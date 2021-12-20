@@ -1,0 +1,41 @@
+button#one:focus {
+  background: #889ab5;
+}
+
+:root {
+  /* Colors: */
+  --unnamed-color-f8be28: #f8be28;
+  --unnamed-color-ffffff: #ffffff;
+
+  /* Font/text values */
+  --unnamed-font-family-sf-compact: SF Compact;
+  --unnamed-font-family-sf-pro: SF Pro;
+  --unnamed-font-style-normal: normal;
+  --unnamed-font-weight-600: 600px;
+  --unnamed-font-weight-bold: bold;
+  --unnamed-font-size-12: 12px;
+  --unnamed-font-size-24: 24px;
+  --unnamed-character-spacing-0: 0px;
+  --unnamed-line-spacing-15: 15px;
+  --unnamed-line-spacing-29: 29px;
+}
+
+/* Character Styles */
+.unnamed-character-style-1 {
+  font-family: var(--unnamed-font-family-prohibition);
+  font-style: var(--unnamed-font-style-normal);
+  font-weight: var(--unnamed-font-weight-normal);
+  font-size: var(--unnamed-font-size-12);
+  line-height: var(--unnamed-line-spacing-15);
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--unnamed-color-ffffff);
+}
+.unnamed-character-style-2 {
+  font-family: var(--unnamed-font-family-sf-compact);
+  font-style: var(--unnamed-font-style-normal);
+  font-weight: var(--unnamed-font-weight-600);
+  font-size: var(--unnamed-font-size-24);
+  line-height: var(--unnamed-line-spacing-29);
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--unnamed-color-ffffff);
+}
