@@ -21,12 +21,14 @@ const useStyles = makeStyles({
     fontSize: '18px',
     color: '#636366',
     padding: '20px 0px',
+    font: 'normal normal normal 18px/21px SF Pro Display',
   },
   title: {
     color: '#2C2C2E',
     fontSize: '18px',
     fontWeight: 'bold',
     padding: '10px 0px',
+    font: 'normal normal normal 18px/21px SF Pro Display',
   },
   button: {
     border: '2px solid #2C2C2E',
@@ -35,11 +37,13 @@ const useStyles = makeStyles({
     color: ' #2C2C2E',
     fontSize: '18px',
     padding: '2px',
+    font: 'normal normal normal 18px/21px SF Pro Display;',
   },
   colHeader: {
     fontSize: '14px',
     color: '#2C2C2E',
     padding: '10px 0px',
+    font: 'normal normal normal 14px/16px SF Pro Display',
   },
   colData: {
     fontSize: '12px',
@@ -145,18 +149,18 @@ function Views() {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json.result);
+        //console.log(json.result);
         setAllSchedule(json.result);
       })
       .catch((error) => console.log(error));
   }, [refreshKey]);
 
   useEffect(() => {
-    if (allViews.length !== 0) {
+    if (allViews.length !== 0 || allSchedule.length !== 0) {
       setIsLoading(false);
     }
-    //console.log(allViews, selectedView, selectedSchedule);
-  }, [allViews, selectedView, selectedSchedule, refreshKey, allSchedule]);
+    console.log(allViews, allSchedule, selectedView, selectedSchedule);
+  }, [allViews, allSchedule, selectedView, selectedSchedule, refreshKey]);
 
   function getView(viewID) {
     axios
@@ -195,7 +199,15 @@ function Views() {
           <thead>
             <tr>
               {arr.map((item) => (
-                <td style={{ padding: '5px' }}>{item}</td>
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    font: 'normal normal normal 12px/14px SF Pro Display',
+                  }}
+                >
+                  {item}
+                </td>
               ))}
             </tr>
           </thead>
@@ -212,6 +224,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     borderLeft: '1px solid #636366',
                     backgroundColor: getBackgroundColor(
                       item,
@@ -232,6 +245,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     backgroundColor: getBackgroundColor(
                       item,
                       Object.values(selectedSchedule.Monday)
@@ -252,6 +266,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     backgroundColor: getBackgroundColor(
                       item,
                       Object.values(selectedSchedule.Tuesday)
@@ -272,6 +287,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     backgroundColor: getBackgroundColor(
                       item,
                       Object.values(selectedSchedule.Wednesday)
@@ -292,6 +308,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     backgroundColor: getBackgroundColor(
                       item,
                       Object.values(selectedSchedule.Thursday)
@@ -312,6 +329,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     backgroundColor: getBackgroundColor(
                       item,
                       Object.values(selectedSchedule.Friday)
@@ -332,6 +350,7 @@ function Views() {
                 <td
                   style={{
                     padding: '5px',
+                    width: '5rem',
                     backgroundColor: getBackgroundColor(
                       item,
                       Object.values(selectedSchedule.Saturday)
@@ -364,73 +383,75 @@ function Views() {
     }
 
     return (
-      <div>
-        <table>
-          <thead>
-            <tr>
-              {arr.map((item) => (
-                <td style={{ padding: '5px' }}>{item}</td>
-              ))}
-            </tr>
-          </thead>
-          <tbody style={{ borderLeft: '1px solid #636366' }}>
-            {/* {allSchedule['sunday'].map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {console.log(schedule, allSchedule['sunday'], allSchedule)}
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          schedule.schedule,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })} */}
-            <tr
-              style={{
-                borderLeft: '1px solid #636366',
-                height: '2.9rem',
-              }}
-            >
-              {console.log(allSchedule['sunday'], allSchedule)}
-              {arr.map((item) => (
-                <td
-                  style={{
-                    padding: '5px',
-                    backgroundColor: `${allSchedule['sunday'].map((schedule) =>
-                      getBackgroundColorAll(
+      <table>
+        <thead>
+          <tr>
+            {arr.map((item) => (
+              <td style={{ padding: '5px', width: '5rem' }}>{item}</td>
+            ))}
+          </tr>
+        </thead>
+        <tbody style={{ borderLeft: '1px solid #636366' }}>
+          {/* {allSchedule['sunday'].map((schedule) => {
+            return (
+              <tr
+                style={{
+                  borderLeft: '1px solid #636366',
+                  //height: '2.9rem',
+                }}
+              >
+                {console.log(schedule, allSchedule['sunday'], allSchedule)}
+                {arr.map((item) => (
+                  <td
+                    style={{
+                      padding: '5px',
+
+                      backgroundColor: getBackgroundColorAll(
                         item,
                         schedule.schedule,
                         schedule.color
-                      )
+                      ),
+                      borderLeft: '1px solid #636366',
+                    }}
+                  >
+                    {item}
+                  </td>
+                ))}
+              </tr>
+            );
+          })} */}
+          {/* <tr
+            style={{
+              borderLeft: '1px solid #636366',
+              height: '2.9rem',
+            }}
+          >
+            {console.log(allSchedule['sunday'], allSchedule)}
+            {arr.map((item) => (
+              <td
+                style={{
+                  width: '5rem',
+                  padding: '5px',
+                  // backgroundColor: `${allSchedule['sunday'].map((schedule) =>
+                  //   getBackgroundColorAll(
+                  //     item,
+                  //     schedule.schedule,
+                  //     schedule.color
+                  //   )
+                  // )}`,
+                  backgroundColor: getBackgroundColorAll(
+                    item,
+                    `${allSchedule['sunday'].map(
+                      (schedule) => schedule.schedule
                     )}`,
-                    // backgroundColor: getBackgroundColorAll(
-                    //   item,
-                    //   `${allSchedule['sunday'].map(
-                    //     (schedule) => schedule.schedule
-                    //   )}`,
-                    //   schedule.color
-                    // ),
-                    borderLeft: '1px solid #636366',
-                  }}
-                ></td>
-              ))}
-            </tr>
-            {/* {allSchedule.map((schedule) => {
+                    'red'
+                  ),
+                  borderLeft: '1px solid #636366',
+                }}
+              ></td>
+            ))}
+          </tr> */}
+          {/* {allSchedule.map((schedule) => {
               return (
                 <tr
                   style={{
@@ -574,9 +595,8 @@ function Views() {
                 </tr>
               );
             })} */}
-          </tbody>
-        </table>
-      </div>
+        </tbody>
+      </table>
     );
   };
 
@@ -629,7 +649,7 @@ function Views() {
   function getBackgroundColorAll(i, day, col) {
     let color;
     let result = [];
-    //console.log(day);
+    //console.log(JSON.stringify(day));
     result = range(
       Number(day.start_time.slice(0, -3)),
       Number(day.end_time.slice(0, -3))
@@ -652,10 +672,12 @@ function Views() {
     //console.log(result);
     for (var j = 0; j < result.length; j++)
       if (result[j] === Number(convertTime12to24(i).slice(0, -3))) {
-        console.log('in if', col);
+        //console.log('in if', col);
         color = col;
-        console.log('in if', color);
+        return color;
+        //console.log('in if', color);
       }
+
     return color;
   }
   //popover open and close
@@ -689,13 +711,13 @@ function Views() {
 
   function handleSunday(i, event) {
     const fields = [...sundayFields];
-    console.log(i);
+    //console.log(i);
     fields[i][event.target.name] = event.target.value;
     setSundayFields(fields);
   }
   function handleSundayUpdate(i, event) {
     const fields = [...selectedSchedule.Sunday];
-    console.log(i);
+    //console.log(i);
     fields[i][event.target.name] = event.target.value;
     setSelectedSchedule({
       ...selectedSchedule,
@@ -705,24 +727,24 @@ function Views() {
 
   function handleSundayAdd() {
     const fields = [...sundayFields];
-    console.log(fields);
+    //console.log(fields);
     fields.push({ start_time: '', end_time: '' });
-    console.log(fields);
+    //console.log(fields);
     setSundayFields(fields);
   }
 
   function handleSundayRemove(i) {
     const fields = [...sundayFields];
-    console.log(fields);
+    //console.log(fields);
     fields.splice(i, 1);
-    console.log(fields);
+    //console.log(fields);
     setSundayFields(fields);
   }
   function handleSundayAddUpdate() {
     const fields = [...selectedSchedule.Sunday];
-    console.log(fields);
+    //console.log(fields);
     fields.push({ start_time: '', end_time: '' });
-    console.log(fields);
+    //console.log(fields);
     setSelectedSchedule({
       ...selectedSchedule,
       Sunday: fields,
@@ -731,7 +753,7 @@ function Views() {
 
   function handleSundayRemoveUpdate(i) {
     const fields = [...selectedSchedule.Sunday];
-    console.log(fields);
+    //console.log(fields);
     fields.splice(i, 1);
     setSelectedSchedule({
       ...selectedSchedule,
@@ -1114,8 +1136,8 @@ function Views() {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
-                fontSize: '18px',
-                fontWeight: 'bold',
+                font: 'normal normal bold 18px/21px SF Pro Display',
+                textAlign: 'center',
               }}
             >
               New View
@@ -1124,7 +1146,15 @@ function Views() {
         </Modal.Header>
 
         <Modal.Body>
-          <Typography className={classes.colHeader}> View Name </Typography>
+          <Typography
+            style={{
+              font: 'normal normal bold 14px/16px SF Pro Display',
+              color: '#2C2C2E',
+            }}
+          >
+            {' '}
+            View Name{' '}
+          </Typography>
           <input
             style={{
               background: '#F3F3F8 0% 0% no-repeat padding-box',
@@ -1134,7 +1164,13 @@ function Views() {
             value={viewName}
             onChange={(e) => setViewName(e.target.value)}
           />
-          <Typography className={classes.colHeader}>
+          <Typography
+            style={{
+              font: 'normal normal bold 14px/16px SF Pro Display',
+              color: '#2C2C2E',
+              paddingTop: '20px',
+            }}
+          >
             {' '}
             Pick a color for the view{' '}
           </Typography>
@@ -1162,7 +1198,7 @@ function Views() {
                   width: '40px',
                   height: '40px',
                   borderRadius: '3px',
-
+                  font: 'normal normal normal 18px/21px SF Pro Display',
                   background: '#F1E3C8 0% 0% no-repeat padding-box',
                 }}
                 onClick={() => {
@@ -1178,7 +1214,7 @@ function Views() {
                   width: '40px',
                   height: '40px',
                   borderRadius: '3px',
-
+                  font: 'normal normal normal 18px/21px SF Pro Display',
                   background: '#DCEDC8 0% 0% no-repeat padding-box',
                 }}
                 onClick={() => {
@@ -1270,6 +1306,7 @@ function Views() {
                 color: '#2C2C2E',
                 fontSize: '16px',
                 padding: '5px',
+                font: 'normal normal bold 20px/24px SF Pro Display',
               }}
               onClick={() => {
                 getView(view.view_unique_id);
@@ -1318,6 +1355,8 @@ function Views() {
                     display: 'flex',
                     flexDirection: 'row',
                     cursor: 'pointer',
+                    paddingTop: '10px',
+                    font: 'normal normal bold 20px/24px SF Pro Display',
                   }}
                   onClick={(e) => {
                     handleClick(e);
@@ -1379,11 +1418,9 @@ function Views() {
 
       <div>{showCreateNewViewModal && createNewViewModal()}</div>
       <Row className={classes.colHeader}>
-        <Col xs={3}>Meeting types with this view</Col>
         <Col>Time Zone</Col>
       </Row>
       <Row className={classes.colData}>
-        <Col xs={3}>1 Metting Type</Col>
         <Col>Pacific Time - US & Canada</Col>
       </Row>
       {allViews.length === 0 && showTimeInput === false ? (
@@ -1508,21 +1545,8 @@ function Views() {
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'flex-start',
+                  //alignItems: 'flex-start',
                   overflow: 'scroll',
-                  '*::-webkit-scrollbar': {
-                    '-webkit-appearance': 'none',
-                    width: '10px',
-                  },
-                  '*::-webkit-scrollbar-track': {
-                    '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
-                  },
-                  '*::-webkit-scrollbar-thumb': {
-                    borderRadius: '5px',
-                    backgroundColor: 'rgba(0,0,0,.5)',
-                    '-webkit-box-shadow': '0 0 1px rgba(255,255,255,.5)',
-                    outline: '1px solid slategrey',
-                  },
                 }}
               >
                 {timeDisplay()}
@@ -2555,21 +2579,8 @@ function Views() {
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
-                      alignItems: 'flex-start',
+                      //alignItems: 'flex-start',
                       overflow: 'scroll',
-                      '*::-webkit-scrollbar': {
-                        '-webkit-appearance': 'none',
-                        width: '10px',
-                      },
-                      '*::-webkit-scrollbar-track': {
-                        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
-                      },
-                      '*::-webkit-scrollbar-thumb': {
-                        borderRadius: '5px',
-                        backgroundColor: 'rgba(0,0,0,.5)',
-                        '-webkit-box-shadow': '0 0 1px rgba(255,255,255,.5)',
-                        outline: '1px solid slategrey',
-                      },
                     }}
                   >
                     {showUpdateButton === true ? timeDisplay() : <div></div>}
@@ -2630,6 +2641,7 @@ function Views() {
                       fontWeight: 'bold',
                       border: 'none',
                       padding: '5px',
+                      font: 'normal normal bold 20px/24px SF Pro Display',
                     }}
                   >
                     {view.view_name}
@@ -2721,21 +2733,8 @@ function Views() {
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'flex-start',
+                  //alignItems: 'flex-start',
                   overflow: 'scroll',
-                  '*::-webkit-scrollbar': {
-                    '-webkit-appearance': 'none',
-                    width: '10px',
-                  },
-                  '*::-webkit-scrollbar-track': {
-                    '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
-                  },
-                  '*::-webkit-scrollbar-thumb': {
-                    borderRadius: '5px',
-                    backgroundColor: 'rgba(0,0,0,.5)',
-                    '-webkit-box-shadow': '0 0 1px rgba(255,255,255,.5)',
-                    outline: '1px solid slategrey',
-                  },
                 }}
               >
                 {timeDisplayAll()}

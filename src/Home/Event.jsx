@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import axios from 'axios';
-
+import { useHistory } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
 import Bookmark from '../images/bookmark.svg';
@@ -17,11 +17,20 @@ const useStyles = makeStyles({
     color: '#2C2C2E',
     fontSize: '18px',
     fontWeight: 'bold',
+    font: 'normal normal bold 18px/21px SF Pro Display',
+  },
+
+  colHeader: {
+    fontSize: '14px',
+    color: '#2C2C2E',
+    padding: '10px 0px',
+    font: 'normal normal bold 14px/16px SF Pro Display',
   },
 });
 
 export default function Event() {
   const classes = useStyles();
+  const history = useHistory();
   const [allViews, setAllViews] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,7 +76,7 @@ export default function Event() {
   }, [refreshKey]);
 
   useEffect(() => {
-    if (allEvents.length !== 0) {
+    if (allEvents.length !== 0 || allViews.length !== 0) {
       setIsLoading(false);
     }
     console.log(allViews, selectedEvent, selectedEventBuffer);
@@ -79,7 +88,6 @@ export default function Event() {
         `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
       )
       .then((response) => {
-        let schedule = JSON.parse(response.data.result.result[0].schedule);
         setViewName(response.data.result.result[0].view_name);
         setViewID(response.data.result.result[0].view_unique_id);
         setViewColor(response.data.result.result[0].color);
@@ -175,6 +183,7 @@ export default function Event() {
       fontSize: '18px',
       fontWeight: 'bold',
       color: '#2C2C2E',
+      font: 'normal normal bold 20px/24px SF Pro Display',
     };
 
     const handleChangeBeforeUpdate = (chkValue) => {
@@ -211,6 +220,7 @@ export default function Event() {
                 justifyContent: 'center',
                 fontSize: '18px',
                 fontWeight: 'bold',
+                font: 'normal normal normal 30px/37px Prohibition',
               }}
             >
               {viewName}
@@ -475,6 +485,7 @@ export default function Event() {
       fontSize: '18px',
       fontWeight: 'bold',
       color: '#2C2C2E',
+      font: 'normal normal bold 20px/24px SF Pro Display',
     };
 
     const handleChangeBeforeCreate = (chkValue) => {
@@ -499,6 +510,8 @@ export default function Event() {
                 justifyContent: 'center',
                 fontSize: '18px',
                 fontWeight: 'bold',
+                textAlign: 'center',
+                font: 'normal normal normal 30px/37px Prohibition',
               }}
             >
               {viewName}
@@ -663,6 +676,7 @@ export default function Event() {
                     backgroundColor: `${view.color}`,
                     textAlign: 'center',
                     border: 'none',
+                    font: 'normal normal normal 24px/30px Prohibition',
                   }}
                   onClick={(e) => {
                     getView(view.view_unique_id);
@@ -705,6 +719,7 @@ export default function Event() {
                                   fontSize: '24px',
                                   color: '#2C2C2E',
                                   padding: '0',
+                                  font: 'normal normal normal 24px/30px Prohibition',
                                 }}
                               >
                                 {event.event_name}
@@ -715,15 +730,24 @@ export default function Event() {
                             </Col>
                           </Row>
                           <div
-                            style={{ fontSize: '14px', fontWeight: 'normal' }}
+                            style={{
+                              fontSize: '14px',
+                              fontWeight: 'normal',
+                              font: 'normal normal normal 14px/16px SF Pro Display',
+                            }}
                           >
                             <div>
                               {Number(event.duration.substring(0, 1)) > 1
-                                ? Number(event.duration.substring(0, 1)) * 60
+                                ? event.duration.substring(2, 4) !== '00'
+                                  ? Number(event.duration.substring(0, 1)) +
+                                    ' hrs ' +
+                                    Number(event.duration.substring(2, 4)) +
+                                    ' min'
+                                  : Number(event.duration.substring(0, 1)) +
+                                    ' hrs'
                                 : Number(event.duration.substring(0, 1)) == 1
-                                ? '60'
-                                : event.duration.substring(3, 5)}{' '}
-                              min
+                                ? '60 min'
+                                : event.duration.substring(3, 5) + ' min'}
                             </div>
                             <div>
                               Location:{' '}
@@ -747,9 +771,19 @@ export default function Event() {
                               fontSize: '12px',
                               fontWeight: 'normal',
                               paddingTop: '20px',
+                              paddingBottom: '10px',
+                              font: 'normal normal bold 12px/14px SF Pro Display',
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
                             }}
                           >
-                            <Col>View booking page</Col>
+                            <Col
+                              onClick={() => {
+                                history.push('/schedule');
+                              }}
+                            >
+                              View booking page
+                            </Col>
                             <Col xs={2}>
                               <img
                                 src={Edit}
@@ -758,6 +792,7 @@ export default function Event() {
                                   setEventID(event.event_unique_id);
                                   getEvent(event.event_unique_id);
                                   setViewColor(view.color);
+                                  setViewName(view.view_name);
                                 }}
                                 alt="edit event"
                               />
@@ -767,16 +802,16 @@ export default function Event() {
                         <Row
                           style={{
                             marginLeft: '10px',
-                            //padding: '0px 10px',
-
+                            padding: '10px 0px',
                             width: '213px',
                             height: '48px',
                             fontSize: '12px',
                             fontWeight: 'normal',
                             //marginTop: '11px',
-                            padding: '15px',
+                            //paddingTop: '15px',
                             background: '#E5E5EB',
                             border: '1px solid #2C2C2E',
+                            font: 'normal normal normal 14px/16px Helvetica Neue',
                           }}
                         >
                           <Col>

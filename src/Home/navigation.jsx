@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     background: '#f3f3f8',
     width: '100%',
     borderBottom: '2px solid #636366',
-    boxShadow: 'none',    
+    boxShadow: 'none',
   },
 
   /* displaying the navigationBar as flex Containers */
@@ -75,6 +75,7 @@ const useStyles = makeStyles({
       color: '#2C2C2E',
     },
     textTransform: 'initial',
+    font: 'normal normal normal 18px/21px SF Pro Display',
   },
   activeButtonSelection: {
     color: '#2C2C2E',
@@ -83,6 +84,7 @@ const useStyles = makeStyles({
     },
     fontWeight: 'bold',
     textTransform: 'initial',
+    font: 'normal normal bold 18px/23px Helvetica Neue',
   },
 });
 
@@ -93,11 +95,10 @@ export function Navigation() {
   console.log('CLIENT ID', typeof BASE_URL, BASE_URL);
   const history = useHistory();
   const classes = useStyles();
-  const [isActive, setActive] = useState("schedule");
+  const [isActive, setActive] = useState('schedule');
   const loginContext = useContext(LoginContext);
   console.log(loginContext);
   var selectedUser = loginContext.loginState.curUser;
-
 
   if (
     document.cookie.split(';').some((item) => item.trim().startsWith('ta_uid='))
@@ -107,7 +108,6 @@ export function Navigation() {
       .find((row) => row.startsWith('ta_uid='))
       .split('=')[1];
   }
-  
 
   return (
     <>
@@ -121,7 +121,10 @@ export function Navigation() {
               >
                 <ThemeProvider theme={headingFont}>
                   <Typography
-                    style={{ fontSize: '32px' }}
+                    style={{
+                      fontSize: '32px',
+                      font: 'normal normal normal 32px/39px Prohibition',
+                    }}
                     onClick={() => {
                       history.push('/schedule');
                     }}
@@ -231,7 +234,6 @@ export function Navigation() {
                 </Button>
               </ThemeProvider>
             </div>
-
           ) : null}
         </Toolbar>
       </AppBar>

@@ -14,6 +14,44 @@
   }
 }
 
+@font-face {
+  font-family: "Prohibition";
+  src: local("Pohibition"),
+    url(./fonts/Prohibition-Lines.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "Staatliches";
+  src: local("Staatliches"),
+    url(./fonts/Staatliches-Regular.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: local("Roboto"), url(./fonts/Roboto-Bold.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "RightGrotesk";
+  src: local("RightGrotesk"),
+    url(./fonts/RightGrotesk-Medium.otf) format("opentype");
+}
+@font-face {
+  font-family: "HelveticaNeue";
+  src: local("HelveticaNeue"),
+    url(./fonts/HelveticaNeue-Medium.ttf) format("truetype");
+}
+@font-face {
+  font-family: "SFProDisplay-Regular";
+  src: local("SFProDisplay-Regular"),
+    url(./fonts/SFProDisplay-Regular.ttf) format("truetype");
+}
+@font-face {
+  font-family: "SFProDisplay-Bold";
+  src: local("SFProDisplay-Bold"),
+    url(./fonts/SFProDisplay-Bold.ttf) format("truetype");
+}
+
 .App-header {
   background-color: #f3f3f8;
   min-height: 100vh;
