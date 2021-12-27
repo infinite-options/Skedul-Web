@@ -7,12 +7,8 @@ export default LoginContext;
 export const LoginInitState = {
   loggedIn: false,
   reload: false,
-  ta: {
+  user: {
     id: '',
     email: '',
   },
-  usersOfTA: [],
-  curUser: '',
-  curUserTimeZone: '',
-  curUserEmail:'',
 };

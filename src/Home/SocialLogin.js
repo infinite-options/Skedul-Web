@@ -1,82 +1,174 @@
-import React, { useContext, useEffect, useState } from 'react';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import React, { useContext, useState } from 'react';
 import GoogleLogin from 'react-google-login';
-import Cookies from 'js-cookie';
 import axios from 'axios';
 import { Grid, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { Col, Container, Form, Modal, Row } from 'react-bootstrap';
 //import { AuthContext } from '../auth/AuthContext';
 import { withRouter } from 'react-router';
-import Facebook from '../manifest/LoginAssets/Facebook.svg';
-import Google from '../manifest/LoginAssets/Google.svg';
-import Apple from '../manifest/LoginAssets/Apple.svg';
+import Google from './LoginAssets/Google.svg';
 import LoginContext from 'LoginContext';
+
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
+const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 function SocialLogin(props) {
   // const Auth = useContext(AuthContext);
   const loginContext = useContext(LoginContext);
   const history = useHistory();
+  const [loggedIn, setLoggedIn] = useState(false);
   const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [newPhoneNumber, setNewPhoneNumber] = useState('');
   const [newFName, setNewFName] = useState('');
   const [newLName, setNewLName] = useState('');
-  const [newEmployer, setNewEmployer] = useState('');
- 
+  const [socialId, setSocialId] = useState('');
+  const [refreshToken, setrefreshToken] = useState('');
+  const [accessToken, setAccessToken] = useState('');
+  const [accessExpiresIn, setaccessExpiresIn] = useState('');
+  const client_id = CLIENT_ID;
+  const client_secret = CLIENT_SECRET;
 
   const responseGoogle = (response) => {
     console.log('response', response);
-    if (response.profileObj) {
-      console.log('Google login successful');
-      let email = response.profileObj.email;
-      let accessToken = response.accessToken;
-      let socialId = response.googleId;
-      _socialLoginAttempt(email,accessToken,socialId);
-    } else {
-      console.log('Google login unsuccessful');
+
+    let auth_code = response.code;
+    let authorization_url = 'https://accounts.google.com/o/oauth2/token';
+
+    console.log('auth_code', auth_code);
+    var details = {
+      code: auth_code,
+      client_id: client_id,
+      client_secret: client_secret,
+      //redirect_uri: 'https://manifestmy.space',
+      redirect_uri: 'http://localhost:3000',
+      grant_type: 'authorization_code',
+    };
+
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + '=' + encodedValue);
     }
+    formBody = formBody.join('&');
+
+    fetch(authorization_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+      body: formBody,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
+        console.log(responseData);
+        return responseData;
+      })
+      .then((data) => {
+        console.log(data);
+        let at = data['access_token'];
+        let rt = data['refresh_token'];
+        let ax = data['expires_in'].toString();
+        setAccessToken(at);
+        setrefreshToken(rt);
+        setaccessExpiresIn(ax);
+        console.log('res', at, rt);
+
+        axios
+          .get(
+            'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' +
+              at
+          )
+          .then((response) => {
+            console.log(response.data);
+
+            let data = response.data;
+            //setUserInfo(data);
+            let e = data['email'];
+            let fn = data['given_name'];
+            let ln = data['family_name'];
+            let si = data['id'];
+
+            setNewEmail(e);
+            setNewFName(fn);
+            setNewLName(ln);
+            setSocialId(si);
+            axios
+              .get(
+                'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetEmailId/' +
+                  e
+              )
+              .then((response) => {
+                console.log(response.data);
+                if (response.data.message === 'User EmailID doesnt exist') {
+                  setSocialSignUpModalShow(!socialSignUpModalShow);
+                } else {
+                  document.cookie = 'user_uid=' + response.data.result;
+                  document.cookie = 'user_email=' + e;
+                  setLoggedIn(true);
+                  loginContext.setLoginState({
+                    ...loginContext.loginState,
+                    loggedIn: true,
+                    user: {
+                      ...loginContext.loginState.user,
+                      id: response.data.result,
+                      email: e.toString(),
+                    },
+                  });
+                  history.push({
+                    pathname: '/schedule',
+                    state: e,
+                  });
+                }
+              });
+          })
+          .catch((error) => {
+            console.log('its in landing page');
+            console.log(error);
+          });
+
+        // setSocialSignUpModalShow(!socialSignUpModalShow);
+
+        return (
+          accessToken,
+          refreshToken,
+          accessExpiresIn,
+          newEmail,
+          newFName,
+          newLName,
+          socialId
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   console.log(newEmail);
-  const responseFacebook = (response) => {
-    console.log(response);
-    if (response.email) {
-      console.log('Facebook login successful');
-      let email = response.email;
-      let accessToken = response.accessToken;
-      let socialId = response.id;
-      _socialLoginAttempt(email,accessToken,socialId);
-    } else {
-      console.log('Facebook login unsuccessful');
-    }
-  };
 
-  const _socialLoginAttempt = (email,accessToken,socialId) => {
+  const _socialLoginAttempt = (email, accessToken, socialId) => {
     axios
       .get(
-        BASE_URL + 'loginSocialTA/' +
-        email
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialLogin/' +
+          email
       )
       .then((res) => {
         console.log(res);
         if (res.data.result !== false) {
-          document.cookie = 'ta_uid=' + res.data.result;
-          document.cookie = 'ta_email=' + email;
-          document.cookie = 'patient_name=Loading';
+          document.cookie = 'user_uid=' + res.data.result;
+          document.cookie = 'user_email=' + email;
+          setLoggedIn(true);
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
-            ta: {
-              ...loginContext.loginState.ta,
+            user: {
+              ...loginContext.loginState.user,
               id: res.data.result,
               email: email.toString(),
             },
-            usersOfTA: [],
-            curUser: '',
-            curUserTimeZone: '',
-            curUserEmail: '',
           });
           console.log('Login successful');
           console.log(email);
@@ -88,7 +180,6 @@ function SocialLogin(props) {
         } else {
           console.log('log in error');
           setNewEmail(email);
-          //props.history.push('/socialsignup');
           setSocialSignUpModalShow(true);
         }
       })
@@ -104,17 +195,11 @@ function SocialLogin(props) {
     //setSignUpModalShow(false);
     setSocialSignUpModalShow(false);
     history.push('/');
-    setNewPhoneNumber('');
     setNewFName('');
     setNewLName('');
-    setNewEmployer('');
   };
   const handleNewEmailChange = (event) => {
     setNewEmail(event.target.value);
-  };
-
-  const handleNewPhoneNumberChange = (event) => {
-    setNewPhoneNumber(event.target.value);
   };
 
   const handleNewFNameChange = (event) => {
@@ -125,19 +210,21 @@ function SocialLogin(props) {
     setNewLName(event.target.value);
   };
 
-  const handleNewEmployerChange = (event) => {
-    setNewEmployer(event.target.value);
-  };
   const handleSocialSignUpDone = () => {
     axios
-      .post(BASE_URL + 'addNewSocialTA', {
-        email_id: newEmail,
-        first_name: newFName,
-        last_name: newLName,
-        phone_number: newPhoneNumber,
-        employer: newEmployer,
-        ta_time_zone: '',
-      })
+      .post(
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialSignUp',
+        {
+          email_id: newEmail,
+          first_name: newFName,
+          last_name: newLName,
+          time_zone: '',
+          google_auth_token: accessToken,
+          google_refresh_token: refreshToken,
+          social_id: socialId,
+          access_expires_in: accessExpiresIn,
+        }
+      )
       .then((response) => {
         console.log(response);
         hideSignUp();
@@ -196,7 +283,7 @@ function SocialLogin(props) {
                 />
               </Col>
             </Form.Group>
-            <Col>
+            {/* <Col>
               <Form.Group as={Row} className="formEltMargin">
                 <Form.Control
                   type="text"
@@ -211,8 +298,8 @@ function SocialLogin(props) {
                   }}
                 />
               </Form.Group>
-            </Col>
-            <Col>
+            </Col> */}
+            {/* <Col>
               <Form.Group as={Row} className="formEltMargin">
                 <Form.Control
                   type="tel"
@@ -228,7 +315,7 @@ function SocialLogin(props) {
                   }}
                 />
               </Form.Group>
-            </Col>
+            </Col> */}
             <Col>
               <Form.Group as={Row} className="formEltMargin">
                 <Form.Control
@@ -298,35 +385,21 @@ function SocialLogin(props) {
       justifyContent="center"
     >
       <Grid item xs={4}>
-        <FacebookLogin
-          appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-          autoLoad={false}
-          fields="name,email,picture"
-          onClick="return false"
-          callback={responseFacebook}
-          size="small"
-          // icon={<SiFacebook/>}
-          textButton="Continue with Facebook"
-          render={(renderProps) => (
-            <img
-              src={Facebook}
-              onClick={renderProps.onClick}
-              disabled={renderProps.disabled}
-              alt={''}
-            ></img>
-          )}
-        />
-      </Grid>
-      <Grid item xs={4}>
         <Button style={{}}>
           <GoogleLogin
             //clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
             clientId={CLIENT_ID}
+            accessType="offline"
+            prompt="consent"
+            responseType="code"
+            buttonText="Log In"
+            //redirectUri="https://manifestmy.space"
+            redirectUri="http://localhost:3000"
+            scope="https://www.googleapis.com/auth/calendar"
             onSuccess={responseGoogle}
             onFailure={responseGoogle}
             isSignedIn={false}
-            buttonText="Continue with Google"
-            disable={false}
+            disable={true}
             cookiePolicy={'single_host_origin'}
             render={(renderProps) => (
               <img
@@ -340,16 +413,6 @@ function SocialLogin(props) {
         </Button>
       </Grid>
 
-      <Grid item xs={4}>
-        <img
-          src={Apple}
-          variant="contained"
-          alt={''}
-          onClick={() => {
-            window.AppleID.auth.signIn();
-          }}
-        ></img>
-      </Grid>
       {socialSignUpModal()}
     </Grid>
   );

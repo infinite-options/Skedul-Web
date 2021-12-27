@@ -51,9 +51,21 @@ export default function Event() {
   const [afterBufferTime, setAfterBufferTime] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
 
+  var selectedUser = '';
+  if (
+    document.cookie
+      .split(';')
+      .some((item) => item.trim().startsWith('user_uid='))
+  ) {
+    selectedUser = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('user_uid='))
+      .split('=')[1];
+  }
+  console.log('selecteduser', selectedUser);
+
   useEffect(() => {
-    const url =
-      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/100-000102';
+    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -63,8 +75,7 @@ export default function Event() {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url =
-      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllEventsUser/100-000102';
+    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllEventsUser/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -426,7 +437,7 @@ export default function Event() {
     d = `${numHoursD}:${numMinsD}:00`;
 
     var event = {
-      user_id: '100-000102',
+      user_id: `${selectedUser}`,
       view_id: viewID,
       event_name: eventName,
       duration: d,

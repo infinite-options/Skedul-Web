@@ -1,24 +1,13 @@
-import React from 'react';
-import Toolbar from '@material-ui/core/Toolbar';
-import AppBar from '@material-ui/core/AppBar';
+import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Box, TextField, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import Ellipse from '../manifest/LoginAssets/Ellipse.svg';
-import LoginImage from '../manifest/LoginAssets/Login.svg';
-import Facebook from '../manifest/LoginAssets/Facebook.svg';
-import Google from '../manifest/LoginAssets/Google.svg';
-import Apple from '../manifest/LoginAssets/Apple.svg';
-import SignUpImage from '../manifest/LoginAssets/SignUp.svg';
-import Cookies from 'js-cookie';
-
+import Ellipse from './LoginAssets/Ellipse.svg';
+import LoginImage from './LoginAssets/Login.svg';
 import { Col, Container, Form, Modal, Row } from 'react-bootstrap';
-import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
-import { useState, useContext } from 'react';
 import SocialLogin from './SocialLogin';
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -41,34 +30,20 @@ export default function Login() {
   console.log('In Sign Up page');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loggedIn, setLoggedIn] = useState();
-  const [validation, setValidation] = useState('');
-  const [signUpModalShow, setSignUpModalShow] = useState(false);
   const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [newPhoneNumber, setNewPhoneNumber] = useState('');
   const [newFName, setNewFName] = useState('');
   const [newLName, setNewLName] = useState('');
-  const [newEmployer, setNewEmployer] = useState('');
-  const [newClients, setNewClients] = useState([]);
 
-
-  const handleSignUp = (event) => {
-    console.log('sign up clicked');
-    setSignUpModalShow(true);
-    setSocialSignUpModalShow(false);
-  };
   const hideSignUp = () => {
     //setSignUpModalShow(false);
     setSocialSignUpModalShow(false);
     history.push('/');
     setEmail('');
     setPassword('');
-    setNewPhoneNumber('');
     setNewFName('');
     setNewLName('');
-    setNewEmployer('');
   };
 
   const handleNewEmailChange = (event) => {
@@ -79,10 +54,6 @@ export default function Login() {
     setNewPassword(event.target.value);
   };
 
-  const handleNewPhoneNumberChange = (event) => {
-    setNewPhoneNumber(event.target.value);
-  };
-
   const handleNewFNameChange = (event) => {
     setNewFName(event.target.value);
   };
@@ -91,21 +62,18 @@ export default function Login() {
     setNewLName(event.target.value);
   };
 
-  const handleNewEmployerChange = (event) => {
-    setNewEmployer(event.target.value);
-  };
-
   const handleSignUpDone = () => {
     axios
-      .post(BASE_URL + 'addNewTA', {
-        email_id: newEmail,
-        password: newPassword,
-        first_name: newFName,
-        last_name: newLName,
-        phone_number: newPhoneNumber,
-        employer: newEmployer,
-        ta_time_zone: moment.tz.guess(),
-      })
+      .post(
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSignUp',
+        {
+          email_id: newEmail,
+          password: newPassword,
+          first_name: newFName,
+          last_name: newLName,
+          time_zone: moment.tz.guess(),
+        }
+      )
       .then((response) => {
         console.log(response.data);
         hideSignUp();
@@ -117,13 +85,14 @@ export default function Login() {
   };
   const handleSocialSignUpDone = () => {
     axios
-      .post('/TASocialSignUp', {
-        email_id: newEmail,
-        first_name: newFName,
-        last_name: newLName,
-        phone_number: newPhoneNumber,
-        employer: newEmployer,
-      })
+      .post(
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialSignUp',
+        {
+          email_id: newEmail,
+          first_name: newFName,
+          last_name: newLName,
+        }
+      )
       .then((response) => {
         console.log(response.data);
         hideSignUp();
@@ -148,7 +117,7 @@ export default function Login() {
               <Form.Control plaintext readOnly value={newEmail} />
             </Col>
           </Form.Group>
-          <Form.Group as={Row} className="formEltMargin">
+          {/* <Form.Group as={Row} className="formEltMargin">
             <Form.Label column sm="4">
               Phone Number
             </Form.Label>
@@ -161,7 +130,7 @@ export default function Login() {
                 onChange={handleNewPhoneNumberChange}
               />
             </Col>
-          </Form.Group>
+          </Form.Group> */}
           <Form.Group as={Row} className="formEltMargin">
             <Form.Label column sm="2">
               First Name
@@ -186,7 +155,7 @@ export default function Login() {
               />
             </Col>
           </Form.Group>
-          <Form.Group as={Row} className="formEltMargin">
+          {/* <Form.Group as={Row} className="formEltMargin">
             <Form.Label column sm="4">
               Employer
             </Form.Label>
@@ -197,7 +166,7 @@ export default function Login() {
                 onChange={handleNewEmployerChange}
               />
             </Col>
-          </Form.Group>
+          </Form.Group> */}
           <Form.Group as={Row} className="formEltMargin">
             <Col>
               <Button
@@ -260,35 +229,6 @@ export default function Login() {
         });
     } */
   // }; */
-  const responseGoogle = (response) => {
-    console.log('clicked on sign up google');
-    if (response.profileObj !== null || response.profileObj !== undefined) {
-      let e = response.profileObj.email;
-      let at = response.accessToken;
-      let rt = response.googleId;
-      let first_name = response.profileObj.givenName;
-      let last_name = response.profileObj.familyName;
-      console.log(e, at, rt, first_name, last_name);
-      axios
-        .post(BASE_URL + 'TASocialLogIn/', {
-          username: e,
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.data !== false) {
-            setLoggedIn(true);
-          } else {
-            console.log('social sign up with', e);
-            setSocialSignUpModalShow(true);
-            setNewEmail(e);
-            console.log('social sign up modal displayed');
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  };
   return (
     <Box
       display="flex"
@@ -357,7 +297,7 @@ export default function Login() {
                 />
               </Col>
             </Form.Group>
-            <Col>
+            {/* <Col>
               <Form.Group as={Row} className="formEltMargin">
                 <Form.Control
                   type="text"
@@ -389,7 +329,7 @@ export default function Login() {
                   }}
                 />
               </Form.Group>
-            </Col>
+            </Col> */}
             <Col>
               <Form.Group as={Row} className="formEltMargin">
                 <Form.Control
@@ -503,7 +443,7 @@ export default function Login() {
       <Box style={{ position: 'fixed', right: '-100px', bottom: '-100px' }}>
         <img src={Ellipse} alt="Ellipse" />
       </Box>
-      {socialSignUpModal()}
+      {/* {socialSignUpModal()} */}
 
       {/* <Box hidden={loggedIn === true}>
                   <Loading/>

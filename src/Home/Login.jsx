@@ -1,23 +1,16 @@
 import React from 'react';
-import Toolbar from '@material-ui/core/Toolbar';
-import AppBar from '@material-ui/core/AppBar';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Box, TextField, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import Ellipse from '../manifest/LoginAssets/Ellipse.svg';
-import LoginImage from '../manifest/LoginAssets/Login.svg';
-import Facebook from '../manifest/LoginAssets/Facebook.svg';
-import Google from '../manifest/LoginAssets/Google.svg';
-import Apple from '../manifest/LoginAssets/Apple.svg';
-import SignUpImage from '../manifest/LoginAssets/SignUp.svg';
-import Cookies from 'js-cookie';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import Ellipse from './LoginAssets/Ellipse.svg';
+import LoginImage from './LoginAssets/Login.svg';
+import Google from './LoginAssets/Google.svg';
+import SignUpImage from './LoginAssets/SignUp.svg';
 import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
 import { useState, useContext } from 'react';
 import LoginContext from 'LoginContext';
-import { AlternateEmail } from '@material-ui/icons';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -35,6 +28,8 @@ const useStyles = makeStyles({
 /* Navigation Bar component function */
 export default function Login() {
   const loginContext = useContext(LoginContext);
+  const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
   console.log('in login page');
   const classes = useStyles();
   const history = useHistory();
@@ -43,8 +38,9 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState();
   const [validation, setValidation] = useState('');
-  const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
-
+  const [accessToken, setAccessToken] = useState('');
+  const [idToken, setIdToken] = useState('');
+  const [socialId, setSocialId] = useState('');
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -54,54 +50,139 @@ export default function Login() {
   };
 
   const responseGoogle = (response) => {
-     // console.log(response);
+    console.log(response);
     if (response.profileObj) {
       // console.log('Google login successful');
       let email = response.profileObj.email;
-      let accessToken = response.accessToken;
-      let socialId = response.googleId;
-      _socialLoginAttempt(email, accessToken, socialId, 'GOOGLE');
-    }
-  };
+      let user_id = '';
+      // let accessToken = response.accessToken;
+      setSocialId(response.googleId);
+      axios
+        .get(
+          `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserToken/${email}`
+        )
+        .then((response) => {
+          console.log('in events', response);
+          let url =
+            'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
+          loginContext.setLoginState({
+            ...loginContext.loginState,
+            user: {
+              id: response['data']['user_unique_id'],
+              email: response['data']['user_email_id'],
+            },
+          });
+          user_id = response['data']['user_unique_id'];
+          var old_at = response['data']['user_google_auth_token'];
+          console.log('in events', old_at);
+          var refreshToken = response['data']['user_google_refresh_token'];
 
-  const responseFacebook = (response) => {
-    // console.log(response);
-    if (response.email) {
-      // console.log('Facebook login successful');
-      let email = response.email;
-      let accessToken = response.accessToken;
-      let socialId = response.id;
-      _socialLoginAttempt(email, accessToken, socialId, 'FACEBOOK');
+          let checkExp_url = url + old_at;
+          console.log('in events', checkExp_url);
+          fetch(
+            `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
+            {
+              method: 'GET',
+            }
+          )
+            .then((response) => {
+              console.log('in events', response);
+              if (response['status'] === 400) {
+                console.log('in events if');
+                let authorization_url =
+                  'https://accounts.google.com/o/oauth2/token';
+
+                var details = {
+                  refresh_token: refreshToken,
+                  client_id: CLIENT_ID,
+                  client_secret: CLIENT_SECRET,
+                  grant_type: 'refresh_token',
+                };
+
+                var formBody = [];
+                for (var property in details) {
+                  var encodedKey = encodeURIComponent(property);
+                  var encodedValue = encodeURIComponent(details[property]);
+                  formBody.push(encodedKey + '=' + encodedValue);
+                }
+                formBody = formBody.join('&');
+
+                fetch(authorization_url, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type':
+                      'application/x-www-form-urlencoded;charset=UTF-8',
+                  },
+                  body: formBody,
+                })
+                  .then((response) => {
+                    return response.json();
+                  })
+                  .then((responseData) => {
+                    console.log(responseData);
+                    return responseData;
+                  })
+                  .then((data) => {
+                    console.log(data);
+                    let at = data['access_token'];
+                    var id_token = data['id_token'];
+                    setAccessToken(at);
+                    setIdToken(id_token);
+                    console.log('in events', at);
+                    let url =
+                      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateAccessToken/';
+                    axios
+                      .post(url + user_id, {
+                        user_google_auth_token: at,
+                      })
+                      .then((response) => {})
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                    return accessToken;
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              } else {
+                setAccessToken(old_at);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          console.log('in events', refreshToken);
+        });
+      _socialLoginAttempt(email, accessToken, socialId, 'GOOGLE');
     }
   };
 
   const _socialLoginAttempt = (email, accessToken, socialId, platform) => {
     axios
-      .get(BASE_URL + 'loginSocialTA/' + email)
+      .get(
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialLogin/' +
+          email
+      )
       .then((res) => {
         console.log(res);
         if (res.data.result !== false) {
-          document.cookie = 'ta_uid=' + res.data.result;
-          document.cookie = 'ta_email=' + email;
-          document.cookie = 'patient_name=Loading';
+          document.cookie = 'user_uid=' + res.data.result;
+          document.cookie = 'user_email=' + email;
+          setLoggedIn(true);
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
-            ta: {
-              ...loginContext.loginState.ta,
+            user: {
+              ...loginContext.loginState.user,
               id: res.data.result,
               email: email.toString(),
             },
-            usersOfTA: [],
-            curUser: '',
-            curUserTimeZone: '',
-            curUserEmail:'',
           });
           console.log('Login successful');
           console.log(email);
           history.push({
             pathname: '/schedule',
-            state: email,
+            state: email.toString(),
           });
           // Successful log in, Try to update tokens, then continue to next page based on role
         } else {
@@ -121,29 +202,28 @@ export default function Login() {
     event.preventDefault();
     console.log('event', event, email, password);
     axios
-      .get(BASE_URL + 'loginTA/' + email.toString() + '/' + password.toString())
+      .get(
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserLogin/' +
+          email.toString() +
+          ',' +
+          password.toString()
+      )
       .then((response) => {
-        
         if (response.data.result !== false) {
-          console.log('respnse true', response.data.result)
+          console.log('respnse true', response.data.result);
           console.log('response', response.data);
-          document.cookie = 'ta_uid=' + response.data.result;
-          document.cookie = 'ta_email=' + email;
-          document.cookie = 'patient_name=Loading';
+          document.cookie = 'user_uid=' + response.data.result;
+          document.cookie = 'user_email=' + email;
           setLoggedIn(true);
           console.log('response id', response.data.result, loggedIn);
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
-            ta: {
-              ...loginContext.loginState.ta,
+            user: {
+              ...loginContext.loginState.user,
               id: response.data.result,
               email: email.toString(),
             },
-            usersOfTA: [],
-            curUser: '',
-            curUserTimeZone: '',
-            curUserEmail: '',
           });
           history.push({
             pathname: '/schedule',
@@ -160,67 +240,14 @@ export default function Login() {
       });
   };
 
-/*   const responseGoogle = (response) => {
-    console.log('response', response);
-    if (response.profileObj !== null || response.profileObj !== undefined) {
-      let e = response.profileObj.email;
-      let at = response.accessToken;
-      let rt = response.googleId;
-      let first_name = response.profileObj.givenName;
-      let last_name = response.profileObj.familyName;
-      console.log(e, at, rt, first_name, last_name);
-      axios
-        .get(BASE_URL + 'loginSocialTA/' + e)
-        .then((response) => {
-          console.log('social login');
-          console.log(response.data.result);
-          if (response.data !== false) {
-            document.cookie = 'ta_uid=' + response.data.result;
-            document.cookie = 'ta_email=' + e;
-            document.cookie = 'patient_name=Loading';
-            loginContext.setLoginState({
-              ...loginContext.loginState,
-              loggedIn: true,
-              ta: {
-                ...loginContext.loginState.ta,
-                id: response.data.result,
-                email: email.toString(),
-              },
-              usersOfTA: [],
-              curUser: '',
-              curUserTimeZone: '',
-            });
-            console.log('Login successful');
-            console.log(e);
-            history.push({
-              pathname: '/schedule',
-              state: e,
-            });
-          } else {
-            console.log('social sign up with', e);
-            this.setState({
-              socialSignUpModalShow: true,
-              newEmail: e,
-            });
-            history.push({
-              pathname: '/signup',
-              state: '',
-            });
-            console.log('social sign up modal displayed');
-          }
-        })
-        .catch((error) => {
-          console.log('error', error);
-        });
-    }
-  }; */
-
   if (
-    document.cookie.split(';').some((item) => item.trim().startsWith('ta_uid='))
+    document.cookie
+      .split(';')
+      .some((item) => item.trim().startsWith('user_uid='))
   ) {
     console.log('we are here');
     console.log(document.cookie);
-    //console.log(ta_uid);
+    //console.log(user_uid);
     history.push('/schedule');
   } else {
   }
@@ -296,19 +323,6 @@ export default function Login() {
 
         <Box display="flex" justifyContent="center" marginTop="1rem">
           <Box>
-            <Button
-              disableRipple={true}
-              disableFocusRipple={true}
-              disableTouchRipple={true}
-              disableElevation={true}
-              style={{
-                borderRadius: '32px',
-                height: '3rem',
-                backgroundImage: `url(${Facebook})`,
-              }}
-            ></Button>
-          </Box>
-          <Box>
             <GoogleLogin
               clientId="1009120542229-9nq0m80rcnldegcpi716140tcrfl0vbt.apps.googleusercontent.com"
               render={(renderProps) => (
@@ -329,19 +343,6 @@ export default function Login() {
               disable={false}
               cookiePolicy={'single_host_origin'}
             />
-          </Box>
-          <Box>
-            <Button
-              disableRipple={true}
-              disableFocusRipple={true}
-              disableTouchRipple={true}
-              disableElevation={true}
-              style={{
-                borderRadius: '32px',
-                height: '3rem',
-                backgroundImage: `url(${Apple})`,
-              }}
-            ></Button>
           </Box>
         </Box>
 

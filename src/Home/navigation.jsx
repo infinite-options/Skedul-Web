@@ -101,11 +101,11 @@ export function Navigation() {
   var selectedUser = loginContext.loginState.curUser;
 
   if (
-    document.cookie.split(';').some((item) => item.trim().startsWith('ta_uid='))
+    document.cookie.split(';').some((item) => item.trim().startsWith('user_uid='))
   ) {
     selectedUser = document.cookie
       .split('; ')
-      .find((row) => row.startsWith('ta_uid='))
+      .find((row) => row.startsWith('user_uid='))
       .split('=')[1];
   }
 
@@ -138,7 +138,7 @@ export function Navigation() {
 
           {document.cookie
             .split(';')
-            .some((item) => item.trim().startsWith('ta_uid=')) ? (
+            .some((item) => item.trim().startsWith('user_uid=')) ? (
             <div style={{ width: '100%', textAlign: 'right' }}>
               <ThemeProvider theme={buttonFont}>
                 <Button
@@ -209,8 +209,8 @@ export function Navigation() {
                 <Button
                   className={classes.myButton}
                   onClick={(e) => {
-                    document.cookie = 'ta_uid=1;max-age=0';
-                    document.cookie = 'ta_email=1;max-age=0';
+                    document.cookie = 'user_uid=1;max-age=0';
+                    document.cookie = 'user_email=1;max-age=0';
                     document.cookie = 'patient_uid=1;max-age=0';
                     document.cookie = 'patient_name=1;max-age=0';
                     document.cookie = 'patient_email=1;max-age=0';

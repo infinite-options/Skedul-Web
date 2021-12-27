@@ -5,6 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { Typography, Button } from '@material-ui/core';
 import Bookmark from '../images/bookmark.svg';
 import moment from 'moment';
+import { extendMoment } from 'moment-range';
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
@@ -13,16 +14,27 @@ const useStyles = makeStyles({
 });
 export default function Schedule() {
   const classes = useStyles();
+  const mt = extendMoment(moment);
   const [allViews, setAllViews] = useState([]);
   const [allSchedule, setAllSchedule] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
-
+  var selectedUser = '';
+  if (
+    document.cookie
+      .split(';')
+      .some((item) => item.trim().startsWith('user_uid='))
+  ) {
+    selectedUser = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('user_uid='))
+      .split('=')[1];
+  }
+  console.log('selecteduser', selectedUser);
   useEffect(() => {
-    const url =
-      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/100-000102';
+    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -32,8 +44,7 @@ export default function Schedule() {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url =
-      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllEventsUser/100-000102';
+    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllEventsUser/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -43,8 +54,7 @@ export default function Schedule() {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url =
-      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetSchedule/100-000102';
+    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetSchedule/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -54,13 +64,16 @@ export default function Schedule() {
   }, [refreshKey]);
 
   useEffect(() => {
-    if (
-      allEvents.length !== 0 ||
-      allSchedule.length !== 0 ||
-      allViews.length !== 0
-    ) {
-      setIsLoading(false);
+    if (allSchedule != undefined) {
+      if (
+        allEvents.length !== 0 ||
+        allSchedule.length !== 0 ||
+        allViews.length !== 0
+      ) {
+        setIsLoading(false);
+      }
     }
+
     //console.log(allViews);
   }, [allViews, allEvents, allSchedule, refreshKey]);
 
@@ -128,24 +141,19 @@ export default function Schedule() {
         </Row>
       );
     }
-    // console.log('12 @', arr.valueOf());
     return arr;
   };
 
   const sortSchedule = () => {
     var arr = Object.values(allSchedule);
 
-    //var arr = allViews.map((view) => JSON.parse(view.schedule));
-
     var dic = {};
     let today = new Date();
-    //console.log(arr);
+    console.log(arr);
     let dateNew = moment(today);
     let startDate = dateNew.startOf('week');
-    let startDay = startDate.format('dddd');
     let endDate = dateNew.add(11, 'days');
-    let endDay = endDate.format('dddd');
-    //console.log(Object.values(arr));
+
     for (let i = 0; i < arr.length; i++) {
       //console.log(arr[i], arr.length);
       let day = arr[i];
@@ -161,10 +169,8 @@ export default function Schedule() {
           dic[key] = [];
         }
         dic[key].push(day[j]);
-        //console.log('dict', dic);
       }
     }
-    // console.log('dict', dic);
     return dic;
   };
 
@@ -226,12 +232,10 @@ export default function Schedule() {
     let mixture_cmyk = mix_cmyks(...cmyks);
     let mixture_rgb = cmyk2rgb(...mixture_cmyk);
     let mixture_hex = rgb2hex(...mixture_rgb);
-    console.log(mixture_hex);
     return mixture_hex;
   }
   const getScheduleItemFromDic = (day, hour, dic) => {
     let today = new Date();
-    //console.log(arr);
     let dateNew = moment(today);
     let startDate = dateNew.startOf('week');
     let startDay = startDate.format('dddd');
@@ -239,54 +243,51 @@ export default function Schedule() {
     let endDay = endDate.format('dddd');
 
     var res = [];
+    var unique = [];
     var tempStart = null;
     var tempEnd = null;
     var arr = dic[day + '_' + hour];
-    //console.log('startObject = ', arr);
+    var ex = [];
 
+    //console.log('startObject = ', dic.length);
+
+    //console.log('startObject = ', ex);
     var sameTimeEventCount = 0;
     var addmarginLeft = 0;
     let itemWidth = 80;
     var fontSize = 10;
     if (arr == null) {
-      //console.log('in if null', arr);
       return;
     }
+    //console.log(arr);
     for (let i = 0; i < arr.length; i++) {
+      //console.log(arr[i]);
       tempStart = arr[i].schedule.start_time;
       tempEnd = arr[i].schedule.end_time;
-      //console.log(tempStart.substring(3, 5), tempEnd);
       let minsToMarginTop = (tempStart.substring(3, 5) / 60) * 55;
-      //console.log(minsToMarginTop);
       let hourDiff = tempEnd.substring(0, 2) - tempStart.substring(0, 2);
-      //console.log(hourDiff);
       let minDiff =
         tempEnd.substring(3, 5) / 60 - tempStart.substring(3, 5) / 60;
-      //console.log(minDiff);
       let height = (hourDiff + minDiff) * 55;
-      //console.log(height);
       sameTimeEventCount++;
-      //console.log(sameTimeEventCount);
       let color = 'lightslategray';
       //check if there is already an event there overlapping from another hour
+
       for (let i = 0; i < arr.length; i++) {
-        //console.log('in for');
         tempStart = arr[i].schedule.start_time;
         tempEnd = arr[i].schedule.end_time;
-
         if (
           tempStart.substring(0, 2) < hour &&
           tempEnd.substring(0, 2) > hour
         ) {
-          //console.log('in if > hour');
           addmarginLeft += 20;
           itemWidth = itemWidth - 20;
-          //console.log('in if hour', addmarginLeft, itemWidth);
         }
       }
-
+      if (sameTimeEventCount <= 1) {
+        unique.push(arr[i]);
+      }
       if (sameTimeEventCount > 1) {
-        //console.log('in if sameTimeEventCount>1');
         addmarginLeft += 20;
         itemWidth = itemWidth - 20;
       }
@@ -300,7 +301,6 @@ export default function Schedule() {
         color = `${arr[i].color}`;
       } else if (sameTimeEventCount > 1) {
         color = mix_hexes(arr[i - 1].color, arr[i].color);
-        console.log(arr[i].color, arr[i - 1].color);
       } else {
         color = `${arr[i].color}`;
       }
@@ -312,9 +312,8 @@ export default function Schedule() {
         .split(/[:\s+]/);
       if (start_time[0][0] == '0') start_time[0] = start_time[0][1];
       const end_time = arr[i].schedule.end_time.substring(11).split(/[:\s+]/);
-      // Need to strip trailing zeros because the data in the database
-      // is inconsistent about this
       if (end_time[0][0] == '0') end_time[0] = end_time[0][1];
+
       let newElement = (
         <div key={'event' + i}>
           <div
@@ -325,6 +324,7 @@ export default function Schedule() {
             style={{
               zIndex: 1,
               marginTop: minsToMarginTop + 'px',
+              marginLeft: addmarginLeft + 'px',
               padding: '3px',
               fontSize: fontSize + 'px',
               // border: '1px lightgray solid ',
@@ -340,7 +340,7 @@ export default function Schedule() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              //opacity: '0.45',
+              opacity: '0.8',
             }}
           >
             {/* insert border change here: */}
@@ -348,17 +348,20 @@ export default function Schedule() {
         </div>
       );
       //console.log('newElement', newElement, arr[i]);
+
       res.push(newElement);
     }
-
-    console.log('res_wr = ', res);
+    //console.log('unique', unique);
+    //console.log('res_wr = ', res);
     return res;
   };
   const weekViewItems = () => {
     // this creates the events adjusting their div size to reflecting the time it's slotted for
     var res = [];
     let dic = sortSchedule();
+    var x = [];
     console.log(dic);
+
     for (let i = 0; i < 7; ++i) {
       var arr = [];
       for (let j = 0; j < 24; ++j) {
@@ -396,7 +399,7 @@ export default function Schedule() {
           {arr}
         </Col>
       );
-      console.log(res);
+      //console.log(res);
     }
     for (let i = 0; i < 5; ++i) {
       var arr = [];
@@ -435,147 +438,163 @@ export default function Schedule() {
           {arr}
         </Col>
       );
-      console.log(res);
+      //console.log(res);
     }
     return res;
   };
   return (
     <div className={classes.container}>
-      <Row>
-        {allViews.map((view) => {
-          return (
-            <Col>
-              <Typography
-                style={{
-                  textTransform: 'uppercase',
-                  color: '#2C2C2E',
-                  padding: '0',
-                  font: 'normal normal normal 20px/25px Prohibition',
-                  backgroundColor: `${view.color}`,
-                }}
-              >
-                {view.view_name}
-              </Typography>
+      {isLoading ? (
+        <h1>No Views</h1>
+      ) : (
+        <div>
+          <Row>
+            {allViews.map((view) => {
+              return (
+                <Col>
+                  <Typography
+                    style={{
+                      textTransform: 'uppercase',
+                      color: '#2C2C2E',
+                      padding: '0',
+                      font: 'normal normal normal 20px/25px Prohibition',
+                      backgroundColor: `${view.color}`,
+                    }}
+                  >
+                    {view.view_name}
+                  </Typography>
 
-              <Row>
-                {allEvents.map((event) => {
-                  return (
-                    <div>
-                      {event.view_id === view.view_unique_id ? (
+                  <Row>
+                    {allEvents.map((event) => {
+                      return (
                         <div>
-                          <div
-                            style={{
-                              marginTop: '20px',
-                              marginLeft: '10px',
-                              width: '213px',
-                              //height: '148px',
-                              backgroundColor: `${view.color}`,
-                              padding: '0px 10px',
-                            }}
-                          >
-                            <Row>
-                              <Col style={{ paddingLeft: '7px' }}>
-                                <Typography
+                          {event.view_id === view.view_unique_id ? (
+                            <div>
+                              <div
+                                style={{
+                                  marginTop: '20px',
+                                  marginLeft: '10px',
+                                  width: '213px',
+                                  //height: '148px',
+                                  backgroundColor: `${view.color}`,
+                                  padding: '0px 10px',
+                                }}
+                              >
+                                <Row>
+                                  <Col style={{ paddingLeft: '7px' }}>
+                                    <Typography
+                                      style={{
+                                        textTransform: 'uppercase',
+                                        color: '#2C2C2E',
+                                        padding: '0',
+                                        font: 'normal normal normal 20px/25px Prohibition',
+                                      }}
+                                    >
+                                      {event.event_name}
+                                    </Typography>
+                                  </Col>
+                                  <Col xs={2}>
+                                    <img src={Bookmark} alt="bookmark" />
+                                  </Col>
+                                </Row>
+                                <div
                                   style={{
-                                    textTransform: 'uppercase',
-                                    color: '#2C2C2E',
-                                    padding: '0',
-                                    font: 'normal normal normal 20px/25px Prohibition',
+                                    font: 'normal normal normal 14px/16px SF Pro Display',
                                   }}
                                 >
-                                  {event.event_name}
-                                </Typography>
-                              </Col>
-                              <Col xs={2}>
-                                <img src={Bookmark} alt="bookmark" />
-                              </Col>
-                            </Row>
-                            <div
-                              style={{
-                                font: 'normal normal normal 14px/16px SF Pro Display',
-                              }}
-                            >
-                              <div>
-                                {Number(event.duration.substring(0, 1)) > 1
-                                  ? event.duration.substring(2, 4) !== '00'
-                                    ? Number(event.duration.substring(0, 1)) +
-                                      ' hrs ' +
-                                      Number(event.duration.substring(2, 4)) +
-                                      ' min'
-                                    : Number(event.duration.substring(0, 1)) +
-                                      ' hrs'
-                                  : Number(event.duration.substring(0, 1)) == 1
-                                  ? '60 min'
-                                  : event.duration.substring(3, 5) + ' min'}
-                              </div>
-                              <div>
-                                Location:{' '}
-                                {event.location === ''
-                                  ? 'None Specified'
-                                  : event.location}
-                              </div>
-                              <div>
-                                -
-                                {JSON.parse(
-                                  event.buffer_time
-                                ).before.time.substring(3, 5)}{' '}
-                                / +
-                                {JSON.parse(
-                                  event.buffer_time
-                                ).after.time.substring(3, 5)}
+                                  <div>
+                                    {Number(event.duration.substring(0, 1)) > 1
+                                      ? event.duration.substring(2, 4) !== '00'
+                                        ? Number(
+                                            event.duration.substring(0, 1)
+                                          ) +
+                                          ' hrs ' +
+                                          Number(
+                                            event.duration.substring(2, 4)
+                                          ) +
+                                          ' min'
+                                        : Number(
+                                            event.duration.substring(0, 1)
+                                          ) + ' hrs'
+                                      : Number(
+                                          event.duration.substring(0, 1)
+                                        ) == 1
+                                      ? '60 min'
+                                      : event.duration.substring(3, 5) + ' min'}
+                                  </div>
+                                  <div>
+                                    Location:{' '}
+                                    {event.location === ''
+                                      ? 'None Specified'
+                                      : event.location}
+                                  </div>
+                                  <div>
+                                    -
+                                    {JSON.parse(
+                                      event.buffer_time
+                                    ).before.time.substring(3, 5)}{' '}
+                                    / +
+                                    {JSON.parse(
+                                      event.buffer_time
+                                    ).after.time.substring(3, 5)}
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div></div>
+                          )}
                         </div>
-                      ) : (
-                        <div></div>
-                      )}
-                    </div>
-                  );
-                })}
-              </Row>
-            </Col>
-          );
-        })}
-      </Row>
-      <Container
-        fluid
-        style={{
-          borderTop: '1px solid #AFAFB3',
-          margin: '20px 0px',
-          padding: '0px',
-        }}
-      >
-        <Row>
-          <Col
-            xs={1}
+                      );
+                    })}
+                  </Row>
+                </Col>
+              );
+            })}
+          </Row>
+          <Container
+            fluid
             style={{
-              color: '#636366',
-              font: 'normal normal bold 16px SF Pro Display',
-              paddingTop: '20px',
+              borderTop: '1px solid #AFAFB3',
+              margin: '20px 0px',
+              padding: '0px',
             }}
           >
-            <br></br>
-            <br></br>
-            {moment().format('MMMM')}
-          </Col>
-          <Col>
-            <Row>{weekdaysAndDateDisplay()}</Row>
-          </Col>
-        </Row>
-      </Container>
-
-      <Row noGutters={true} style={{ marginLeft: '0rem', marginRight: '0rem' }}>
-        <Col xs={1}>
-          <Container style={{ margin: '0', padding: '0' }}>
-            {timeDisplay()}
+            <Row>
+              <Col
+                xs={1}
+                style={{
+                  color: '#636366',
+                  font: 'normal normal bold 16px SF Pro Display',
+                  paddingTop: '20px',
+                }}
+              >
+                <br></br>
+                <br></br>
+                {moment().format('MMMM')}
+              </Col>
+              <Col>
+                <Row>{weekdaysAndDateDisplay()}</Row>
+              </Col>
+            </Row>
           </Container>
-        </Col>
 
-        <Col>
-          <Row>{weekViewItems()}</Row>
-        </Col>
-      </Row>
+          <Row
+            noGutters={true}
+            style={{ marginLeft: '0rem', marginRight: '0rem' }}
+          >
+            <Col xs={1}>
+              <Container style={{ margin: '0', padding: '0' }}>
+                {timeDisplay()}
+              </Container>
+            </Col>
+
+            <Col>
+              <Row>{weekViewItems()}</Row>
+            </Col>
+          </Row>
+        </div>
+      )}
     </div>
   );
 }
