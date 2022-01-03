@@ -10,5 +10,6 @@ export const LoginInitState = {
   user: {
     id: '',
     email: '',
+    user_access:'',
   },
 };

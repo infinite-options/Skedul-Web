@@ -41,6 +41,7 @@ export default function Login() {
   const [accessToken, setAccessToken] = useState('');
   const [idToken, setIdToken] = useState('');
   const [socialId, setSocialId] = useState('');
+  const [userID, setUserID] = useState('')
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -52,17 +53,20 @@ export default function Login() {
   const responseGoogle = (response) => {
     console.log(response);
     if (response.profileObj) {
-      // console.log('Google login successful');
       let email = response.profileObj.email;
-      let user_id = '';
-      // let accessToken = response.accessToken;
+      let user_id='';
       setSocialId(response.googleId);
       axios
         .get(
           `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserToken/${email}`
         )
         .then((response) => {
+          console.log(
+            'in events',
+            response['data']['user_unique_id'],response['data']['google_auth_token']
+          );
           console.log('in events', response);
+          setAccessToken(response['data']['google_auth_token']);
           let url =
             'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
           loginContext.setLoginState({
@@ -70,12 +74,18 @@ export default function Login() {
             user: {
               id: response['data']['user_unique_id'],
               email: response['data']['user_email_id'],
+              user_access: response['data']['google_auth_token'],
             },
           });
+          document.cookie = 'user_uid=' + response['data']['user_unique_id'];
+          document.cookie = 'user_email=' + response['data']['user_email_id'];
+          document.cookie =
+            'user_access=' + response['data']['google_auth_token'];
+          setUserID(response['data']['user_unique_id']);
           user_id = response['data']['user_unique_id'];
-          var old_at = response['data']['user_google_auth_token'];
+          var old_at = response['data']['google_auth_token'];
           console.log('in events', old_at);
-          var refreshToken = response['data']['user_google_refresh_token'];
+          var refreshToken = response['data']['google_refresh_token'];
 
           let checkExp_url = url + old_at;
           console.log('in events', checkExp_url);
@@ -130,10 +140,10 @@ export default function Login() {
                     setIdToken(id_token);
                     console.log('in events', at);
                     let url =
-                      'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateAccessToken/';
+                      `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateAccessToken/${user_id}`;
                     axios
-                      .post(url + user_id, {
-                        user_google_auth_token: at,
+                      .post(url, {
+                        google_auth_token: at,
                       })
                       .then((response) => {})
                       .catch((err) => {
@@ -146,18 +156,20 @@ export default function Login() {
                   });
               } else {
                 setAccessToken(old_at);
+                console.log(old_at);
               }
             })
             .catch((err) => {
               console.log(err);
             });
-          console.log('in events', refreshToken);
+          console.log('in events', refreshToken, accessToken);
         });
+
       _socialLoginAttempt(email, accessToken, socialId, 'GOOGLE');
     }
   };
 
-  const _socialLoginAttempt = (email, accessToken, socialId, platform) => {
+  const _socialLoginAttempt = (email, at, socialId, platform) => {
     axios
       .get(
         'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialLogin/' +
@@ -166,23 +178,28 @@ export default function Login() {
       .then((res) => {
         console.log(res);
         if (res.data.result !== false) {
-          document.cookie = 'user_uid=' + res.data.result;
+          document.cookie = 'user_uid=' + res.data.result[0];
           document.cookie = 'user_email=' + email;
+          document.cookie = 'user_access=' + res.data.result[1];
           setLoggedIn(true);
+          setAccessToken(res.data.result[1]);
+          console.log('Login socialloginattempt', at)
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
             user: {
               ...loginContext.loginState.user,
-              id: res.data.result,
+              id: res.data.result.toString(),
               email: email.toString(),
+              user_access: res.data.result[1],
             },
           });
           console.log('Login successful');
-          console.log(email);
+          console.log(email, document.cookie);
           history.push({
             pathname: '/schedule',
-            state: email.toString(),
+            state: { email: email.toString(), accessToken:  res.data.result[1] },
+            
           });
           // Successful log in, Try to update tokens, then continue to next page based on role
         } else {
@@ -197,7 +214,6 @@ export default function Login() {
         console.log(err);
       });
   };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('event', event, email, password);
@@ -210,27 +226,28 @@ export default function Login() {
       )
       .then((response) => {
         if (response.data.result !== false) {
-          console.log('respnse true', response.data.result);
-          console.log('response', response.data);
           document.cookie = 'user_uid=' + response.data.result;
           document.cookie = 'user_email=' + email;
+          document.cookie = 'user_access=' + accessToken.toString();
           setLoggedIn(true);
-          console.log('response id', response.data.result, loggedIn);
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
             user: {
               ...loginContext.loginState.user,
-              id: response.data.result,
+              id: response.data.result.toString(),
               email: email.toString(),
+              user_access: '',
             },
           });
           history.push({
             pathname: '/schedule',
-            state: email.toString(),
+            state: {
+              email: email.toString(),
+              accessToken: '',
+            },
           });
         } else {
-          console.log('respnse true', response.data.result);
           setLoggedIn(false);
           setValidation(response.data.message);
         }
@@ -247,8 +264,15 @@ export default function Login() {
   ) {
     console.log('we are here');
     console.log(document.cookie);
-    //console.log(user_uid);
-    history.push('/schedule');
+    console.log(accessToken);
+    
+    history.push({
+      pathname: '/schedule',
+      state: {
+        email: email.toString(),
+        accessToken: accessToken.toString(),
+      },
+    });
   } else {
   }
 
@@ -324,7 +348,7 @@ export default function Login() {
         <Box display="flex" justifyContent="center" marginTop="1rem">
           <Box>
             <GoogleLogin
-              clientId="1009120542229-9nq0m80rcnldegcpi716140tcrfl0vbt.apps.googleusercontent.com"
+              clientId={CLIENT_ID}
               render={(renderProps) => (
                 <Button
                   style={{

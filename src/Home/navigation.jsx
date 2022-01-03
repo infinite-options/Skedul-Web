@@ -91,23 +91,16 @@ const useStyles = makeStyles({
 /* Navigation Bar component function */
 export function Navigation() {
   console.log('CLIENT ID', typeof CLIENT_ID, CLIENT_ID);
-  console.log('CLIENT ID', typeof CLIENT_SECRET, CLIENT_SECRET);
-  console.log('CLIENT ID', typeof BASE_URL, BASE_URL);
+  console.log('CLIENT_SECRET', typeof CLIENT_SECRET, CLIENT_SECRET);
+  console.log('BASE_URL', typeof BASE_URL, BASE_URL);
   const history = useHistory();
   const classes = useStyles();
   const [isActive, setActive] = useState('schedule');
   const loginContext = useContext(LoginContext);
-  console.log(loginContext);
-  var selectedUser = loginContext.loginState.curUser;
-
-  if (
-    document.cookie.split(';').some((item) => item.trim().startsWith('user_uid='))
-  ) {
-    selectedUser = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('user_uid='))
-      .split('=')[1];
-  }
+  console.log(loginContext.loginState.user.user_access);
+  var selectedUser = loginContext.loginState.user.user_uid;
+  var accessT = loginContext.loginState.user.user_access;
+  
 
   return (
     <>
@@ -211,21 +204,16 @@ export function Navigation() {
                   onClick={(e) => {
                     document.cookie = 'user_uid=1;max-age=0';
                     document.cookie = 'user_email=1;max-age=0';
-                    document.cookie = 'patient_uid=1;max-age=0';
-                    document.cookie = 'patient_name=1;max-age=0';
-                    document.cookie = 'patient_email=1;max-age=0';
+                    document.cookie = 'user_access=1;max-age=0' ;
                     loginContext.setLoginState({
                       ...loginContext.loginState,
                       loggedIn: false,
-                      ta: {
+                      user: {
                         ...loginContext.loginState.ta,
                         id: '',
                         email: '',
+                        user_access:''
                       },
-                      usersOfTA: [],
-                      curUser: '',
-                      curUserTimeZone: '',
-                      curUserEmail: '',
                     });
                     history.push('/');
                   }}

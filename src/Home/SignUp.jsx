@@ -188,47 +188,7 @@ export default function Login() {
     );
   };
 
-  /* const responseGoogle = (response) => {
-    console.log('response', response);
-    if (response.profileObj !== null || response.profileObj !== undefined) {
-      let e = response.profileObj.email;
-      let at = response.accessToken;
-      let rt = response.googleId;
-      let first_name = response.profileObj.givenName;
-      let last_name = response.profileObj.familyName;
-      console.log(e, at, rt, first_name, last_name);
-      axios
-        .get(
-          '
-            e
-        ) //, {
-        // username: e,  1009120542229-9nq0m80rcnldegcpi716140tcrfl0vbt.apps.googleusercontent.com
-        //})
-        .then((response) => {
-          console.log(response.data);
-          if (response.data !== false) {
-            console.log('Login successful');
-            console.log(e);
-            history.push({
-              pathname: '/schedule',
-              state: e,
-            });
-          } else {
-            console.log('social sign up with', e);
-            setSocialSignUpModalShow(true);
-            setNewEmail(e);
-            /*  this.setState({
-              socialSignUpModal: true,
-              newEmail: e,
-            }); */
-  /* console.log('social sign up modal displayed');
-          }
-        })
-        .catch((error) => {
-          console.log('error', error);
-        });
-    } */
-  // }; */
+
   return (
     <Box
       display="flex"

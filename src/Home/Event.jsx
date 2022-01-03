@@ -749,7 +749,7 @@ export default function Event() {
                           >
                             <div>
                               {Number(event.duration.substring(0, 1)) > 1
-                                ? event.duration.substring(2, 4) !== '00'
+                                ? event.duration.substring(2, 4) !== '59'
                                   ? Number(event.duration.substring(0, 1)) +
                                     ' hrs ' +
                                     Number(event.duration.substring(2, 4)) +
@@ -758,7 +758,7 @@ export default function Event() {
                                     ' hrs'
                                 : Number(event.duration.substring(0, 1)) == 1
                                 ? '60 min'
-                                : event.duration.substring(3, 5) + ' min'}
+                                : event.duration.substring(2, 4) + ' min'}
                             </div>
                             <div>
                               Location:{' '}

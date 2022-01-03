@@ -29,7 +29,15 @@ function SocialLogin(props) {
   const [accessExpiresIn, setaccessExpiresIn] = useState('');
   const client_id = CLIENT_ID;
   const client_secret = CLIENT_SECRET;
-
+  console.log(client_id);
+   const redirect_uris = [
+     'https://www.skedul',
+     'https://www.skedul/schedule',
+     'https://www.skedul/',
+     'https://skedul',
+     'http://localhost:3000',
+     'http://localhost',
+   ];
   const responseGoogle = (response) => {
     console.log('response', response);
 
@@ -107,21 +115,27 @@ function SocialLogin(props) {
                 if (response.data.message === 'User EmailID doesnt exist') {
                   setSocialSignUpModalShow(!socialSignUpModalShow);
                 } else {
+                  console.log('ACCESS', accessToken)
                   document.cookie = 'user_uid=' + response.data.result;
                   document.cookie = 'user_email=' + e;
+                  document.cookie = 'user_access=' + accessToken.toString();
                   setLoggedIn(true);
                   loginContext.setLoginState({
                     ...loginContext.loginState,
                     loggedIn: true,
                     user: {
                       ...loginContext.loginState.user,
-                      id: response.data.result,
+                      id: response.data.result.toString(),
                       email: e.toString(),
+                      user_access: accessToken.toString(),
                     },
                   });
                   history.push({
                     pathname: '/schedule',
-                    state: e,
+                    state: {
+                      email: e.toString(),
+                      accessToken: accessToken.toString(),
+                    },
                   });
                 }
               });
@@ -158,23 +172,28 @@ function SocialLogin(props) {
       .then((res) => {
         console.log(res);
         if (res.data.result !== false) {
-          document.cookie = 'user_uid=' + res.data.result;
+          document.cookie = 'user_uid=' + res.data.result[0];
           document.cookie = 'user_email=' + email;
+          document.cookie = 'user_access=' + res.data.result[1];
           setLoggedIn(true);
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
             user: {
               ...loginContext.loginState.user,
-              id: res.data.result,
+              id: res.data.result.toString(),
               email: email.toString(),
+              user_access: res.data.result[1],
             },
           });
           console.log('Login successful');
           console.log(email);
           history.push({
             pathname: '/schedule',
-            state: email,
+            state: {
+              email: email.toString(),
+              accessToken: res.data.result[1],
+            },
           });
           // Successful log in, Try to update tokens, then continue to next page based on role
         } else {
@@ -388,12 +407,13 @@ function SocialLogin(props) {
         <Button style={{}}>
           <GoogleLogin
             //clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-            clientId={CLIENT_ID}
+            clientId={client_id}
             accessType="offline"
             prompt="consent"
             responseType="code"
             buttonText="Log In"
             //redirectUri="https://manifestmy.space"
+            ux_mode="redirect"
             redirectUri="http://localhost:3000"
             scope="https://www.googleapis.com/auth/calendar"
             onSuccess={responseGoogle}
