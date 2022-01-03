@@ -3,13 +3,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Modal } from 'react-bootstrap';
 import { Typography, Button } from '@material-ui/core';
-import Bookmark from '../images/bookmark.svg';
 import moment from 'moment';
 import { extendMoment } from 'moment-range';
 import Grid from '@material-ui/core/Grid';
 import LoginContext from '../LoginContext';
+import Bookmark from '../images/bookmark.svg';
+import trash from '../images/Trash.png';
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const useStyles = makeStyles({
   container: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles({
     width: '8rem',
     height: '2rem',
     maxWidth: '80%',
-    color:'white',
+    color: 'white',
     textAlign: 'center',
     textDecoration: 'none',
     fontSize: '20px',
@@ -48,19 +49,23 @@ const useStyles = makeStyles({
 });
 export default function Schedule(props) {
   const classes = useStyles();
-  
+
   const mt = extendMoment(moment);
   const location = useLocation();
   const loginContext = useContext(LoginContext);
   console.log('SCHEDULE PROPS', loginContext);
-  console.log('SCHEDULE PROPS',props)
+  console.log('SCHEDULE PROPS', props);
   const [allViews, setAllViews] = useState([]);
   const [allSchedule, setAllSchedule] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [selectedView, setSelectedView] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
+  const [eventName, setEventName] = useState([]);
+  const [viewID, setViewID] = useState('');
+  const [eventID, setEventID] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [buttonSelect, setButtonSelect] = useState(false);
@@ -68,10 +73,19 @@ export default function Schedule(props) {
   const [showDays, setShowDays] = useState(false);
   const [duration, setDuration] = useState(null);
   const [timeAASlots, setTimeAASlots] = useState([]);
-  const [eventColor, setEventColor] = useState([])
-  const [dateString, setDateString] = useState('')
+  const [eventColor, setEventColor] = useState([]);
+  const [dateString, setDateString] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+
+  const [showCreateNewMeetModal, setShowCreateNewMeetModal] = useState(false);
+  const [meetName, setMeetName] = useState('');
+  const [meetLocation, setMeetLocation] = useState('');
+  const [meetDate, setMeetDate] = useState('');
+  const [meetTime, setMeetTime] = useState('');
+  const [attendees, setAttendees] = useState([{ email: '' }]);
+
+  const [showUpdateMeetModal, setShowUpdateMeetModal] = useState(false);
 
   var selectedUser = '';
   if (
@@ -85,16 +99,23 @@ export default function Schedule(props) {
       .split('=')[1];
   }
   var accessToken = '';
-  
+  var userEmail = '';
   selectedUser = loginContext.loginState.user.id;
   accessToken = loginContext.loginState.user.user_access;
-  console.log('selecteduser', selectedUser, accessToken, document.cookie, location.state);
+  userEmail = loginContext.loginState.user.email;
+  console.log(
+    'selecteduser',
+    selectedUser,
+    accessToken,
+    document.cookie,
+    location.state
+  );
   useEffect(() => {
     const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
+        console.log(json);
         setAllViews(json.result.result);
         setSelectedSchedule(JSON.parse(json.result.result[0].schedule));
       })
@@ -106,7 +127,7 @@ export default function Schedule(props) {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
+        console.log(json);
         setAllEvents(json.result.result);
       })
       .catch((error) => console.log(error));
@@ -117,7 +138,7 @@ export default function Schedule(props) {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
+        console.log(json);
         setAllSchedule(json.result);
       })
       .catch((error) => console.log(error));
@@ -133,33 +154,35 @@ export default function Schedule(props) {
         setIsLoading(false);
       }
     }
-  }, [allViews, allEvents, allSchedule, selectedSchedule,refreshKey]);
-useEffect(() => {
-  if(timeSelected) {
-    axios
-      .get(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AvailableAppointments/' +
-          '2022-1-2' +
-          '/' +
-          duration + '/' + startTime + ',' +endTime
-      )
-      .then((res) => {
-        console.log('This is the information we got' + res, duration);
+  }, [allViews, allEvents, allSchedule, selectedSchedule, refreshKey]);
+  useEffect(() => {
+    if (timeSelected) {
+      axios
+        .get(
+          'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AvailableAppointments/' +
+            '2022-1-3' +
+            '/' +
+            duration +
+            '/' +
+            startTime +
+            ',' +
+            endTime
+        )
+        .then((res) => {
+          console.log('This is the information we got' + res, duration);
 
-        res.data.result.map((r) => {
-          //console.log(res.data.result);
-          timeAASlots.push(r['begin_time']);
+          res.data.result.map((r) => {
+            //console.log(res.data.result);
+            timeAASlots.push(r['begin_time']);
+          });
+
+          //console.log(timeAASlots);
+          setTimeAASlots(timeAASlots);
         });
+    }
 
-        //console.log(timeAASlots);
-        setTimeAASlots(timeAASlots);
-      });
-  }
-    
-setTimeSelected(false);
-    
-  
-}); 
+    setTimeSelected(false);
+  });
   useEffect(() => {
     if (timeSelected) {
       const headers = {
@@ -168,16 +191,16 @@ setTimeSelected(false);
         Authorization: 'Bearer ' + accessToken,
       };
       const data = {
-        timeMin: '2022-01-02' + 'T'+ startTime + ':00-0800',
-        timeMax: '2022-01-02' + 'T'+ endTime + ':00-0800',
+        timeMin: '2022-01-03' + 'T' + startTime + ':00-0800',
+        timeMax: '2022-01-03' + 'T' + endTime + ':00-0800',
         items: [
           {
             id: 'primary',
           },
         ],
       };
-      const timeMin = '2022-01-02' + 'T' + startTime + ':00-0800';
-      const timeMax = '2022-01-02' + 'T' + endTime + ':00-0800';
+      const timeMin = '2022-01-03' + 'T' + startTime + ':00-0800';
+      const timeMax = '2022-01-03' + 'T' + endTime + ':00-0800';
       console.log(headers);
       console.log(data);
       console.log(startTime, timeMin, endTime, timeMax);
@@ -198,7 +221,16 @@ setTimeSelected(false);
           let appt_start_time = start_time;
 
           let seconds = convert(duration);
-          console.log(startTime, timeMin, endTime, timeMax, duration, seconds);
+          console.log(
+            start_time,
+            end_time,
+            startTime,
+            timeMin,
+            endTime,
+            timeMax,
+            duration,
+            seconds
+          );
           // Loop through each appt slot in the search range.
           while (appt_start_time < end_time) {
             console.log('in while');
@@ -221,9 +253,13 @@ setTimeSelected(false);
                 moment(new Date(this_end * 1000)).format('HH:mm:ss')
               );
               // If the appt start time or appt end time falls on a current appt, slot is taken.
-              
+
               if (
-                (appt_start_time == this_start || appt_end_time == this_end)||(appt_start_time < this_start && appt_end_time > this_end)
+                appt_start_time == this_start ||
+                appt_end_time == this_end ||
+                (appt_start_time < this_start && appt_end_time > this_end) ||
+                (appt_start_time < this_start && appt_end_time < this_end) ||
+                (appt_start_time > this_start && appt_end_time > this_end)
               ) {
                 slot_available = false;
                 return; // No need to continue if it's taken.
@@ -244,7 +280,8 @@ setTimeSelected(false);
             appt_start_time += 60 * 30;
             console.log(
               'free',
-              moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'), free
+              moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
+              free
             );
           }
           setTimeSlots(free);
@@ -261,7 +298,6 @@ setTimeSelected(false);
         `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
       )
       .then((response) => {
-        
         let schedule = JSON.parse(response.data.result.result[0].schedule);
         setSelectedView(response.data.result.result[0]);
         setSelectedSchedule(schedule);
@@ -270,11 +306,298 @@ setTimeSelected(false);
         console.log(error);
       });
   }
+
+  const openCreateNewMeetModal = () => {
+    setShowCreateNewMeetModal((prevState) => {
+      return { showCreateNewMeetModal: !prevState.showCreateNewMeetModal };
+    });
+  };
+
+  const closeCreateNewMeetModal = () => {
+    setShowCreateNewMeetModal(false);
+  };
+
+  function handleChange(i, event) {
+    const emails = [...attendees];
+    emails[i].email = event.target.value;
+    setAttendees(emails);
+  }
+
+  function handleAdd() {
+    const emails = [...attendees];
+    emails.push({ email: '' });
+    setAttendees(emails);
+  }
+
+  function handleRemove(i) {
+    const emails = [...attendees];
+    emails.splice(i, 1);
+    setAttendees(emails);
+  }
+
+  function createNewMeet() {
+    var meeting = {
+      user_id: `${selectedUser}`,
+      view_id: `${viewID}`,
+      event_id: `${eventID}`,
+      meeting_name: meetName,
+      location: meetLocation,
+      attendees: attendees,
+      meeting_date: meetDate,
+      meeting_time: meetTime,
+    };
+
+    axios
+      .post(
+        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AddMeeting',
+        meeting
+      )
+      .then((response) => {
+        setRefreshKey((oldKey) => oldKey + 1);
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
+    setShowCreateNewMeetModal(false);
+    setTimeSelected(false);
+    setShowDays(false);
+    setTimeAASlots([]);
+    setTimeSlots([]);
+  }
+  function createMeet() {
+    console.log(meetDate, meetTime, duration);
+    let start_time = meetDate + 'T' + meetTime + '-0800';
+    console.log(start_time);
+    let d = convert(duration);
+    let et = Date.parse(start_time) / 1000 + d;
+    console.log(d);
+    console.log(et);
+    let end_time = moment(new Date(et * 1000)).format();
+    console.log(end_time);
+    var meet = {
+      summary: meetName,
+
+      location: meetLocation,
+      creator: {
+        email: userEmail,
+        self: true,
+      },
+      organizer: {
+        email: userEmail,
+        self: true,
+      },
+      start: {
+        dateTime: start_time,
+      },
+      end: {
+        dateTime: end_time,
+      },
+      attendees: attendees,
+    };
+    console.log(meet);
+    //publishTheCalenderEvent(event)
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + accessToken,
+    };
+    axios
+      .post(
+        `https://www.googleapis.com/calendar/v3/calendars/primary/events?key=${API_KEY}`,
+        meet,
+        {
+          headers: headers,
+        }
+      )
+      .then((response) => {})
+      .catch((error) => {
+        console.log('error', error);
+      });
+  }
+  const createNewMeetModal = () => {
+    const modalStyle = {
+      position: 'absolute',
+      top: '30%',
+      left: '30%',
+      width: '400px',
+    };
+    const headerStyle = {
+      border: 'none',
+      //textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#2C2C2E',
+      textTransform: 'uppercase',
+      backgroundColor: eventColor,
+    };
+    const footerStyle = {
+      border: 'none',
+      backgroundColor: eventColor,
+    };
+    const bodyStyle = {
+      backgroundColor: eventColor,
+    };
+    const colHeader = {
+      margin: '5px',
+    };
+
+    return (
+      <Modal
+        show={showCreateNewMeetModal}
+        onHide={closeCreateNewMeetModal}
+        style={modalStyle}
+      >
+        <Modal.Header style={headerStyle} closeButton>
+          <Modal.Title></Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body style={bodyStyle}>
+          <Typography className={classes.colHeader}>Meeting Name</Typography>
+          <Row style={colHeader}>
+            <input
+              style={{
+                width: '344px',
+                backgroundColor: eventColor,
+                border: '1px solid #636366',
+                borderRadius: '3px',
+              }}
+              value={meetName}
+              onChange={(e) => setMeetName(e.target.value)}
+            />
+          </Row>
+          <Typography className={classes.colHeader}>Date and Time</Typography>
+          <Row>
+            <Col>
+              <input
+                type="date"
+                style={{
+                  width: '162px',
+                  backgroundColor: eventColor,
+                  border: '1px solid #636366',
+                  borderRadius: '3px',
+                }}
+                value={meetDate}
+                onChange={(e) => setMeetDate(e.target.value)}
+              />
+            </Col>
+            <Col>
+              <input
+                type="time"
+                style={{
+                  width: '162px',
+                  backgroundColor: eventColor,
+                  border: '1px solid #636366',
+                  borderRadius: '3px',
+                }}
+                value={meetTime}
+                onChange={(e) => setMeetTime(e.target.value)}
+              />
+            </Col>
+          </Row>
+          <Typography className={classes.colHeader}> Event Type </Typography>
+          <Row style={colHeader}>
+            {eventName}-
+            {Number(duration.substring(0, 1)) > 1
+              ? duration.substring(2, 4) !== '59'
+                ? Number(duration.substring(0, 1)) +
+                  ' hours ' +
+                  Number(duration.substring(2, 4)) +
+                  ' minutes'
+                : Number(duration.substring(0, 1)) + 1 + ' hours'
+              : Number(duration.substring(0, 1)) == 1
+              ? '60 minutes'
+              : duration.substring(2, 4) + ' minutes'}
+            meeting
+          </Row>
+
+          <Typography className={classes.colHeader}> Email </Typography>
+          <Row style={colHeader}>
+            {attendees.map((field, idx) => {
+              return (
+                <input
+                  style={{
+                    width: '254px',
+                    backgroundColor: eventColor,
+                    border: '1px solid #636366',
+                    borderRadius: '3px',
+                  }}
+                  type="text"
+                  onChange={(e) => handleChange(idx, e)}
+                />
+              );
+            })}
+            <div
+              style={{
+                padding: '0',
+                backgroundColor: 'inherit',
+                color: '#636366',
+                textAlign: 'right',
+                cursor: 'pointer',
+              }}
+              onClick={() => handleAdd()}
+            >
+              + Add Guests
+            </div>
+          </Row>
+          <Typography className={classes.colHeader}> Location </Typography>
+          <Row style={colHeader}>
+            <input
+              style={{
+                width: '254px',
+                backgroundColor: eventColor,
+                border: '1px solid #636366',
+                borderRadius: '3px',
+              }}
+              value={meetLocation}
+              onChange={(e) => setMeetLocation(e.target.value)}
+            />
+          </Row>
+        </Modal.Body>
+        <Modal.Footer style={footerStyle}>
+          <Row>
+            <Col xs={4}>
+              <button
+                style={{
+                  backgroundColor: eventColor,
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: '#2C2C2E',
+                }}
+                onClick={() => {
+                  closeCreateNewMeetModal();
+                }}
+              >
+                Cancel
+              </button>
+            </Col>
+            <Col>
+              <button
+                style={{
+                  background: '#2C2C2E 0% 0% no-repeat padding-box',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: eventColor,
+                }}
+                onClick={(e) => {
+                  createMeet();
+                  createNewMeet();
+                }}
+              >
+                Create Meeting
+              </button>
+            </Col>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
   function formatTime(date, time) {
     if (time == null) {
       return '?';
     } else {
-
       var newDate = new Date((date + 'T' + time).replace(/\s/, 'T'));
       var hours = newDate.getHours();
       var minutes = newDate.getMinutes();
@@ -298,13 +621,17 @@ setTimeSelected(false);
   function renderAvailableApptsVertical() {
     console.log('TimeSlots', timeSlots);
     console.log('TimeSlotsAA', timeAASlots);
-    let result = []
-    {timeSlots.length === 0 
-    ? result = timeAASlots
-    :timeAASlots.length === 0 
-    ? result = timeSlots
-    : result = timeSlots.filter((o1) => timeAASlots.some((o2) => o1 === o2));}
-    
+    let result = [];
+    {
+      timeSlots.length === 0
+        ? (result = timeAASlots)
+        : timeAASlots.length === 0
+        ? (result = timeSlots)
+        : (result = timeSlots.filter((o1) =>
+            timeAASlots.some((o2) => o1 === o2)
+          ));
+    }
+
     console.log('Merged', result);
     return (
       <Grid container xs={11}>
@@ -314,11 +641,16 @@ setTimeSelected(false);
               style={{
                 backgroundColor: `${eventColor}`,
                 border: `2px solid ${eventColor}`,
+                cursor: 'pointer',
               }}
               className={classes.timeslotButton}
-              onClick={() => selectApptTime(element)}
+              onClick={() => {
+                selectApptTime(element);
+                openCreateNewMeetModal();
+                setMeetTime(element);
+              }}
             >
-              {formatTime('2022-01-02', element)}
+              {formatTime('2022-01-03', element)}
             </button>
           );
         })}
@@ -328,11 +660,11 @@ setTimeSelected(false);
   function selectApptTime(element) {
     console.log('selected time', element);
     setSelectedTime(element);
-    setTimeSelected(true);    
+    setTimeSelected(true);
     setButtonSelect(true);
   }
   //console.log(dateString)
-  function showAvailableDays(){
+  function showAvailableDays() {
     return (
       <Row>
         {selectedSchedule.Sunday[0].start_time === '' ? (
@@ -342,6 +674,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -362,6 +695,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -383,6 +717,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -403,6 +738,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -423,6 +759,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -443,6 +780,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -463,6 +801,7 @@ setTimeSelected(false);
             style={{
               backgroundColor: `${eventColor}`,
               border: `2px solid ${eventColor}`,
+              cursor: 'pointer',
             }}
             className={classes.timeslotButton}
             onClick={() => {
@@ -478,9 +817,8 @@ setTimeSelected(false);
         )}
       </Row>
     );
-
   }
-  console.log(startTime, endTime)
+  console.log(startTime, endTime);
   const weekdaysAndDateDisplay = () => {
     let arr = [];
     let today = new Date();
@@ -553,7 +891,7 @@ setTimeSelected(false);
 
     var dic = {};
     let today = new Date();
-    
+
     let dateNew = moment(today);
     let startDate = dateNew.startOf('week');
     let endDate = dateNew.add(11, 'days');
@@ -761,7 +1099,7 @@ setTimeSelected(false);
     var res = [];
     let dic = sortSchedule();
     var x = [];
-   // console.log(dic);
+    // console.log(dic);
 
     for (let i = 0; i < 7; ++i) {
       var arr = [];
@@ -877,6 +1215,9 @@ setTimeSelected(false);
                                 setDuration(event.duration);
                                 setEventColor(view.color);
                                 getView(event.view_id);
+                                setViewID(event.view_id);
+                                setEventID(event.event_unique_id);
+                                setEventName(event.event_name);
                               }}
                             >
                               <div
@@ -884,6 +1225,7 @@ setTimeSelected(false);
                                   marginTop: '20px',
                                   marginLeft: '10px',
                                   width: '213px',
+                                  cursor: 'pointer',
                                   //height: '148px',
                                   backgroundColor: `${view.color}`,
                                   padding: '0px 10px',
@@ -924,7 +1266,9 @@ setTimeSelected(false);
                                           ' min'
                                         : Number(
                                             event.duration.substring(0, 1)
-                                          ) + ' hrs'
+                                          ) +
+                                          1 +
+                                          ' hrs'
                                       : Number(
                                           event.duration.substring(0, 1)
                                         ) == 1
@@ -961,6 +1305,8 @@ setTimeSelected(false);
               );
             })}
           </Row>
+          <div>{showCreateNewMeetModal && createNewMeetModal()}</div>
+          {/* <div>{showUpdateEventModal && updateEventModal()}</div> */}
           <Row
             fluid
             style={{
@@ -979,7 +1325,7 @@ setTimeSelected(false);
               padding: '0px',
             }}
           >
-           {renderAvailableApptsVertical()}
+            {renderAvailableApptsVertical()}
           </Row>
           <Container
             fluid

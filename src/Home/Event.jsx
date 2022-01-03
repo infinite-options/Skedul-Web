@@ -754,7 +754,7 @@ export default function Event() {
                                     ' hrs ' +
                                     Number(event.duration.substring(2, 4)) +
                                     ' min'
-                                  : Number(event.duration.substring(0, 1)) +
+                                  : Number(event.duration.substring(0, 1))+1 +
                                     ' hrs'
                                 : Number(event.duration.substring(0, 1)) == 1
                                 ? '60 min'
