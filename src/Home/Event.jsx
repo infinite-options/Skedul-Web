@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
-import { Container, Row, Col, Modal } from 'react-bootstrap';
+import { Row, Col, Modal } from 'react-bootstrap';
+import { Typography } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Bookmark from '../images/bookmark.svg';
 import Edit from '../images/edit.svg';
 import Copy from '../images/copy.svg';
-import { Typography, Button } from '@material-ui/core';
+
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
@@ -31,15 +31,19 @@ const useStyles = makeStyles({
 export default function Event() {
   const classes = useStyles();
   const history = useHistory();
+
   const [allViews, setAllViews] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [selectedEventBuffer, setSelectedEventBuffer] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [viewID, setViewID] = useState('');
   const [eventID, setEventID] = useState('');
   const [viewName, setViewName] = useState('');
   const [viewColor, setViewColor] = useState('');
+
   const [showCreateNewEventModal, setShowCreateNewEventModal] = useState(false);
   const [showUpdateEventModal, setShowUpdateEventModal] = useState(false);
   const [eventName, setEventName] = useState('');
@@ -49,7 +53,9 @@ export default function Event() {
   const [afterBuffer, setAfterBuffer] = useState(false);
   const [beforeBufferTime, setBeforeBufferTime] = useState('');
   const [afterBufferTime, setAfterBufferTime] = useState('');
-  const [refreshKey, setRefreshKey] = useState(0);
+
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareEmail, setShareEmail] = useState('');
 
   var selectedUser = '';
   if (
@@ -79,6 +85,7 @@ export default function Event() {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
+        console.log(json.result.result[0]);
         setSelectedEvent(json.result.result[0]);
         setSelectedEventBuffer(JSON.parse(json.result.result[0].buffer_time));
         setAllEvents(json.result.result);
@@ -124,6 +131,131 @@ export default function Event() {
       });
   }
 
+  const openShareModal = () => {
+    setShowShareModal((prevState) => {
+      return { showShareModal: !prevState.showShareModal };
+    });
+  };
+
+  const closeShareModal = () => {
+    setShowShareModal(false);
+  };
+
+  function shareEvent() {
+    const canonical = document.querySelector('link[rel=canonical]');
+    var event = {
+      url: canonical ? canonical.href : document.location.href + '/' + eventID,
+    };
+
+    axios
+      .post(
+        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/sendEmail/${shareEmail}`,
+        event
+      )
+      .then((response) => {
+        setRefreshKey((oldKey) => oldKey + 1);
+        setShareEmail('');
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
+    setShowShareModal(false);
+  }
+
+  const shareModal = () => {
+    const modalStyle = {
+      position: 'absolute',
+      top: '30%',
+      left: '30%',
+      width: '400px',
+    };
+    const headerStyle = {
+      border: 'none',
+      //textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#2C2C2E',
+      textTransform: 'uppercase',
+      backgroundColor: `${viewColor}`,
+    };
+    const footerStyle = {
+      border: 'none',
+      backgroundColor: `${viewColor}`,
+    };
+    const bodyStyle = {
+      backgroundColor: `${viewColor}`,
+    };
+
+    return (
+      <Modal show={showShareModal} onHide={closeShareModal}>
+        <Modal.Header style={headerStyle} closeButton>
+          <Modal.Title>
+            <Typography
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                font: 'normal normal normal 30px/37px Prohibition',
+              }}
+            >
+              Share
+            </Typography>
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body style={bodyStyle}>
+          <input
+            style={{
+              width: '345px',
+              backgroundColor: `${viewColor}`,
+              border: '2px solid #636366',
+              borderRadius: '3px',
+            }}
+            value={shareEmail}
+            //value={eventName}
+            onChange={(e) => {
+              setShareEmail(e.target.value);
+            }}
+          />
+        </Modal.Body>
+        <Modal.Footer style={footerStyle}>
+          <Row>
+            <Col xs={4}>
+              <button
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: '#2C2C2E',
+                }}
+                onClick={() => closeShareModal()}
+              >
+                Cancel
+              </button>
+            </Col>
+            <Col>
+              <button
+                style={{
+                  background: '#2C2C2E 0% 0% no-repeat padding-box',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: `${viewColor}`,
+                }}
+                onClick={(e) => {
+                  shareEvent();
+                }}
+              >
+                Share Link
+              </button>
+            </Col>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
   const openUpdateEventModal = () => {
     setShowUpdateEventModal((prevState) => {
       return { showUpdateEventModal: !prevState.showUpdateEventModal };
@@ -133,7 +265,6 @@ export default function Event() {
   const closeUpdateEventModal = () => {
     setShowUpdateEventModal(false);
   };
-
   function updateEvent(event_id) {
     var event = {
       event_name: selectedEvent.event_name,
@@ -181,14 +312,14 @@ export default function Event() {
       fontWeight: 'bold',
       color: '#2C2C2E',
       textTransform: 'uppercase',
-      backgroundColor: viewColor,
+      backgroundColor: `${viewColor}`,
     };
     const footerStyle = {
       border: 'none',
-      backgroundColor: viewColor,
+      backgroundColor: `${viewColor}`,
     };
     const bodyStyle = {
-      backgroundColor: viewColor,
+      backgroundColor: `${viewColor}`,
     };
     const colHeader = {
       fontSize: '18px',
@@ -221,7 +352,7 @@ export default function Event() {
       <Modal
         show={showUpdateEventModal}
         onHide={closeUpdateEventModal}
-        style={modalStyle}
+        //style={modalStyle}
       >
         <Modal.Header style={headerStyle} closeButton>
           <Modal.Title>
@@ -245,7 +376,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -262,7 +393,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -279,7 +410,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -315,7 +446,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -353,7 +484,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -375,7 +506,7 @@ export default function Event() {
             <Col xs={4}>
               <button
                 style={{
-                  backgroundColor: viewColor,
+                  backgroundColor: `${viewColor}`,
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
                   color: '#2C2C2E',
@@ -391,7 +522,7 @@ export default function Event() {
                   background: '#2C2C2E 0% 0% no-repeat padding-box',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: viewColor,
+                  color: `${viewColor}`,
                 }}
                 onClick={(e) => updateEvent(eventID)}
               >
@@ -461,6 +592,13 @@ export default function Event() {
       )
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
+        setEventName('');
+        setEventDuration('');
+        setEventLocation('');
+        setAfterBuffer('');
+        setAfterBufferTime('');
+        setBeforeBuffer('');
+        setBeforeBufferTime('');
       })
       .catch((error) => {
         console.log('error', error);
@@ -473,6 +611,7 @@ export default function Event() {
       top: '30%',
       left: '30%',
       width: '400px',
+      height: '100%',
     };
     const headerStyle = {
       border: 'none',
@@ -483,14 +622,14 @@ export default function Event() {
       fontWeight: 'bold',
       color: '#2C2C2E',
       textTransform: 'uppercase',
-      backgroundColor: viewColor,
+      backgroundColor: `${viewColor}`,
     };
     const footerStyle = {
       border: 'none',
-      backgroundColor: viewColor,
+      backgroundColor: `${viewColor}`,
     };
     const bodyStyle = {
-      backgroundColor: viewColor,
+      backgroundColor: `${viewColor}`,
     };
     const colHeader = {
       fontSize: '18px',
@@ -512,6 +651,7 @@ export default function Event() {
         show={showCreateNewEventModal}
         onHide={closeCreateNewEventModal}
         style={modalStyle}
+        backdropClassName="modal-backdrop foo-modal-backdrop in"
       >
         <Modal.Header style={headerStyle} closeButton>
           <Modal.Title>
@@ -536,7 +676,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -547,7 +687,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -558,7 +698,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -585,7 +725,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -608,7 +748,7 @@ export default function Event() {
           <input
             style={{
               width: '345px',
-              backgroundColor: viewColor,
+              backgroundColor: `${viewColor}`,
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
@@ -621,7 +761,7 @@ export default function Event() {
             <Col xs={4}>
               <button
                 style={{
-                  backgroundColor: viewColor,
+                  backgroundColor: `${viewColor}`,
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
                   color: '#2C2C2E',
@@ -637,7 +777,7 @@ export default function Event() {
                   background: '#2C2C2E 0% 0% no-repeat padding-box',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: viewColor,
+                  color: `${viewColor}`,
                 }}
                 onClick={(e) => createNewEvent(viewID)}
               >
@@ -700,6 +840,7 @@ export default function Event() {
             </Col>
             <div>{showCreateNewEventModal && createNewEventModal()}</div>
             <div>{showUpdateEventModal && updateEventModal()}</div>
+            <div>{showShareModal && shareModal()}</div>
             <Col
               style={{
                 display: 'flex',
@@ -754,7 +895,8 @@ export default function Event() {
                                     ' hrs ' +
                                     Number(event.duration.substring(2, 4)) +
                                     ' min'
-                                  : Number(event.duration.substring(0, 1))+1 +
+                                  : Number(event.duration.substring(0, 1)) +
+                                    1 +
                                     ' hrs'
                                 : Number(event.duration.substring(0, 1)) == 1
                                 ? '60 min'
@@ -818,8 +960,6 @@ export default function Event() {
                             height: '48px',
                             fontSize: '12px',
                             fontWeight: 'normal',
-                            //marginTop: '11px',
-                            //paddingTop: '15px',
                             background: '#E5E5EB',
                             border: '1px solid #2C2C2E',
                             font: 'normal normal normal 14px/16px Helvetica Neue',
@@ -828,7 +968,17 @@ export default function Event() {
                           <Col>
                             <img src={Copy} alt="copy event" /> Copy Link
                           </Col>
-                          <Col xs={4}>Share</Col>
+                          <Col
+                            xs={4}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              openShareModal();
+                              setViewColor(view.color);
+                              setEventID(event.event_unique_id);
+                            }}
+                          >
+                            Share
+                          </Col>
                         </Row>
                       </div>
                     ) : (
