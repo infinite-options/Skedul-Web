@@ -80,7 +80,10 @@ export default function CreateMeet() {
   const [meetLocation, setMeetLocation] = useState('');
   const [meetDate, setMeetDate] = useState('');
   const [meetTime, setMeetTime] = useState('');
-  const [attendees, setAttendees] = useState([{ email: userEmail }]);
+  const [attendees, setAttendees] = useState([
+    { email: userEmail },
+    { email: '' },
+  ]);
 
   const [signedin, setSignedIn] = useState(false);
   const [googleAuthedEmail, setgoogleAuthedEmail] = useState('');
@@ -331,7 +334,7 @@ export default function CreateMeet() {
 
   function handleAdd() {
     const emails = [...attendees];
-    emails.push({ email: userEmail });
+    emails.push({ email: '' });
     setAttendees(emails);
   }
 
@@ -526,7 +529,7 @@ export default function CreateMeet() {
                     borderRadius: '3px',
                   }}
                   type="text"
-                  placeholder={userEmail}
+                  defaultValue={userEmail}
                   onChange={(e) => handleChange(idx, e)}
                 />
               );

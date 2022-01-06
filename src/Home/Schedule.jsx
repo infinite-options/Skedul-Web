@@ -49,20 +49,13 @@ const useStyles = makeStyles({
 });
 export default function Schedule(props) {
   const classes = useStyles();
-
-  const mt = extendMoment(moment);
-  const location = useLocation();
   const loginContext = useContext(LoginContext);
-  console.log('SCHEDULE PROPS', loginContext);
-  console.log('SCHEDULE PROPS', props);
   const [allViews, setAllViews] = useState([]);
   const [allSchedule, setAllSchedule] = useState([]);
+  const [allMeetings, setAllMeetings] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
-  const [selectedView, setSelectedView] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
-  const [eventName, setEventName] = useState([]);
-  const [viewID, setViewID] = useState('');
-  const [eventID, setEventID] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -118,6 +111,17 @@ export default function Schedule(props) {
       })
       .catch((error) => console.log(error));
   }, [refreshKey]);
+  useEffect(() => {
+    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetMeeting/${selectedUser}`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        console.log(json.result.result);
+        setAllMeetings(json.result.result);
+      })
+      .catch((error) => console.log(error));
+  }, [refreshKey]);
 
   useEffect(() => {
     if (allSchedule != undefined) {
@@ -130,30 +134,6 @@ export default function Schedule(props) {
       }
     }
   }, [allViews, allEvents, allSchedule, selectedSchedule, refreshKey]);
-
-  function getView(viewID) {
-    axios
-      .get(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
-      )
-      .then((response) => {
-        let schedule = JSON.parse(response.data.result.result[0].schedule);
-        setSelectedView(response.data.result.result[0]);
-        setSelectedSchedule(schedule);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  function convert(value) {
-    var a = value.split(':'); // split it at the colons
-
-    // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
-
-    return seconds + 1;
-  }
 
   const weekdaysAndDateDisplay = () => {
     let arr = [];
@@ -224,13 +204,11 @@ export default function Schedule(props) {
 
   const sortSchedule = () => {
     var arr = Object.values(allSchedule);
-
+    console.log(arr);
     var dic = {};
     let today = new Date();
 
     let dateNew = moment(today);
-    let startDate = dateNew.startOf('week');
-    let endDate = dateNew.add(11, 'days');
 
     for (let i = 0; i < arr.length; i++) {
       //console.log(arr[i], arr.length);
@@ -248,6 +226,26 @@ export default function Schedule(props) {
         }
         dic[key].push(day[j]);
       }
+    }
+    return dic;
+  };
+  const sortMeetings = () => {
+    var arr = Object.values(allMeetings);
+
+    console.log('meetings', arr);
+    var dic = {};
+
+    let today = new Date();
+
+    for (let i = 0; i < arr.length; i++) {
+      let tempStart = arr[i].start_time;
+      let tempEnd = arr[i].end_time;
+      let key = i + '_' + tempStart.substring(0, 2);
+      //console.log(key);
+      if (dic[key] == null) {
+        dic[key] = [];
+      }
+      dic[key].push(arr[i]);
     }
     return dic;
   };
@@ -430,12 +428,126 @@ export default function Schedule(props) {
     }
     return res;
   };
+  const getMeetItemFromDic = (day, hour, dic) => {
+    let today = new Date();
+    let dateNew = moment(today);
+    let startDate = dateNew.startOf('week');
+    let startDay = startDate.format('dddd');
+    let endDate = dateNew.add(11, 'days');
+    let endDay = endDate.format('dddd');
+
+    var res = [];
+    var unique = [];
+    var tempStart = null;
+    var tempEnd = null;
+    var arr = dic[day + '_' + hour];
+    var sameTimeEventCount = 0;
+    var addmarginLeft = 0;
+    let itemWidth = 80;
+    var fontSize = 10;
+    if (arr == null) {
+      return;
+    }
+    console.log(arr);
+    for (let i = 0; i < arr.length; i++) {
+      console.log(arr[i]);
+      tempStart = arr[i].start + ' ' + arr[i].start_time;
+      tempEnd = arr[i].end + ' ' + arr[i].end_time;
+
+      let tempStartTime = new Date(tempStart.replace(/-/g, '/'));
+      let tempEndTime = new Date(tempEnd.replace(/-/g, '/'));
+      console.log(tempStart, tempStartTime, tempEnd, tempEndTime);
+      let minsToMarginTop = (tempStartTime.getMinutes() / 60) * 55;
+      let hourDiff = tempEndTime.getHours() - tempStartTime.getHours();
+      let minDiff =
+        tempEndTime.getMinutes() / 60 - tempStartTime.getMinutes() / 60;
+      let height = (hourDiff + minDiff) * 55;
+      sameTimeEventCount++;
+      let color = 'lightslategray';
+      //check if there is already an event there overlapping from another hour
+
+      for (let i = 0; i < arr.length; i++) {
+        let tempStartTime = new Date(tempStart);
+        let tempEndTime = new Date(tempEnd);
+        if (tempStartTime.getHours() < hour && tempEndTime.getHours() > hour) {
+          addmarginLeft += 20;
+          itemWidth = itemWidth - 20;
+        }
+      }
+      if (sameTimeEventCount <= 1) {
+        unique.push(arr[i]);
+      }
+      if (sameTimeEventCount > 1) {
+        addmarginLeft += 20;
+        itemWidth = itemWidth - 20;
+      }
+      //chnage font size if not enough space
+      if (tempEndTime.getHours() - tempStartTime.getHours() < 2) {
+        fontSize = 8;
+      }
+
+      // Need to strip trailing zeros because the data in the database
+      // is inconsistent about this
+      const start_time =
+        arr[i].start + '' + arr[i].start_time.substring(11).split(/[:\s+]/);
+      if (start_time[0][0] == '0') start_time[0] = start_time[0][1];
+      const end_time =
+        arr[i].end + '' + arr[i].end_time.substring(11).split(/[:\s+]/);
+      if (end_time[0][0] == '0') end_time[0] = end_time[0][1];
+
+      let newElement = (
+        <div key={'event' + i}>
+          <div
+            className="clickButton"
+            data-toggle="tooltip"
+            data-placement="right"
+            title={
+              arr[i].meeting_unique_id +
+              '\nStart: ' +
+              tempStartTime +
+              '\nEnd: ' +
+              tempEndTime
+            }
+            key={i}
+            style={{
+              zIndex: 1,
+              marginTop: minsToMarginTop + 'px',
+              marginLeft: addmarginLeft + 'px',
+              padding: '3px',
+              fontSize: fontSize + 'px',
+
+              // border: '1px lightgray solid ',
+              // border:
+              //   this.props.highLight === arr[i].title
+              //     ? '2px solid #FF6B4A '
+              //     : '',
+              float: 'left',
+              background: color,
+              width: itemWidth + 'px',
+              position: 'absolute',
+              height: height + 'px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              opacity: '0.8',
+            }}
+          >
+            {/* insert border change here: */}
+          </div>
+        </div>
+      );
+
+      res.push(newElement);
+    }
+    return res;
+  };
   const weekViewItems = () => {
     // this creates the events adjusting their div size to reflecting the time it's slotted for
     var res = [];
     let dic = sortSchedule();
     var x = [];
-    // console.log(dic);
+    let dicMeet = sortMeetings();
+    console.log(dic, dicMeet);
 
     for (let i = 0; i < 7; ++i) {
       var arr = [];
@@ -457,6 +569,7 @@ export default function Schedule(props) {
                 }}
               >
                 {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
+                {getMeetItemFromDic(i, leftFillNum(j, 2), dicMeet)}
               </Col>
             </Row>
           </Container>
@@ -494,6 +607,7 @@ export default function Schedule(props) {
                 }}
               >
                 {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
+                {getMeetItemFromDic(i, leftFillNum(j, 2), dicMeet)}
               </Col>
             </Row>
           </Container>
@@ -542,14 +656,7 @@ export default function Schedule(props) {
                       return (
                         <div>
                           {event.view_id === view.view_unique_id ? (
-                            <div
-                              onClick={() => {
-                                getView(event.view_id);
-                                setViewID(event.view_id);
-                                setEventID(event.event_unique_id);
-                                setEventName(event.event_name);
-                              }}
-                            >
+                            <div>
                               <div
                                 style={{
                                   marginTop: '20px',
