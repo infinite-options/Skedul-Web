@@ -37,24 +37,26 @@ export default function App() {
   return (
     <div class="hero-container">
       <Router>
-        <LoginContext.Provider
-          value={{
-            loginState: loginState,
-            setLoginState: setLoginState,
-            isLoggedIn: isLoggedIn,
-            login: login,
-            logout: logout,
-            isGuest,
-            setIsGuest,
-            isAuth,
-            setIsAuth,
-          }}
-        >
-          <div>
-            <Navigation />
-            <Nav />
-          </div>
-        </LoginContext.Provider>
+        <Switch>
+          <LoginContext.Provider
+            value={{
+              loginState: loginState,
+              setLoginState: setLoginState,
+              isLoggedIn: isLoggedIn,
+              login: login,
+              logout: logout,
+              isGuest,
+              setIsGuest,
+              isAuth,
+              setIsAuth,
+            }}
+          >
+            <div>
+              <Navigation />
+              <Nav />
+            </div>
+          </LoginContext.Provider>
+        </Switch>
       </Router>
 
       <Router>

@@ -18,8 +18,8 @@ const useStyles = makeStyles({
     padding: '20px',
   },
   timeslotButton: {
-    width: '8rem',
-    height: '2rem',
+    width: '12rem',
+    //height: '2rem',
     maxWidth: '80%',
     color: 'white',
     textAlign: 'center',
@@ -66,8 +66,8 @@ export default function CreateMeet() {
   const [timeSelected, setTimeSelected] = useState(false);
   const [showDays, setShowDays] = useState(false);
   const [duration, setDuration] = useState(null);
-  const [timeAASlots, setTimeAASlots] = useState([]);
   const [dateString, setDateString] = useState('');
+  const [timeAASlots, setTimeAASlots] = useState([]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
@@ -84,6 +84,7 @@ export default function CreateMeet() {
 
   const [signedin, setSignedIn] = useState(false);
   const [googleAuthedEmail, setgoogleAuthedEmail] = useState('');
+
   let curURL = window.location.href;
   const eventID = curURL.substring(curURL.length - 10);
   useEffect(() => {
@@ -99,6 +100,7 @@ export default function CreateMeet() {
     if (email) {
       setSignedIn(true);
       setgoogleAuthedEmail(email);
+      setShowDays(true);
     }
   };
   const getAuthToGoogle = async () => {
@@ -162,7 +164,7 @@ export default function CreateMeet() {
       axios
         .get(
           'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AvailableAppointments/' +
-            '2022-1-3' +
+            dateString +
             '/' +
             duration +
             '/' +
@@ -193,16 +195,16 @@ export default function CreateMeet() {
         Authorization: 'Bearer ' + accessToken,
       };
       const data = {
-        timeMin: '2022-01-03' + 'T' + startTime + ':00-0800',
-        timeMax: '2022-01-03' + 'T' + endTime + ':00-0800',
+        timeMin: dateString + 'T' + startTime + ':00-0800',
+        timeMax: dateString + 'T' + endTime + ':00-0800',
         items: [
           {
             id: 'primary',
           },
         ],
       };
-      const timeMin = '2022-01-03' + 'T' + startTime + ':00-0800';
-      const timeMax = '2022-01-03' + 'T' + endTime + ':00-0800';
+      const timeMin = dateString + 'T' + startTime + ':00-0800';
+      const timeMax = dateString + 'T' + endTime + ':00-0800';
       console.log(headers);
       console.log(data);
       console.log(startTime, timeMin, endTime, timeMax);
@@ -346,7 +348,7 @@ export default function CreateMeet() {
       event_id: `${eventID}`,
       meeting_name: meetName,
       location: meetLocation,
-      attendees: [{ email: userEmail }, attendees],
+      attendees: attendees,
       meeting_date: meetDate,
       meeting_time: meetTime,
     };
@@ -367,6 +369,11 @@ export default function CreateMeet() {
     setShowDays(false);
     setTimeAASlots([]);
     setTimeSlots([]);
+    setMeetName('');
+    setMeetDate('');
+    setMeetLocation('');
+    setMeetTime('');
+    setAttendees([{ email: userEmail }]);
   }
   function createMeet() {
     console.log(meetDate, meetTime, duration);
@@ -396,10 +403,18 @@ export default function CreateMeet() {
       end: {
         dateTime: end_time,
       },
-      attendees: [{ email: userEmail }, attendees],
+      attendees: attendees,
     };
     console.log(meet);
+
     publishTheCalenderEvent(meet);
+    setTimeSelected(false);
+    setShowDays(false);
+    setMeetName('');
+    setMeetDate('');
+    setMeetLocation('');
+    setMeetTime('');
+    setAttendees([{ email: userEmail }]);
   }
   const createNewMeetModal = () => {
     const modalStyle = {
@@ -606,9 +621,48 @@ export default function CreateMeet() {
 
     return seconds + 1;
   }
+  function formatDate(date) {
+    var dd = date.getDate();
+    var mm = date.getMonth() + 1;
+    var yyyy = date.getFullYear();
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+    date = mm + '/' + dd + '/' + yyyy;
+    return date;
+  }
+  function Last7Days() {
+    var result = [];
+    var resultDay = [];
+    let date = {};
+    for (var i = 0; i < 7; i++) {
+      var d = new Date();
+      var x = new Date().getDay();
+      d.setDate(d.getDate() + i);
+      x = moment(d).format('dddd');
+      result.push(formatDate(d));
+      resultDay.push(x);
+      date[x] = moment(d).format('YYYY-MM-DD');
+    }
+    //result.join(',');
+    //resultDay.join(',');
+    console.log(result);
+    console.log(resultDay);
+    // date = {
+    //   day: resultDay,
+    //   date: result,
+    // };
+    console.log(date);
+    return date;
+  }
   function renderAvailableApptsVertical() {
     console.log('TimeSlots', timeSlots);
     console.log('TimeSlotsAA', timeAASlots);
+
+    Last7Days();
     let result = [];
     {
       timeSlots.length === 0
@@ -635,10 +689,11 @@ export default function CreateMeet() {
               onClick={() => {
                 selectApptTime(element);
                 openCreateNewMeetModal();
+                setMeetDate(dateString);
                 setMeetTime(element);
               }}
             >
-              {formatTime('2022-01-03', element)}
+              {formatTime(dateString, element)}
             </button>
           );
         })}
@@ -648,160 +703,225 @@ export default function CreateMeet() {
   function selectApptTime(element) {
     console.log('selected time', element);
     setSelectedTime(element);
-    setTimeSelected(true);
+    //setTimeSelected(true);
     setButtonSelect(true);
   }
   //console.log(dateString)
   function showAvailableDays() {
+    // let x = Last7Days();
+    // //console.log(x);
+    // for (var i = 0; i < 7; i++) {
+    //   if (x.day[i] == 'Sunday') {
+    //     console.log(x.date[i]);
+    //   }
+    // }
+    let dateRange = Last7Days();
+    console.log(dateRange);
     return (
       <Row>
         {selectedSchedule.Sunday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Sunday[0].start_time);
-              setEndTime(selectedSchedule.Sunday[0].end_time);
-            }}
-          >
-            Sunday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Sunday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Sunday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Sunday[0].start_time);
+                  setEndTime(selectedSchedule.Sunday[0].end_time);
+                }}
+              >
+                <div>Sunday</div>
+                {dateRange['Sunday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
         {selectedSchedule.Monday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Monday[0].start_time);
-              setEndTime(selectedSchedule.Monday[0].end_time);
-            }}
-          >
-            Monday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Monday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Monday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Monday[0].start_time);
+                  setEndTime(selectedSchedule.Monday[0].end_time);
+                }}
+              >
+                <div>Monday</div>
+                {dateRange['Monday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
 
         {selectedSchedule.Tuesday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Tuesday[0].start_time);
-              setEndTime(selectedSchedule.Tuesday[0].end_time);
-            }}
-          >
-            Tuesday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Tuesday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Tuesday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Tuesday[0].start_time);
+                  setEndTime(selectedSchedule.Tuesday[0].end_time);
+                }}
+              >
+                <div>Tuesday</div>
+                {dateRange['Tuesday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
         {selectedSchedule.Wednesday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Wednesday[0].start_time);
-              setEndTime(selectedSchedule.Wednesday[0].end_time);
-            }}
-          >
-            Wednesday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Wednesday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Wednesday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Wednesday[0].start_time);
+                  setEndTime(selectedSchedule.Wednesday[0].end_time);
+                }}
+              >
+                <div>Wednesday</div>
+                {dateRange['Wednesday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
         {selectedSchedule.Thursday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Thursday[0].start_time);
-              setEndTime(selectedSchedule.Thursday[0].end_time);
-            }}
-          >
-            Thursday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Thursday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Thursday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Thursday[0].start_time);
+                  setEndTime(selectedSchedule.Thursday[0].end_time);
+                }}
+              >
+                <div>Thursday</div>
+                {dateRange['Thursday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
         {selectedSchedule.Friday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Friday[0].start_time);
-              setEndTime(selectedSchedule.Friday[0].end_time);
-            }}
-          >
-            Friday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Friday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Friday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Friday[0].start_time);
+                  setEndTime(selectedSchedule.Friday[0].end_time);
+                }}
+              >
+                <div>Friday</div>
+                {dateRange['Friday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
         {selectedSchedule.Saturday[0].start_time === '' ? (
           ''
         ) : (
-          <Col
-            style={{
-              backgroundColor: `${viewColor}`,
-              border: `2px solid ${viewColor}`,
-              cursor: 'pointer',
-            }}
-            className={classes.timeslotButton}
-            onClick={() => {
-              setTimeSelected(true);
-              setTimeAASlots([]);
-              setTimeSlots([]);
-              setStartTime(selectedSchedule.Saturday[0].start_time);
-              setEndTime(selectedSchedule.Saturday[0].end_time);
-            }}
-          >
-            Saturday
-          </Col>
+          <div>
+            {dateRange.hasOwnProperty('Saturday') ? (
+              <Col
+                style={{
+                  backgroundColor: `${viewColor}`,
+                  border: `2px solid ${viewColor}`,
+                  cursor: 'pointer',
+                }}
+                className={classes.timeslotButton}
+                onClick={() => {
+                  setTimeSelected(true);
+                  setDateString(dateRange['Saturday']);
+                  setTimeAASlots([]);
+                  setTimeSlots([]);
+                  setStartTime(selectedSchedule.Saturday[0].start_time);
+                  setEndTime(selectedSchedule.Saturday[0].end_time);
+                }}
+              >
+                <div>Saturday</div>
+                {dateRange['Saturday']}
+              </Col>
+            ) : (
+              <div></div>
+            )}
+          </div>
         )}
       </Row>
     );
@@ -829,7 +949,6 @@ export default function CreateMeet() {
               setTimeSelected(false);
               setTimeSlots([]);
               setTimeAASlots([]);
-              setShowDays(true);
               setDuration(selectedEvent.duration);
               getView();
               setViewID(selectedEvent.view_id);

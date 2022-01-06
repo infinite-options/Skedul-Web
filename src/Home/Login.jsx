@@ -41,7 +41,7 @@ export default function Login() {
   const [accessToken, setAccessToken] = useState('');
   const [idToken, setIdToken] = useState('');
   const [socialId, setSocialId] = useState('');
-  const [userID, setUserID] = useState('')
+  const [userID, setUserID] = useState('');
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -54,7 +54,7 @@ export default function Login() {
     console.log(response);
     if (response.profileObj) {
       let email = response.profileObj.email;
-      let user_id='';
+      let user_id = '';
       setSocialId(response.googleId);
       axios
         .get(
@@ -63,7 +63,8 @@ export default function Login() {
         .then((response) => {
           console.log(
             'in events',
-            response['data']['user_unique_id'],response['data']['google_auth_token']
+            response['data']['user_unique_id'],
+            response['data']['google_auth_token']
           );
           console.log('in events', response);
           setAccessToken(response['data']['google_auth_token']);
@@ -139,8 +140,7 @@ export default function Login() {
                     setAccessToken(at);
                     setIdToken(id_token);
                     console.log('in events', at);
-                    let url =
-                      `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateAccessToken/${user_id}`;
+                    let url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateAccessToken/${user_id}`;
                     axios
                       .post(url, {
                         google_auth_token: at,
@@ -183,13 +183,13 @@ export default function Login() {
           document.cookie = 'user_access=' + res.data.result[1];
           setLoggedIn(true);
           setAccessToken(res.data.result[1]);
-          console.log('Login socialloginattempt', at)
+          console.log('Login socialloginattempt', at);
           loginContext.setLoginState({
             ...loginContext.loginState,
             loggedIn: true,
             user: {
               ...loginContext.loginState.user,
-              id: res.data.result.toString(),
+              id: res.data.result[0],
               email: email.toString(),
               user_access: res.data.result[1],
             },
@@ -198,8 +198,7 @@ export default function Login() {
           console.log(email, document.cookie);
           history.push({
             pathname: '/schedule',
-            state: { email: email.toString(), accessToken:  res.data.result[1] },
-            
+            state: { email: email.toString(), accessToken: res.data.result[1] },
           });
           // Successful log in, Try to update tokens, then continue to next page based on role
         } else {
@@ -265,7 +264,7 @@ export default function Login() {
     console.log('we are here');
     console.log(document.cookie);
     console.log(accessToken);
-    
+
     history.push({
       pathname: '/schedule',
       state: {

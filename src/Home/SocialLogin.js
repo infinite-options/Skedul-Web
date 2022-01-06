@@ -30,14 +30,14 @@ function SocialLogin(props) {
   const client_id = CLIENT_ID;
   const client_secret = CLIENT_SECRET;
   console.log(client_id);
-   const redirect_uris = [
-     'https://www.skedul',
-     'https://www.skedul/schedule',
-     'https://www.skedul/',
-     'https://skedul',
-     'http://localhost:3000',
-     'http://localhost',
-   ];
+  const redirect_uris = [
+    'https://www.skedul',
+    'https://www.skedul/schedule',
+    'https://www.skedul/',
+    'https://skedul',
+    'http://localhost:3000',
+    'http://localhost',
+  ];
   const responseGoogle = (response) => {
     console.log('response', response);
 
@@ -115,7 +115,7 @@ function SocialLogin(props) {
                 if (response.data.message === 'User EmailID doesnt exist') {
                   setSocialSignUpModalShow(!socialSignUpModalShow);
                 } else {
-                  console.log('ACCESS', accessToken)
+                  console.log('ACCESS', accessToken);
                   document.cookie = 'user_uid=' + response.data.result;
                   document.cookie = 'user_email=' + e;
                   document.cookie = 'user_access=' + accessToken.toString();
@@ -181,7 +181,7 @@ function SocialLogin(props) {
             loggedIn: true,
             user: {
               ...loginContext.loginState.user,
-              id: res.data.result.toString(),
+              id: res.data.result[0],
               email: email.toString(),
               user_access: res.data.result[1],
             },
