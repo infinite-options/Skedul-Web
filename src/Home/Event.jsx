@@ -959,7 +959,16 @@ export default function Event() {
                             font: 'normal normal normal 14px/16px Helvetica Neue',
                           }}
                         >
-                          <Col>
+                          <Col
+                            style={{ cursor: 'pointer' }}
+                            onClick={() =>
+                              navigator.clipboard.writeText(
+                                document.location.href +
+                                  '/' +
+                                  `${event.event_unique_id}`
+                              )
+                            }
+                          >
                             <img src={Copy} alt="copy event" /> Copy Link
                           </Col>
                           <Col
