@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Col, Container, Form, Modal, Row } from 'react-bootstrap';
 //import { AuthContext } from '../auth/AuthContext';
 import { withRouter } from 'react-router';
-import Google from './LoginAssets/Google.svg';
+import Google from '../images/Google.svg';
 import LoginContext from 'LoginContext';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;

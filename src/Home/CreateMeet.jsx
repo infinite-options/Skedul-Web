@@ -87,10 +87,7 @@ export default function CreateMeet() {
   const [meetLocation, setMeetLocation] = useState('');
   const [meetDate, setMeetDate] = useState('');
   const [meetTime, setMeetTime] = useState('');
-  const [attendees, setAttendees] = useState([
-    { email: userEmail },
-    { email: '' },
-  ]);
+  const [attendees, setAttendees] = useState([{ email: '' }]);
 
   const [signedin, setSignedIn] = useState(false);
   const [googleAuthedEmail, setgoogleAuthedEmail] = useState('');
@@ -108,7 +105,6 @@ export default function CreateMeet() {
   const getGoogleAuthorizedEmail = async () => {
     let profile = [];
     profile = await getSignedInUserEmail();
-    console.log(profile);
 
     if (profile) {
       setSignedIn(true);
@@ -126,13 +122,13 @@ export default function CreateMeet() {
     }
     console.log('booknowbtn', successfull);
   };
-  console.log(googleAuthedEmail, googleAuthedName);
+  //console.log(googleAuthedEmail, googleAuthedName);
   useEffect(() => {
     const url = BASE_URL + `GetEvent/${eventID}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json.result.result[0]);
+        //console.log(json.result.result[0]);
         setSelectedEvent(json.result.result[0]);
         let viewID = json.result.result[0].view_id;
         let userID = json.result.result[0].user_id;
@@ -158,9 +154,80 @@ export default function CreateMeet() {
             setRefreshToken(response.data.google_refresh_token);
             setSelectedUser(response.data.user_unique_id);
             setUserEmail(response.data.user_email_id);
+            setAttendees([{ email: response.data.user_email_id }]);
             setUserName(
               response.data.user_first_name + '' + response.data.user_last_name
             );
+            var old_at = response.data.google_auth_token;
+            var refresh_token = response.data.google_refresh_token;
+            console.log(refresh_token);
+            console.log('in events', old_at);
+            fetch(
+              `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
+              {
+                method: 'GET',
+              }
+            ).then((response) => {
+              console.log('in events', response);
+              if (response['status'] === 400) {
+                console.log('in events if');
+                let authorization_url =
+                  'https://accounts.google.com/o/oauth2/token';
+
+                var details = {
+                  refresh_token: refresh_token,
+                  client_id: CLIENT_ID,
+                  client_secret: CLIENT_SECRET,
+                  grant_type: 'refresh_token',
+                };
+                console.log(details);
+                var formBody = [];
+                for (var property in details) {
+                  var encodedKey = encodeURIComponent(property);
+                  var encodedValue = encodeURIComponent(details[property]);
+                  formBody.push(encodedKey + '=' + encodedValue);
+                }
+                formBody = formBody.join('&');
+
+                fetch(authorization_url, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type':
+                      'application/x-www-form-urlencoded;charset=UTF-8',
+                  },
+                  body: formBody,
+                })
+                  .then((response) => {
+                    return response.json();
+                  })
+                  .then((responseData) => {
+                    console.log(responseData);
+                    return responseData;
+                  })
+                  .then((data) => {
+                    console.log(data);
+                    let at = data['access_token'];
+                    setAccessToken(at);
+                    console.log('in events', at);
+                    let url = BASE_URL + `UpdateAccessToken/${userID}`;
+                    axios
+                      .post(url, {
+                        google_auth_token: at,
+                      })
+                      .then((response) => {})
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                    return accessToken;
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              } else {
+                setAccessToken(old_at);
+                console.log(old_at);
+              }
+            });
           })
           .catch((error) => {
             console.log(error);
@@ -173,9 +240,8 @@ export default function CreateMeet() {
     if (selectedEvent.length !== 0) {
       setIsLoading(false);
     }
-    console.log(selectedEvent);
   }, [selectedEvent, selectedSchedule, refreshKey]);
-  console.log(userEmail);
+  console.log(attendees, userEmail);
   useEffect(() => {
     if (timeSelected) {
       axios
@@ -191,14 +257,16 @@ export default function CreateMeet() {
             endTime
         )
         .then((res) => {
-          console.log('This is the information we got' + res, duration);
+          console.log(
+            'This is the information we got' + res,
+            duration,
+            dateString + '/' + duration + '/' + startTime + ',' + endTime
+          );
 
           res.data.result.map((r) => {
-            //console.log(res.data.result);
             timeAASlots.push(r['begin_time']);
           });
 
-          //console.log(timeAASlots);
           setTimeAASlots(timeAASlots);
         });
     }
@@ -207,72 +275,6 @@ export default function CreateMeet() {
   });
   useEffect(() => {
     if (timeSelected) {
-      var old_at = accessToken;
-      console.log('in events', old_at);
-      fetch(
-        `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
-        {
-          method: 'GET',
-        }
-      ).then((response) => {
-        console.log('in events', response);
-        if (response['status'] === 400) {
-          console.log('in events if');
-          let authorization_url = 'https://accounts.google.com/o/oauth2/token';
-
-          var details = {
-            refresh_token: refreshToken,
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET,
-            grant_type: 'refresh_token',
-          };
-
-          var formBody = [];
-          for (var property in details) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(details[property]);
-            formBody.push(encodedKey + '=' + encodedValue);
-          }
-          formBody = formBody.join('&');
-
-          fetch(authorization_url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-            },
-            body: formBody,
-          })
-            .then((response) => {
-              return response.json();
-            })
-            .then((responseData) => {
-              console.log(responseData);
-              return responseData;
-            })
-            .then((data) => {
-              console.log(data);
-              let at = data['access_token'];
-              setAccessToken(at);
-              console.log('in events', at);
-              let url = BASE_URL + `UpdateAccessToken/${userID}`;
-              axios
-                .post(url, {
-                  google_auth_token: at,
-                })
-                .then((response) => {})
-                .catch((err) => {
-                  console.log(err);
-                });
-              return accessToken;
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          setAccessToken(old_at);
-          console.log(old_at);
-        }
-      });
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -291,7 +293,8 @@ export default function CreateMeet() {
       const timeMax = dateString + 'T' + endTime + ':00-0800';
       console.log(headers);
       console.log(data);
-      console.log(startTime, timeMin, endTime, timeMax);
+      console.log(duration);
+      //console.log(startTime, timeMin, endTime, timeMax);
       axios
         .post(
           `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`,
@@ -309,26 +312,27 @@ export default function CreateMeet() {
           let appt_start_time = start_time;
 
           let seconds = convert(duration);
-          console.log(
-            start_time,
-            end_time,
-            startTime,
-            timeMin,
-            endTime,
-            timeMax,
-            duration,
-            seconds
-          );
+          console.log(seconds);
+          // console.log(
+          //   start_time,
+          //   end_time,
+          //   startTime,
+          //   timeMin,
+          //   endTime,
+          //   timeMax,
+          //   duration,
+          //   seconds
+          // );
           // Loop through each appt slot in the search range.
           while (appt_start_time < end_time) {
-            console.log('in while');
+            //console.log('in while');
             // Add appt duration to the appt start time so we know where the appt will end.
             let appt_end_time = appt_start_time + seconds;
-            console.log(
-              moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
-              moment(new Date(appt_end_time * 1000)).format('HH:mm:ss'),
-              moment(new Date(end_time * 1000)).format('HH:mm:ss')
-            );
+            // console.log(
+            //   moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
+            //   moment(new Date(appt_end_time * 1000)).format('HH:mm:ss'),
+            //   moment(new Date(end_time * 1000)).format('HH:mm:ss')
+            // );
             // For each appt slot, loop through the current appts to see if it falls
             // in a slot that is already taken.
             let slot_available = true;
@@ -336,10 +340,10 @@ export default function CreateMeet() {
             busy.forEach((times) => {
               let this_start = Date.parse(times['start']) / 1000;
               let this_end = Date.parse(times['end']) / 1000;
-              console.log(
-                moment(new Date(this_start * 1000)).format('HH:mm:ss'),
-                moment(new Date(this_end * 1000)).format('HH:mm:ss')
-              );
+              // console.log(
+              //   moment(new Date(this_start * 1000)).format('HH:mm:ss'),
+              //   moment(new Date(this_end * 1000)).format('HH:mm:ss')
+              // );
               // If the appt start time or appt end time falls on a current appt, slot is taken.
 
               if (
@@ -366,11 +370,11 @@ export default function CreateMeet() {
             }
             // + duration minutes
             appt_start_time += 60 * 30;
-            console.log(
-              'free',
-              moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
-              free
-            );
+            // console.log(
+            //   'free',
+            //   moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
+            //   free
+            // );
           }
           setTimeSlots(free);
         })
@@ -385,7 +389,7 @@ export default function CreateMeet() {
     axios
       .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
-        console.log(JSON.parse(response.data.result.result[0].schedule));
+        //console.log(JSON.parse(response.data.result.result[0].schedule));
         let schedule = JSON.parse(response.data.result.result[0].schedule);
         setSelectedView(response.data.result.result[0]);
         setSelectedSchedule(schedule);
@@ -407,13 +411,16 @@ export default function CreateMeet() {
 
   function handleChange(i, event) {
     const emails = [...attendees];
+    console.log(emails);
     emails[i].email = event.target.value;
     setAttendees(emails);
+    console.log(emails);
   }
 
   function handleAdd() {
     const emails = [...attendees];
-    emails.push({ email: '' });
+    console.log(emails);
+    emails.push({ email: userEmail });
     setAttendees(emails);
   }
 
@@ -452,18 +459,19 @@ export default function CreateMeet() {
     setMeetDate('');
     setMeetLocation('');
     setMeetTime('');
-    setAttendees([{ email: userEmail }]);
+    setAttendees([{ email: '' }]);
   }
   function createMeet() {
-    console.log(meetDate, meetTime, duration);
+    //console.log(meetDate, meetTime, duration);
     let start_time = meetDate + 'T' + meetTime + '-0800';
-    console.log(start_time);
+    //console.log(start_time);
     let d = convert(duration);
     let et = Date.parse(start_time) / 1000 + d;
-    console.log(d);
-    console.log(et);
+    //console.log(d);
+    //console.log(et);
     let end_time = moment(new Date(et * 1000)).format();
-    console.log(end_time);
+    attendees.push({ email: userEmail });
+    console.log(attendees);
     var meet = {
       summary: meetName,
 
@@ -493,7 +501,7 @@ export default function CreateMeet() {
     setMeetDate('');
     setMeetLocation('');
     setMeetTime('');
-    setAttendees([{ email: userEmail }]);
+    setAttendees([{ email: '' }]);
   }
   const createNewMeetModal = () => {
     const modalStyle = {
@@ -729,18 +737,18 @@ export default function CreateMeet() {
     }
     //result.join(',');
     //resultDay.join(',');
-    console.log(result);
-    console.log(resultDay);
+    //console.log(result);
+    //console.log(resultDay);
     // date = {
     //   day: resultDay,
     //   date: result,
     // };
-    console.log(date);
+    //console.log(date);
     return date;
   }
   function renderAvailableApptsVertical() {
-    console.log('TimeSlots', timeSlots);
-    console.log('TimeSlotsAA', timeAASlots);
+    //console.log('TimeSlots', timeSlots);
+    //console.log('TimeSlotsAA', timeAASlots);
 
     Last7Days();
     let result = [];
@@ -781,7 +789,7 @@ export default function CreateMeet() {
     );
   }
   function selectApptTime(element) {
-    console.log('selected time', element);
+    //console.log('selected time', element);
     setSelectedTime(element);
     //setTimeSelected(true);
     setButtonSelect(true);
@@ -796,7 +804,7 @@ export default function CreateMeet() {
     //   }
     // }
     let dateRange = Last7Days();
-    console.log(dateRange);
+    //console.log(dateRange);
     return (
       <Row>
         {selectedSchedule.Sunday[0].start_time === '' ? (
@@ -1009,7 +1017,6 @@ export default function CreateMeet() {
 
   return (
     <div className={classes.container}>
-      {console.log(selectedEvent, selectedEvent.duration)}
       {isLoading ? (
         <h1>No Views</h1>
       ) : (
@@ -1019,7 +1026,7 @@ export default function CreateMeet() {
               marginTop: '20px',
               marginLeft: '10px',
               width: '213px',
-              //height: '148px',
+              cursor: 'pointer',
               backgroundColor: `${viewColor}`,
               padding: '0px 10px',
             }}
@@ -1058,6 +1065,7 @@ export default function CreateMeet() {
               }}
             >
               <div>
+                {console.log(duration, selectedEvent.duration)}
                 {Number(selectedEvent.duration.substring(0, 2)) > 1
                   ? selectedEvent.duration.substring(3, 5) !== '59'
                     ? Number(selectedEvent.duration.substring(0, 2)) +
