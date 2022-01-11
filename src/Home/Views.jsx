@@ -133,6 +133,7 @@ function Views() {
       .split('=')[1];
   }
   console.log('selecteduser', selectedUser);
+
   useEffect(() => {
     const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
@@ -140,6 +141,7 @@ function Views() {
       .then((json) => {
         setSelectedView(json.result.result[0]);
         setSelectedSchedule(JSON.parse(json.result.result[0].schedule));
+
         setAllViews(json.result.result);
       })
       .catch((error) => console.log(error));
@@ -159,9 +161,9 @@ function Views() {
   useEffect(() => {
     if (allSchedule != undefined) {
       if (
-        allSchedule.length !== 0 ||
-        allViews.length !== 0 ||
-        selectedSchedule.length !== 0
+        allSchedule.length !== 0 &&
+        allViews.length !== 0 &&
+        Object.values(selectedSchedule) !== null
       ) {
         setIsLoading(false);
       }
