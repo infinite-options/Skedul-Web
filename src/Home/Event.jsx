@@ -8,6 +8,8 @@ import Bookmark from '../images/bookmark.svg';
 import Edit from '../images/edit.svg';
 import Copy from '../images/copy.svg';
 
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
+
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
@@ -71,7 +73,7 @@ export default function Event() {
   console.log('selecteduser', selectedUser);
 
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/${selectedUser}`;
+    const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -81,7 +83,7 @@ export default function Event() {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllEventsUser/${selectedUser}`;
+    const url = BASE_URL + `GetAllEventsUser/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -102,9 +104,7 @@ export default function Event() {
 
   function getView(viewID) {
     axios
-      .get(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
-      )
+      .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
         setViewName(response.data.result.result[0].view_name);
         setViewID(response.data.result.result[0].view_unique_id);
@@ -117,9 +117,7 @@ export default function Event() {
 
   function getEvent(eventID) {
     axios
-      .get(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetEvent/${eventID}`
-      )
+      .get(BASE_URL + `GetEvent/${eventID}`)
       .then((response) => {
         setSelectedEvent(response.data.result.result[0]);
         setSelectedEventBuffer(
@@ -148,10 +146,7 @@ export default function Event() {
     };
 
     axios
-      .post(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/sendEmail/${shareEmail}`,
-        event
-      )
+      .post(BASE_URL + `sendEmail/${shareEmail}`, event)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
         setShareEmail('');
@@ -283,10 +278,7 @@ export default function Event() {
     };
 
     axios
-      .post(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateEvent/${event_id}`,
-        event
-      )
+      .post(BASE_URL + `UpdateEvent/${event_id}`, event)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
       })
@@ -415,7 +407,7 @@ export default function Event() {
               borderRadius: '3px',
             }}
             value={selectedEvent.duration}
-            //value={eventDuration}
+            placeholder="00:00:00"
             onChange={(e) => {
               setSelectedEvent({
                 ...selectedEvent,
@@ -451,6 +443,7 @@ export default function Event() {
               borderRadius: '3px',
             }}
             value={selectedEventBuffer.before.time}
+            placeholder="00:00:00"
             onChange={(e) => {
               if (e.target.value < 0) return;
               setSelectedEventBuffer({
@@ -489,6 +482,7 @@ export default function Event() {
               borderRadius: '3px',
             }}
             value={selectedEventBuffer.after.time}
+            placeholder="00:00:00"
             onChange={(e) => {
               if (e.target.value < 0) return;
               setSelectedEventBuffer({
@@ -571,7 +565,7 @@ export default function Event() {
       user_id: `${selectedUser}`,
       view_id: viewID,
       event_name: eventName,
-      duration: d,
+      duration: eventDuration,
       location: eventLocation,
       buffer_time: {
         before: {
@@ -586,10 +580,7 @@ export default function Event() {
     };
 
     axios
-      .post(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AddEvent',
-        event
-      )
+      .post(BASE_URL + 'AddEvent', event)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
         setEventName('');
@@ -703,6 +694,7 @@ export default function Event() {
               borderRadius: '3px',
             }}
             value={eventDuration}
+            placeholder="00:00:00"
             onChange={(e) => setEventDuration(e.target.value)}
           />
           <Typography className={classes.colHeader}>
@@ -730,6 +722,7 @@ export default function Event() {
               borderRadius: '3px',
             }}
             value={beforeBufferTime}
+            placeholder="00 min"
             onChange={(e) => setBeforeBufferTime(e.target.value)}
           />
           <div>
@@ -752,6 +745,7 @@ export default function Event() {
               border: '2px solid #636366',
               borderRadius: '3px',
             }}
+            placeholder="00 min"
             value={afterBufferTime}
             onChange={(e) => setAfterBufferTime(e.target.value)}
           />
@@ -889,18 +883,18 @@ export default function Event() {
                             }}
                           >
                             <div>
-                              {Number(event.duration.substring(0, 1)) > 1
-                                ? event.duration.substring(2, 4) !== '59'
-                                  ? Number(event.duration.substring(0, 1)) +
+                              {Number(event.duration.substring(0, 2)) > '01'
+                                ? event.duration.substring(3, 5) !== '59'
+                                  ? Number(event.duration.substring(0, 2)) +
                                     ' hrs ' +
-                                    Number(event.duration.substring(2, 4)) +
+                                    Number(event.duration.substring(3, 5)) +
                                     ' min'
-                                  : Number(event.duration.substring(0, 1)) +
+                                  : Number(event.duration.substring(0, 2)) +
                                     1 +
                                     ' hrs'
-                                : Number(event.duration.substring(0, 1)) == 1
+                                : Number(event.duration.substring(0, 2)) == '01'
                                 ? '60 min'
-                                : event.duration.substring(2, 4) + ' min'}
+                                : event.duration.substring(3, 5) + ' min'}
                             </div>
                             <div>
                               Location:{' '}

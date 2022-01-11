@@ -105,40 +105,35 @@ function SocialLogin(props) {
             setNewFName(fn);
             setNewLName(ln);
             setSocialId(si);
-            axios
-              .get(
-                'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetEmailId/' +
-                  e
-              )
-              .then((response) => {
-                console.log(response.data);
-                if (response.data.message === 'User EmailID doesnt exist') {
-                  setSocialSignUpModalShow(!socialSignUpModalShow);
-                } else {
-                  console.log('ACCESS', accessToken);
-                  document.cookie = 'user_uid=' + response.data.result;
-                  document.cookie = 'user_email=' + e;
-                  document.cookie = 'user_access=' + accessToken.toString();
-                  setLoggedIn(true);
-                  loginContext.setLoginState({
-                    ...loginContext.loginState,
-                    loggedIn: true,
-                    user: {
-                      ...loginContext.loginState.user,
-                      id: response.data.result.toString(),
-                      email: e.toString(),
-                      user_access: accessToken.toString(),
-                    },
-                  });
-                  history.push({
-                    pathname: '/schedule',
-                    state: {
-                      email: e.toString(),
-                      accessToken: accessToken.toString(),
-                    },
-                  });
-                }
-              });
+            axios.get(BASE_URL + 'GetEmailId/' + e).then((response) => {
+              console.log(response.data);
+              if (response.data.message === 'User EmailID doesnt exist') {
+                setSocialSignUpModalShow(!socialSignUpModalShow);
+              } else {
+                console.log('ACCESS', accessToken);
+                document.cookie = 'user_uid=' + response.data.result;
+                document.cookie = 'user_email=' + e;
+                document.cookie = 'user_access=' + accessToken.toString();
+                setLoggedIn(true);
+                loginContext.setLoginState({
+                  ...loginContext.loginState,
+                  loggedIn: true,
+                  user: {
+                    ...loginContext.loginState.user,
+                    id: response.data.result.toString(),
+                    email: e.toString(),
+                    user_access: accessToken.toString(),
+                  },
+                });
+                history.push({
+                  pathname: '/schedule',
+                  state: {
+                    email: e.toString(),
+                    accessToken: accessToken.toString(),
+                  },
+                });
+              }
+            });
           })
           .catch((error) => {
             console.log('its in landing page');
@@ -165,10 +160,7 @@ function SocialLogin(props) {
 
   const _socialLoginAttempt = (email, accessToken, socialId) => {
     axios
-      .get(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialLogin/' +
-          email
-      )
+      .get(BASE_URL + 'UserSocialLogin/' + email)
       .then((res) => {
         console.log(res);
         if (res.data.result !== false) {
@@ -231,19 +223,16 @@ function SocialLogin(props) {
 
   const handleSocialSignUpDone = () => {
     axios
-      .post(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialSignUp',
-        {
-          email_id: newEmail,
-          first_name: newFName,
-          last_name: newLName,
-          time_zone: '',
-          google_auth_token: accessToken,
-          google_refresh_token: refreshToken,
-          social_id: socialId,
-          access_expires_in: accessExpiresIn,
-        }
-      )
+      .post(BASE_URL + 'UserSocialSignUp', {
+        email_id: newEmail,
+        first_name: newFName,
+        last_name: newLName,
+        time_zone: '',
+        google_auth_token: accessToken,
+        google_refresh_token: refreshToken,
+        social_id: socialId,
+        access_expires_in: accessExpiresIn,
+      })
       .then((response) => {
         console.log(response);
         hideSignUp();

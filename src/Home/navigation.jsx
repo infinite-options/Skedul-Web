@@ -8,6 +8,7 @@ import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import Logo from '../images/Logo.svg';
 import LoginContext from '../LoginContext';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
@@ -100,7 +101,6 @@ export function Navigation() {
   console.log(loginContext.loginState.user.user_access);
   var selectedUser = loginContext.loginState.user.user_uid;
   var accessT = loginContext.loginState.user.user_access;
-  
 
   return (
     <>
@@ -112,19 +112,13 @@ export function Navigation() {
                 className={classes.titleElement}
                 style={{ textAlign: 'left' }}
               >
-                <ThemeProvider theme={headingFont}>
-                  <Typography
-                    style={{
-                      fontSize: '32px',
-                      font: 'normal normal normal 32px/39px Prohibition',
-                    }}
-                    onClick={() => {
-                      history.push('/schedule');
-                    }}
-                  >
-                    SCHEDULER
-                  </Typography>
-                </ThemeProvider>
+                <img
+                  src={Logo}
+                  alt="logo"
+                  onClick={() => {
+                    history.push('/schedule');
+                  }}
+                />
               </Box>
             </div>
           </div>
@@ -200,11 +194,24 @@ export function Navigation() {
                   Help
                 </Button>
                 <Button
+                  className={
+                    isActive === 'account'
+                      ? `${classes.activeButtonSelection}`
+                      : `${classes.buttonSelection}`
+                  }
+                  onClick={() => {
+                    history.push('/account');
+                    setActive('account');
+                  }}
+                >
+                  Account
+                </Button>
+                <Button
                   className={classes.myButton}
                   onClick={(e) => {
                     document.cookie = 'user_uid=1;max-age=0';
                     document.cookie = 'user_email=1;max-age=0';
-                    document.cookie = 'user_access=1;max-age=0' ;
+                    document.cookie = 'user_access=1;max-age=0';
                     loginContext.setLoginState({
                       ...loginContext.loginState,
                       loggedIn: false,
@@ -212,7 +219,7 @@ export function Navigation() {
                         ...loginContext.loginState.ta,
                         id: '',
                         email: '',
-                        user_access:''
+                        user_access: '',
                       },
                     });
                     history.push('/');

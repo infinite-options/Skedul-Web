@@ -64,16 +64,13 @@ export default function Login() {
 
   const handleSignUpDone = () => {
     axios
-      .post(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSignUp',
-        {
-          email_id: newEmail,
-          password: newPassword,
-          first_name: newFName,
-          last_name: newLName,
-          time_zone: moment.tz.guess(),
-        }
-      )
+      .post(BASE_URL + 'UserSignUp', {
+        email_id: newEmail,
+        password: newPassword,
+        first_name: newFName,
+        last_name: newLName,
+        time_zone: moment.tz.guess(),
+      })
       .then((response) => {
         console.log(response.data);
         hideSignUp();
@@ -85,14 +82,11 @@ export default function Login() {
   };
   const handleSocialSignUpDone = () => {
     axios
-      .post(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserSocialSignUp',
-        {
-          email_id: newEmail,
-          first_name: newFName,
-          last_name: newLName,
-        }
-      )
+      .post(BASE_URL + 'UserSocialSignUp', {
+        email_id: newEmail,
+        first_name: newFName,
+        last_name: newLName,
+      })
       .then((response) => {
         console.log(response.data);
         hideSignUp();
@@ -187,7 +181,6 @@ export default function Login() {
       </Modal>
     );
   };
-
 
   return (
     <Box

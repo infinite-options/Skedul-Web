@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
@@ -8,7 +8,7 @@ const useStyles = makeStyles({
     backgroundColor: '#F3F3F8',
   },
 });
-export default function Help() {
+export default function Account() {
   const classes = useStyles();
-  return <div className={classes.container}>Help</div>;
+  return <div className={classes.container}>Account</div>;
 }

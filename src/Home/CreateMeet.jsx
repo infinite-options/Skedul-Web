@@ -12,6 +12,8 @@ import {
   publishTheCalenderEvent,
 } from './GoogleApiService';
 
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
+
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
@@ -51,6 +53,8 @@ const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 
 export default function CreateMeet() {
   const classes = useStyles();
+  const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [viewColor, setViewColor] = useState('');
   const [viewID, setViewID] = useState('');
@@ -72,8 +76,11 @@ export default function CreateMeet() {
   const [endTime, setEndTime] = useState('');
 
   const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userID, setUserID] = useState('');
 
   const [showCreateNewMeetModal, setShowCreateNewMeetModal] = useState(false);
   const [meetName, setMeetName] = useState('');
@@ -87,7 +94,7 @@ export default function CreateMeet() {
 
   const [signedin, setSignedIn] = useState(false);
   const [googleAuthedEmail, setgoogleAuthedEmail] = useState('');
-
+  const [googleAuthedName, setgoogleAuthedName] = useState('');
   let curURL = window.location.href;
   const eventID = curURL.substring(curURL.length - 10);
   useEffect(() => {
@@ -99,10 +106,16 @@ export default function CreateMeet() {
   }, []);
 
   const getGoogleAuthorizedEmail = async () => {
-    let email = await getSignedInUserEmail();
-    if (email) {
+    let profile = [];
+    profile = await getSignedInUserEmail();
+    console.log(profile);
+
+    if (profile) {
       setSignedIn(true);
+      let email = profile[0];
+      let fullName = profile[1];
       setgoogleAuthedEmail(email);
+      setgoogleAuthedName(fullName);
       setShowDays(true);
     }
   };
@@ -113,9 +126,9 @@ export default function CreateMeet() {
     }
     console.log('booknowbtn', successfull);
   };
-  console.log(googleAuthedEmail);
+  console.log(googleAuthedEmail, googleAuthedName);
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetEvent/${eventID}`;
+    const url = BASE_URL + `GetEvent/${eventID}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -123,10 +136,9 @@ export default function CreateMeet() {
         setSelectedEvent(json.result.result[0]);
         let viewID = json.result.result[0].view_id;
         let userID = json.result.result[0].user_id;
+        setUserID(userID);
         axios
-          .get(
-            `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
-          )
+          .get(BASE_URL + `GetView/${viewID}`)
           .then((response) => {
             let schedule = JSON.parse(response.data.result.result[0].schedule);
             setSelectedView(response.data.result.result[0]);
@@ -139,14 +151,16 @@ export default function CreateMeet() {
           });
 
         axios
-          .get(
-            `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UserDetails/${userID}`
-          )
+          .get(BASE_URL + `UserDetails/${userID}`)
           .then((response) => {
             console.log(response.data);
             setAccessToken(response.data.google_auth_token);
+            setRefreshToken(response.data.google_refresh_token);
             setSelectedUser(response.data.user_unique_id);
             setUserEmail(response.data.user_email_id);
+            setUserName(
+              response.data.user_first_name + '' + response.data.user_last_name
+            );
           })
           .catch((error) => {
             console.log(error);
@@ -166,7 +180,8 @@ export default function CreateMeet() {
     if (timeSelected) {
       axios
         .get(
-          'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AvailableAppointments/' +
+          BASE_URL +
+            'AvailableAppointments/' +
             dateString +
             '/' +
             duration +
@@ -192,6 +207,72 @@ export default function CreateMeet() {
   });
   useEffect(() => {
     if (timeSelected) {
+      var old_at = accessToken;
+      console.log('in events', old_at);
+      fetch(
+        `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
+        {
+          method: 'GET',
+        }
+      ).then((response) => {
+        console.log('in events', response);
+        if (response['status'] === 400) {
+          console.log('in events if');
+          let authorization_url = 'https://accounts.google.com/o/oauth2/token';
+
+          var details = {
+            refresh_token: refreshToken,
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+            grant_type: 'refresh_token',
+          };
+
+          var formBody = [];
+          for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + '=' + encodedValue);
+          }
+          formBody = formBody.join('&');
+
+          fetch(authorization_url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            },
+            body: formBody,
+          })
+            .then((response) => {
+              return response.json();
+            })
+            .then((responseData) => {
+              console.log(responseData);
+              return responseData;
+            })
+            .then((data) => {
+              console.log(data);
+              let at = data['access_token'];
+              setAccessToken(at);
+              console.log('in events', at);
+              let url = BASE_URL + `UpdateAccessToken/${userID}`;
+              axios
+                .post(url, {
+                  google_auth_token: at,
+                })
+                .then((response) => {})
+                .catch((err) => {
+                  console.log(err);
+                });
+              return accessToken;
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          setAccessToken(old_at);
+          console.log(old_at);
+        }
+      });
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -302,9 +383,7 @@ export default function CreateMeet() {
 
   function getView() {
     axios
-      .get(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
-      )
+      .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
         console.log(JSON.parse(response.data.result.result[0].schedule));
         let schedule = JSON.parse(response.data.result.result[0].schedule);
@@ -357,10 +436,7 @@ export default function CreateMeet() {
     };
 
     axios
-      .post(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AddMeeting',
-        meeting
-      )
+      .post(BASE_URL + 'AddMeeting', meeting)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
       })
@@ -504,20 +580,34 @@ export default function CreateMeet() {
           <Typography className={classes.colHeader}> Event Type </Typography>
           <Row style={colHeader}>
             {eventName}-
-            {Number(duration.substring(0, 1)) > 1
-              ? duration.substring(2, 4) !== '59'
-                ? Number(duration.substring(0, 1)) +
+            {Number(duration.substring(0, 2)) > '01'
+              ? duration.substring(3, 5) !== '59'
+                ? Number(duration.substring(0, 2)) +
                   ' hours ' +
-                  Number(duration.substring(2, 4)) +
+                  Number(duration.substring(3, 5)) +
                   ' minutes'
-                : Number(duration.substring(0, 1)) + 1 + ' hours'
-              : Number(duration.substring(0, 1)) == 1
+                : Number(duration.substring(0, 2)) + 1 + ' hours'
+              : Number(duration.substring(0, 2)) == '01'
               ? '60 minutes'
-              : duration.substring(2, 4) + ' minutes'}
+              : duration.substring(3, 5) + ' minutes'}
             meeting
           </Row>
 
-          <Typography className={classes.colHeader}> Email </Typography>
+          <Typography className={classes.colHeader}> Guests </Typography>
+          <Typography>{googleAuthedName}</Typography>
+          <Typography>{userName}</Typography>
+          <div
+            style={{
+              padding: '0',
+              backgroundColor: 'inherit',
+              color: '#636366',
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+            onClick={() => handleAdd()}
+          >
+            + Add Guests
+          </div>
           <Row style={colHeader}>
             {attendees.map((field, idx) => {
               return (
@@ -529,23 +619,10 @@ export default function CreateMeet() {
                     borderRadius: '3px',
                   }}
                   type="text"
-                  defaultValue={userEmail}
                   onChange={(e) => handleChange(idx, e)}
                 />
               );
             })}
-            <div
-              style={{
-                padding: '0',
-                backgroundColor: 'inherit',
-                color: '#636366',
-                textAlign: 'right',
-                cursor: 'pointer',
-              }}
-              onClick={() => handleAdd()}
-            >
-              + Add Guests
-            </div>
           </Row>
           <Typography className={classes.colHeader}> Location </Typography>
           <Row style={colHeader}>
@@ -981,18 +1058,18 @@ export default function CreateMeet() {
               }}
             >
               <div>
-                {Number(selectedEvent.duration.substring(0, 1)) > 1
-                  ? selectedEvent.duration.substring(2, 4) !== '59'
-                    ? Number(selectedEvent.duration.substring(0, 1)) +
+                {Number(selectedEvent.duration.substring(0, 2)) > 1
+                  ? selectedEvent.duration.substring(3, 5) !== '59'
+                    ? Number(selectedEvent.duration.substring(0, 2)) +
                       ' hrs ' +
-                      Number(selectedEvent.duration.substring(2, 4)) +
+                      Number(selectedEvent.duration.substring(3, 5)) +
                       ' min'
-                    : Number(selectedEvent.duration.substring(0, 1)) +
+                    : Number(selectedEvent.duration.substring(0, 2)) +
                       1 +
                       ' hrs'
-                  : Number(selectedEvent.duration.substring(0, 1)) == 1
+                  : Number(selectedEvent.duration.substring(0, 2)) == 1
                   ? '60 min'
-                  : selectedEvent.duration.substring(2, 4) + ' min'}
+                  : selectedEvent.duration.substring(3, 5) + ' min'}
               </div>
               <div>
                 Location:{' '}

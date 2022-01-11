@@ -57,7 +57,8 @@ export const getSignedInUserEmail = async () => {
     if (status) {
       var auth2 = gapi.auth2.getAuthInstance();
       var profile = auth2.currentUser.get().getBasicProfile();
-      return profile.getEmail();
+      console.log(profile);
+      return [profile.getEmail(), profile.getName()];
     } else {
       return null;
     }

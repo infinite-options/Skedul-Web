@@ -7,6 +7,8 @@ import { Typography, Button } from '@material-ui/core';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
 import DropDown from '../images/dropDown.svg';
 
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
+
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
@@ -89,7 +91,6 @@ function Views() {
   const [allSchedule, setAllSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updated, setUpdated] = useState(false);
-  const [created, setCreated] = useState(false);
   const [selectedView, setSelectedView] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
   const [viewName, setViewName] = useState('');
@@ -133,7 +134,7 @@ function Views() {
   }
   console.log('selecteduser', selectedUser);
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/${selectedUser}`;
+    const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -145,7 +146,7 @@ function Views() {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetSchedule/${selectedUser}`;
+    const url = BASE_URL + `GetSchedule/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -157,7 +158,11 @@ function Views() {
 
   useEffect(() => {
     if (allSchedule != undefined) {
-      if (allViews.length !== 0 || allSchedule.length !== 0) {
+      if (
+        allSchedule.length !== 0 ||
+        allViews.length !== 0 ||
+        selectedSchedule.length !== 0
+      ) {
         setIsLoading(false);
       }
     }
@@ -166,9 +171,7 @@ function Views() {
 
   function getView(viewID) {
     axios
-      .get(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetView/${viewID}`
-      )
+      .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
         let schedule = JSON.parse(response.data.result.result[0].schedule);
         setSelectedView(response.data.result.result[0]);
@@ -393,211 +396,7 @@ function Views() {
             ))}
           </tr>
         </thead>
-        <tbody style={{ borderLeft: '1px solid #636366' }}>
-          {/* {allSchedule['sunday'].map((schedule) => {
-            return (
-              <tr
-                style={{
-                  borderLeft: '1px solid #636366',
-                  //height: '2.9rem',
-                }}
-              >
-                {console.log(schedule, allSchedule['sunday'], allSchedule)}
-                {arr.map((item) => (
-                  <td
-                    style={{
-                      padding: '5px',
-
-                      backgroundColor: getBackgroundColorAll(
-                        item,
-                        schedule.schedule,
-                        schedule.color
-                      ),
-                      borderLeft: '1px solid #636366',
-                    }}
-                  >
-                    {item}
-                  </td>
-                ))}
-              </tr>
-            );
-          })} */}
-          {/* <tr
-            style={{
-              borderLeft: '1px solid #636366',
-              height: '2.9rem',
-            }}
-          >
-            {console.log(allSchedule['sunday'], allSchedule)}
-            {arr.map((item) => (
-              <td
-                style={{
-                  width: '5rem',
-                  padding: '5px',
-                  // backgroundColor: `${allSchedule['sunday'].map((schedule) =>
-                  //   getBackgroundColorAll(
-                  //     item,
-                  //     schedule.schedule,
-                  //     schedule.color
-                  //   )
-                  // )}`,
-                  backgroundColor: getBackgroundColorAll(
-                    item,
-                    `${allSchedule['sunday'].map(
-                      (schedule) => schedule.schedule
-                    )}`,
-                    'red'
-                  ),
-                  borderLeft: '1px solid #636366',
-                }}
-              ></td>
-            ))}
-          </tr> */}
-          {/* {allSchedule.map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          JSON.parse(schedule.schedule).Monday,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })}
-            {allSchedule.map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          JSON.parse(schedule.schedule).Tuesday,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })}
-            {allSchedule.map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          JSON.parse(schedule.schedule).Wednesday,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })}
-            {allSchedule.map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          JSON.parse(schedule.schedule).Thursday,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })}
-            {allSchedule.map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          JSON.parse(schedule.schedule).Friday,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })}
-            {allSchedule.map((schedule) => {
-              return (
-                <tr
-                  style={{
-                    borderLeft: '1px solid #636366',
-                    height: '2.9rem',
-                  }}
-                >
-                  {arr.map((item) => (
-                    <td
-                      style={{
-                        padding: '5px',
-                        backgroundColor: getBackgroundColorAll(
-                          item,
-                          JSON.parse(schedule.schedule).Saturday,
-                          schedule.color
-                        ),
-                        borderLeft: '1px solid #636366',
-                      }}
-                    ></td>
-                  ))}
-                </tr>
-              );
-            })} */}
-        </tbody>
+        <tbody style={{ borderLeft: '1px solid #636366' }}></tbody>
       </table>
     );
   };
@@ -648,40 +447,6 @@ function Views() {
     return color;
   }
 
-  function getBackgroundColorAll(i, day, col) {
-    let color;
-    let result = [];
-    //console.log(JSON.stringify(day));
-    result = range(
-      Number(day.start_time.slice(0, -3)),
-      Number(day.end_time.slice(0, -3))
-    );
-    // day.map((item) => {
-    //   console.log(item);
-    //   item.start_time.slice(0, -3) === '' || item.end_time.slice(0, -3) === ''
-    //     ? (color = '')
-    //     : Number(item.start_time.slice(0, -3)) <=
-    //         Number(convertTime12to24(i).slice(0, -3)) &&
-    //       Number(convertTime12to24(i).slice(0, -3)) <=
-    //         Number(item.end_time.slice(0, -3))
-    //     ? //(color = `${selectedView.color}`),
-    //       (result = range(
-    //         Number(item.start_time.slice(0, -3)),
-    //         Number(item.end_time.slice(0, -3))
-    //       ))
-    //     : (color = '');
-    // });
-    //console.log(result);
-    for (var j = 0; j < result.length; j++)
-      if (result[j] === Number(convertTime12to24(i).slice(0, -3))) {
-        //console.log('in if', col);
-        color = col;
-        return color;
-        //console.log('in if', color);
-      }
-
-    return color;
-  }
   //popover open and close
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -1068,15 +833,11 @@ function Views() {
     };
 
     axios
-      .post(
-        'https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/AddView',
-        event
-      )
+      .post(BASE_URL + 'AddView', event)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
         setViewName('');
         setViewColor('');
-        setCreated(true);
         setShowUpdateButton(true);
       })
       .catch((error) => {
@@ -1098,10 +859,7 @@ function Views() {
     };
 
     axios
-      .post(
-        `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateView/${view.view_unique_id}`,
-        event
-      )
+      .post(BASE_URL + `UpdateView/${view.view_unique_id}`, event)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
       })

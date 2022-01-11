@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-
-import { useHistory, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
-import { Typography, Button } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import moment from 'moment';
-import { extendMoment } from 'moment-range';
-import Grid from '@material-ui/core/Grid';
 import LoginContext from '../LoginContext';
 import Bookmark from '../images/bookmark.svg';
-import trash from '../images/Trash.png';
+
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
+
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
@@ -79,7 +76,7 @@ export default function Schedule(props) {
   console.log('selecteduser', selectedUser);
 
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllViews/${selectedUser}`;
+    const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -91,7 +88,7 @@ export default function Schedule(props) {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAllEventsUser/${selectedUser}`;
+    const url = BASE_URL + `GetAllEventsUser/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -102,7 +99,7 @@ export default function Schedule(props) {
   }, [refreshKey]);
 
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetSchedule/${selectedUser}`;
+    const url = BASE_URL + `GetSchedule/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -112,7 +109,7 @@ export default function Schedule(props) {
       .catch((error) => console.log(error));
   }, [refreshKey]);
   useEffect(() => {
-    const url = `https://pi4chbdo50.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetMeeting/${selectedUser}`;
+    const url = BASE_URL + `GetMeeting/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -313,11 +310,6 @@ export default function Schedule(props) {
   const getScheduleItemFromDic = (day, hour, dic) => {
     let today = new Date();
     let dateNew = moment(today);
-    let startDate = dateNew.startOf('week');
-    let startDay = startDate.format('dddd');
-    let endDate = dateNew.add(11, 'days');
-    let endDay = endDate.format('dddd');
-
     var res = [];
     var unique = [];
     var tempStart = null;
@@ -431,10 +423,6 @@ export default function Schedule(props) {
   const getMeetItemFromDic = (day, hour, dic) => {
     let today = new Date();
     let dateNew = moment(today);
-    let startDate = dateNew.startOf('week');
-    let startDay = startDate.format('dddd');
-    let endDate = dateNew.add(11, 'days');
-    let endDay = endDate.format('dddd');
 
     var res = [];
     var unique = [];
@@ -690,26 +678,27 @@ export default function Schedule(props) {
                                   }}
                                 >
                                   <div>
-                                    {Number(event.duration.substring(0, 1)) > 1
-                                      ? event.duration.substring(2, 4) !== '59'
+                                    {Number(event.duration.substring(0, 2)) >
+                                    '01'
+                                      ? event.duration.substring(3, 5) !== '59'
                                         ? Number(
-                                            event.duration.substring(0, 1)
+                                            event.duration.substring(0, 2)
                                           ) +
                                           ' hrs ' +
                                           Number(
-                                            event.duration.substring(2, 4)
+                                            event.duration.substring(3, 5)
                                           ) +
                                           ' min'
                                         : Number(
-                                            event.duration.substring(0, 1)
+                                            event.duration.substring(0, 2)
                                           ) +
                                           1 +
                                           ' hrs'
                                       : Number(
-                                          event.duration.substring(0, 1)
-                                        ) == 1
+                                          event.duration.substring(0, 2)
+                                        ) == '01'
                                       ? '60 min'
-                                      : event.duration.substring(2, 4) + ' min'}
+                                      : event.duration.substring(3, 5) + ' min'}
                                   </div>
                                   <div>
                                     Location:{' '}

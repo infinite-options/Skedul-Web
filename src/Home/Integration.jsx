@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
+
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#F3F3F8',
