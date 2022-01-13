@@ -6,7 +6,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Typography, Button } from '@material-ui/core';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
 import DropDown from '../images/dropDown.svg';
-
+import Trash from '../images/Trash.svg';
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 const useStyles = makeStyles({
@@ -179,6 +179,19 @@ function Views() {
         setSelectedView(response.data.result.result[0]);
         setSelectedSchedule(schedule);
         setUpdated(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  function deleteView(viewID) {
+    var deleteV = {
+      view_id: viewID,
+    };
+    axios
+      .post(BASE_URL + 'DeleteView', deleteV)
+      .then((response) => {
+        setRefreshKey((oldKey) => oldKey + 1);
       })
       .catch((error) => {
         console.log(error);
@@ -2409,15 +2422,31 @@ function Views() {
                 >
                   <div
                     style={{
-                      background: `${view.color} 0% 0% no-repeat padding-box`,
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
                       color: '2C2C2E',
                       fontWeight: 'bold',
                       border: 'none',
                       padding: '5px',
+                      background: `${view.color} 0% 0% no-repeat padding-box`,
                       font: 'normal normal bold 20px/24px SF Pro Display',
                     }}
                   >
-                    {view.view_name}
+                    {view.view_name}&nbsp;&nbsp;
+                    <div
+                      style={{
+                        width: '13px',
+                        height: '13px',
+                        padding: '5px',
+                        margin: '5px 0',
+                        backgroundImage: `url(${Trash})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => deleteView(view.view_unique_id)}
+                    ></div>
                   </div>
                 </div>
               );

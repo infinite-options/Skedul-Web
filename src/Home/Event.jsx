@@ -7,6 +7,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Bookmark from '../images/bookmark.svg';
 import Edit from '../images/edit.svg';
 import Copy from '../images/copy.svg';
+import Trash from '../images/Trash.svg';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -123,6 +124,20 @@ export default function Event() {
         setSelectedEventBuffer(
           JSON.parse(response.data.result.result[0].buffer_time)
         );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function deleteEvent(eventID) {
+    var deleteE = {
+      event_id: eventID,
+    };
+    axios
+      .post(BASE_URL + 'DeleteEvent', deleteE)
+      .then((response) => {
+        setRefreshKey((oldKey) => oldKey + 1);
       })
       .catch((error) => {
         console.log(error);
@@ -931,9 +946,22 @@ export default function Event() {
                             >
                               View booking page
                             </Col>
-                            <Col xs={2}>
+                            <Col
+                              xs={3}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'flex-start',
+                              }}
+                            >
                               <img
                                 src={Edit}
+                                style={{
+                                  width: '13px',
+                                  height: '13px',
+                                  cursor: 'pointer',
+                                  marginRight: '5px',
+                                }}
                                 onClick={() => {
                                   openUpdateEventModal();
                                   setEventID(event.event_unique_id);
@@ -943,13 +971,26 @@ export default function Event() {
                                 }}
                                 alt="edit event"
                               />
+
+                              <img
+                                src={Trash}
+                                style={{
+                                  width: '13px',
+                                  height: '13px',
+                                  cursor: 'pointer',
+                                }}
+                                onClick={() => {
+                                  deleteEvent(event.event_unique_id);
+                                }}
+                                alt="edit event"
+                              />
                             </Col>
                           </Row>
                         </div>
                         <Row
                           style={{
                             marginLeft: '10px',
-                            padding: '10px 0px',
+                            padding: '13px 0px',
                             width: '213px',
                             height: '48px',
                             fontSize: '12px',
