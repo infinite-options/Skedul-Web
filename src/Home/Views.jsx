@@ -88,8 +88,9 @@ function Views() {
   const classes = useStyles();
   const [showCreateNewViewModal, setShowCreateNewViewModal] = useState(false);
   const [allViews, setAllViews] = useState([]);
-  const [allSchedule, setAllSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBusy, setBusy] = useState(true);
+  const [noViews, setNoViews] = useState(true);
   const [updated, setUpdated] = useState(false);
   const [selectedView, setSelectedView] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
@@ -139,37 +140,45 @@ function Views() {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        setSelectedView(json.result.result[0]);
-        setSelectedSchedule(JSON.parse(json.result.result[0].schedule));
-
-        setAllViews(json.result.result);
+        console.log(json.result.result[0]);
+        if (json.result.result[0] === undefined) {
+          setIsLoading(true);
+          setNoViews(true);
+        } else {
+          setSelectedView(json.result.result[0]);
+          setSelectedSchedule(JSON.parse(json.result.result[0].schedule));
+          setAllViews(json.result.result);
+          setBusy(false);
+        }
       })
       .catch((error) => console.log(error));
   }, [refreshKey]);
+  console.log(isBusy, isLoading);
+  // useEffect(() => {
+  //   const url = BASE_URL + `GetSchedule/${selectedUser}`;
+  //   fetch(url)
+  //     .then((response) => response.json())
+  //     .then((json) => {
+  //       //console.log(json.result);
+  //       setAllSchedule(json.result);
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, [refreshKey]);
 
   useEffect(() => {
-    const url = BASE_URL + `GetSchedule/${selectedUser}`;
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        //console.log(json.result);
-        setAllSchedule(json.result);
-      })
-      .catch((error) => console.log(error));
-  }, [refreshKey]);
-
-  useEffect(() => {
-    if (allSchedule != undefined) {
+    if (selectedSchedule != undefined) {
       if (
-        allSchedule.length !== 0 &&
         allViews.length !== 0 &&
-        Object.values(selectedSchedule) !== null
+        Object.values(selectedSchedule) != undefined &&
+        Object.values(selectedSchedule) != null
       ) {
         setIsLoading(false);
+        setNoViews(false);
       }
     }
-    console.log(allViews, allSchedule, selectedView, selectedSchedule);
-  }, [allViews, allSchedule, selectedView, selectedSchedule, refreshKey]);
+
+    console.log(allViews, selectedView, selectedSchedule);
+  }, [allViews, selectedView, selectedSchedule, refreshKey]);
 
   function getView(viewID) {
     axios
@@ -488,6 +497,8 @@ function Views() {
   const saveViewOptions = () => {
     setShowCreateNewViewModal(false);
     setShowTimeInput(true);
+    setIsLoading(false);
+    setBusy(false);
     setShowUpdateButton(false);
   };
 
@@ -851,6 +862,7 @@ function Views() {
       .post(BASE_URL + 'AddView', event)
       .then((response) => {
         setRefreshKey((oldKey) => oldKey + 1);
+        setBusy(true);
         setViewName('');
         setViewColor('');
         setShowUpdateButton(true);
@@ -1105,7 +1117,7 @@ function Views() {
       </div>
       <div className={classes.title}>VIEWS</div>
       <div>
-        {allViews.length === 0 ? (
+        {allViews.length === 0 || noViews ? (
           <div>
             <Button
               className={classes.button}
@@ -1198,7 +1210,8 @@ function Views() {
       <Row className={classes.colData}>
         <Col>Pacific Time - US & Canada</Col>
       </Row>
-      {allViews.length === 0 && showTimeInput === false ? (
+      {(allViews.length === 0 && showTimeInput === false) ||
+      isLoading === true ? (
         <div className={classes.weekDiv}>
           <Row className={classes.colHeader}>
             <Col>
@@ -1342,892 +1355,215 @@ function Views() {
       ) : (
         <div className={classes.weekDiv}>
           <Row className={classes.colHeader}>
-            <Col>
-              <Row>
-                <Col>Days of the Week</Col>
-                <Col> Hours of the day</Col>
-              </Row>
-              {showUpdateButton === true ? (
+            {isBusy ? (
+              <Col>
+                <Row>
+                  <Col>Days of the Week</Col>
+                  <Col>Hours of the day</Col>
+                </Row>
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="sunday"
-                        checked={
-                          Object.values(selectedSchedule.Sunday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="sunday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="sunday">Sunday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Sunday).map(
-                      (field, idx) => {
-                        return (
-                          <div className={classes.colData}>
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleSundayRemoveUpdate(idx)}
-                            >
-                              -
-                            </button>{' '}
-                            &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="sunday"
-                              name="start_time"
-                              value={field.start_time}
-                              onChange={(e) => handleSundayUpdate(idx, e)}
-                            />
-                            &nbsp; - &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="sunday"
-                              name="end_time"
-                              value={field.end_time}
-                              onChange={(e) => handleSundayUpdate(idx, e)}
-                            />{' '}
-                            &nbsp;
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleSundayAddUpdate()}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
+                  <Col className={classes.colData}>Unavailable</Col>
                 </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="sunday">Sunday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {sundayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(sundayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleSundayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="sunday"
-                            name="start_time"
-                            onChange={(e) => handleSunday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="sunday"
-                            name="end_time"
-                            onChange={(e) => handleSunday(idx, e)}
-                          />{' '}
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleSundayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-              {showUpdateButton === true ? (
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="monday"
-                        checked={
-                          Object.values(selectedSchedule.Monday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="monday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="monday">Monday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Monday).map(
-                      (field, idx) => {
-                        return (
-                          <div className={classes.colData}>
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleMondayRemoveUpdate(idx)}
-                            >
-                              -
-                            </button>{' '}
-                            &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="monday"
-                              name="start_time"
-                              value={field.start_time}
-                              onChange={(e) => handleMondayUpdate(idx, e)}
-                            />
-                            &nbsp; - &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="monday"
-                              name="end_time"
-                              value={field.end_time}
-                              onChange={(e) => handleMondayUpdate(idx, e)}
-                            />{' '}
-                            &nbsp;
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleMondayAddUpdate()}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
+                  <Col className={classes.colData}>Unavailable</Col>
                 </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" id="monday" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="monday">Monday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {mondayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(mondayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleMondayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="monday"
-                            name="start_time"
-                            onChange={(e) => handleMonday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="monday"
-                            name="end_time"
-                            onChange={(e) => handleMonday(idx, e)}
-                          />
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleMondayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-              {showUpdateButton === true ? (
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="tuesday"
-                        checked={
-                          Object.values(selectedSchedule.Tuesday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="tuesday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="tuesday">Tuesday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Tuesday).map(
-                      (field, idx) => {
-                        return (
-                          <div className={classes.colData}>
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleTuesdayRemoveUpdate(idx)}
-                            >
-                              -
-                            </button>{' '}
-                            &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="tuesday"
-                              name="start_time"
-                              value={field.start_time}
-                              onChange={(e) => handleTuesdayUpdate(idx, e)}
-                            />
-                            &nbsp; - &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="tuesday"
-                              name="end_time"
-                              value={field.end_time}
-                              onChange={(e) => handleTuesdayUpdate(idx, e)}
-                            />{' '}
-                            &nbsp;
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleTuesdayAddUpdate()}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
+                  <Col className={classes.colData}>Unavailable</Col>
                 </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" id="tuesday" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="tuesday">Tuesday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {tuesdayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(tuesdayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleTuesdayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="tuesday"
-                            name="start_time"
-                            onChange={(e) => handleTuesday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="tuesday"
-                            name="end_time"
-                            onChange={(e) => handleTuesday(idx, e)}
-                          />{' '}
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleTuesdayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-              {showUpdateButton === true ? (
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="wednesday"
-                        checked={
-                          Object.values(selectedSchedule.Wednesday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="wednesday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="wednesday">Wednesday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Wednesday).map(
-                      (field, idx) => {
-                        return (
-                          <div className={classes.colData}>
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleWednesdayRemoveUpdate(idx)}
-                            >
-                              -
-                            </button>{' '}
-                            &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="wednesday"
-                              name="start_time"
-                              value={field.start_time}
-                              onChange={(e) => handleWednesdayUpdate(idx, e)}
-                            />
-                            &nbsp; - &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="wednesday"
-                              name="end_time"
-                              value={field.end_time}
-                              onChange={(e) => handleWednesdayUpdate(idx, e)}
-                            />{' '}
-                            &nbsp;
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleWednesdayAddUpdate()}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
+                  <Col className={classes.colData}>Unavailable</Col>
                 </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" id="wednesday" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="wednesday">Wednesday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {wednesdayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(wednesdayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleWednesdayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="wednesday"
-                            name="start_time"
-                            onChange={(e) => handleWednesday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="wednesday"
-                            name="end_time"
-                            onChange={(e) => handleWednesday(idx, e)}
-                          />{' '}
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleWednesdayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-              {showUpdateButton === true ? (
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="thursday"
-                        checked={
-                          Object.values(selectedSchedule.Thursday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="thursday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="thursday">Thursday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Thursday).map(
-                      (field, idx) => {
-                        return (
-                          <div className={classes.colData}>
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleThursdayRemoveUpdate(idx)}
-                            >
-                              -
-                            </button>{' '}
-                            &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="thursday"
-                              name="start_time"
-                              value={field.start_time}
-                              onChange={(e) => handleThursdayUpdate(idx, e)}
-                            />
-                            &nbsp; - &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="thursday"
-                              name="end_time"
-                              value={field.end_time}
-                              onChange={(e) => handleThursdayUpdate(idx, e)}
-                            />{' '}
-                            &nbsp;
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleThursdayAddUpdate()}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
+                  <Col className={classes.colData}>Unavailable</Col>
                 </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" id="thursday" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="thursday">Thursday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {thursdayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(thursdayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleThursdayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="thursday"
-                            name="start_time"
-                            onChange={(e) => handleThursday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="thursday"
-                            name="end_time"
-                            onChange={(e) => handleThursday(idx, e)}
-                          />{' '}
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleThursdayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-              {showUpdateButton === true ? (
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="friday"
-                        checked={
-                          Object.values(selectedSchedule.Friday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="friday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="friday">Friday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Friday).map(
-                      (field, idx) => {
-                        return (
-                          <div className={classes.colData}>
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleFridayRemoveUpdate(idx)}
-                            >
-                              -
-                            </button>{' '}
-                            &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="friday"
-                              name="start_time"
-                              value={field.start_time}
-                              onChange={(e) => handleFridayUpdate(idx, e)}
-                            />
-                            &nbsp; - &nbsp;
-                            <input
-                              className={classes.colDataTime}
-                              type="time"
-                              id="friday"
-                              name="end_time"
-                              value={field.end_time}
-                              onChange={(e) => handleFridayUpdate(idx, e)}
-                            />{' '}
-                            &nbsp;
-                            <button
-                              style={{
-                                padding: '0px',
-                                margin: '0px',
-                                width: '20px',
-                                height: '25px',
-                                border: '1px solid #2C2C2E',
-                                borderRadius: ' 2px',
-                                backgroundColor: '#F3F3F8',
-                              }}
-                              onClick={() => handleFridayAddUpdate()}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
+                  <Col className={classes.colData}>Unavailable</Col>
                 </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" id="friday" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="friday">Friday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {fridayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(fridayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleFridayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="friday"
-                            name="start_time"
-                            onChange={(e) => handleFriday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="friday"
-                            name="end_time"
-                            onChange={(e) => handleFriday(idx, e)}
-                          />{' '}
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleFridayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-              {showUpdateButton === true ? (
                 <Row>
                   <Col>
                     <div className={classes.colData}>
                       <input
                         type="checkbox"
                         id="saturday"
-                        checked={
-                          Object.values(selectedSchedule.Saturday)[0]
-                            .start_time === ''
-                            ? ''
-                            : 'checked'
-                        }
+                        //value="saturday"
+                        disabled
                       />
                       &nbsp;&nbsp;
                       <label htmlFor="saturday">Saturday</label>
                     </div>
                   </Col>
-                  <Col>
-                    {Object.values(selectedSchedule.Saturday).map(
-                      (saturday, idx) => {
+                  <Col className={classes.colData}>Unavailable</Col>
+                </Row>
+              </Col>
+            ) : (
+              <Col>
+                <Row>
+                  <Col>Days of the Week</Col>
+                  <Col> Hours of the day</Col>
+                </Row>
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="sunday"
+                          checked={
+                            Object.values(selectedSchedule.Sunday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="sunday">Sunday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Sunday).map(
+                        (field, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleSundayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="sunday"
+                                name="start_time"
+                                value={field.start_time}
+                                onChange={(e) => handleSundayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="sunday"
+                                name="end_time"
+                                value={field.end_time}
+                                onChange={(e) => handleSundayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleSundayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="sunday">Sunday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {sundayFields.map((field, idx) => {
                         return (
                           <div className={classes.colData}>
+                            {console.log(sundayFields)}
                             <button
                               style={{
                                 padding: '0px',
@@ -2238,7 +1574,7 @@ function Views() {
                                 borderRadius: ' 2px',
                                 backgroundColor: '#F3F3F8',
                               }}
-                              onClick={() => handleSaturdayRemoveUpdate(idx)}
+                              onClick={() => handleSundayRemove(idx)}
                             >
                               -
                             </button>{' '}
@@ -2246,19 +1582,17 @@ function Views() {
                             <input
                               className={classes.colDataTime}
                               type="time"
-                              id="saturday"
+                              id="sunday"
                               name="start_time"
-                              value={saturday.start_time || ''}
-                              onChange={(e) => handleSaturdayUpdate(idx, e)}
+                              onChange={(e) => handleSunday(idx, e)}
                             />
                             &nbsp; - &nbsp;
                             <input
                               className={classes.colDataTime}
                               type="time"
-                              id="saturday"
+                              id="sunday"
                               name="end_time"
-                              value={saturday.end_time || ''}
-                              onChange={(e) => handleSaturdayUpdate(idx, e)}
+                              onChange={(e) => handleSunday(idx, e)}
                             />{' '}
                             &nbsp;
                             <button
@@ -2271,85 +1605,879 @@ function Views() {
                                 borderRadius: ' 2px',
                                 backgroundColor: '#F3F3F8',
                               }}
-                              onClick={() => handleSaturdayAddUpdate()}
+                              onClick={() => handleSundayAdd()}
                             >
                               +
                             </button>
                           </div>
                         );
-                      }
-                    )}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className={classes.colData}>
-                      <input type="checkbox" id="saturday" checked={''} />
-                      &nbsp;&nbsp;
-                      <label htmlFor="saturday">Saturday</label>
-                    </div>
-                  </Col>
-                  <Col>
-                    {saturdayFields.map((field, idx) => {
-                      return (
-                        <div className={classes.colData}>
-                          {console.log(saturdayFields)}
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleSaturdayRemove(idx)}
-                          >
-                            -
-                          </button>{' '}
-                          &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="saturday"
-                            name="start_time"
-                            onChange={(e) => handleSaturday(idx, e)}
-                          />
-                          &nbsp; - &nbsp;
-                          <input
-                            className={classes.colDataTime}
-                            type="time"
-                            id="saturday"
-                            name="end_time"
-                            onChange={(e) => handleSaturday(idx, e)}
-                          />{' '}
-                          &nbsp;
-                          <button
-                            style={{
-                              padding: '0px',
-                              margin: '0px',
-                              width: '20px',
-                              height: '25px',
-                              border: '1px solid #2C2C2E',
-                              borderRadius: ' 2px',
-                              backgroundColor: '#F3F3F8',
-                            }}
-                            onClick={() => handleSaturdayAdd()}
-                          >
-                            +
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </Col>
-                  {/* <Col></Col> */}
-                </Row>
-              )}
-            </Col>
-            {isLoading ? (
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="monday"
+                          checked={
+                            Object.values(selectedSchedule.Monday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="monday">Monday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Monday).map(
+                        (field, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleMondayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="monday"
+                                name="start_time"
+                                value={field.start_time}
+                                onChange={(e) => handleMondayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="monday"
+                                name="end_time"
+                                value={field.end_time}
+                                onChange={(e) => handleMondayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleMondayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" id="monday" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="monday">Monday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {mondayFields.map((field, idx) => {
+                        return (
+                          <div className={classes.colData}>
+                            {console.log(mondayFields)}
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleMondayRemove(idx)}
+                            >
+                              -
+                            </button>{' '}
+                            &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="monday"
+                              name="start_time"
+                              onChange={(e) => handleMonday(idx, e)}
+                            />
+                            &nbsp; - &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="monday"
+                              name="end_time"
+                              onChange={(e) => handleMonday(idx, e)}
+                            />
+                            &nbsp;
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleMondayAdd()}
+                            >
+                              +
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="tuesday"
+                          checked={
+                            Object.values(selectedSchedule.Tuesday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="tuesday">Tuesday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Tuesday).map(
+                        (field, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleTuesdayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="tuesday"
+                                name="start_time"
+                                value={field.start_time}
+                                onChange={(e) => handleTuesdayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="tuesday"
+                                name="end_time"
+                                value={field.end_time}
+                                onChange={(e) => handleTuesdayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleTuesdayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" id="tuesday" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="tuesday">Tuesday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {tuesdayFields.map((field, idx) => {
+                        return (
+                          <div className={classes.colData}>
+                            {console.log(tuesdayFields)}
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleTuesdayRemove(idx)}
+                            >
+                              -
+                            </button>{' '}
+                            &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="tuesday"
+                              name="start_time"
+                              onChange={(e) => handleTuesday(idx, e)}
+                            />
+                            &nbsp; - &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="tuesday"
+                              name="end_time"
+                              onChange={(e) => handleTuesday(idx, e)}
+                            />{' '}
+                            &nbsp;
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleTuesdayAdd()}
+                            >
+                              +
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="wednesday"
+                          checked={
+                            Object.values(selectedSchedule.Wednesday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="wednesday">Wednesday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Wednesday).map(
+                        (field, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleWednesdayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="wednesday"
+                                name="start_time"
+                                value={field.start_time}
+                                onChange={(e) => handleWednesdayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="wednesday"
+                                name="end_time"
+                                value={field.end_time}
+                                onChange={(e) => handleWednesdayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleWednesdayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" id="wednesday" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="wednesday">Wednesday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {wednesdayFields.map((field, idx) => {
+                        return (
+                          <div className={classes.colData}>
+                            {console.log(wednesdayFields)}
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleWednesdayRemove(idx)}
+                            >
+                              -
+                            </button>{' '}
+                            &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="wednesday"
+                              name="start_time"
+                              onChange={(e) => handleWednesday(idx, e)}
+                            />
+                            &nbsp; - &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="wednesday"
+                              name="end_time"
+                              onChange={(e) => handleWednesday(idx, e)}
+                            />{' '}
+                            &nbsp;
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleWednesdayAdd()}
+                            >
+                              +
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="thursday"
+                          checked={
+                            Object.values(selectedSchedule.Thursday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="thursday">Thursday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Thursday).map(
+                        (field, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleThursdayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="thursday"
+                                name="start_time"
+                                value={field.start_time}
+                                onChange={(e) => handleThursdayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="thursday"
+                                name="end_time"
+                                value={field.end_time}
+                                onChange={(e) => handleThursdayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleThursdayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" id="thursday" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="thursday">Thursday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {thursdayFields.map((field, idx) => {
+                        return (
+                          <div className={classes.colData}>
+                            {console.log(thursdayFields)}
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleThursdayRemove(idx)}
+                            >
+                              -
+                            </button>{' '}
+                            &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="thursday"
+                              name="start_time"
+                              onChange={(e) => handleThursday(idx, e)}
+                            />
+                            &nbsp; - &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="thursday"
+                              name="end_time"
+                              onChange={(e) => handleThursday(idx, e)}
+                            />{' '}
+                            &nbsp;
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleThursdayAdd()}
+                            >
+                              +
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="friday"
+                          checked={
+                            Object.values(selectedSchedule.Friday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="friday">Friday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Friday).map(
+                        (field, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleFridayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="friday"
+                                name="start_time"
+                                value={field.start_time}
+                                onChange={(e) => handleFridayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="friday"
+                                name="end_time"
+                                value={field.end_time}
+                                onChange={(e) => handleFridayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleFridayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" id="friday" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="friday">Friday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {fridayFields.map((field, idx) => {
+                        return (
+                          <div className={classes.colData}>
+                            {console.log(fridayFields)}
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleFridayRemove(idx)}
+                            >
+                              -
+                            </button>{' '}
+                            &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="friday"
+                              name="start_time"
+                              onChange={(e) => handleFriday(idx, e)}
+                            />
+                            &nbsp; - &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="friday"
+                              name="end_time"
+                              onChange={(e) => handleFriday(idx, e)}
+                            />{' '}
+                            &nbsp;
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleFridayAdd()}
+                            >
+                              +
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+                {showUpdateButton === true ? (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input
+                          type="checkbox"
+                          id="saturday"
+                          checked={
+                            Object.values(selectedSchedule.Saturday)[0]
+                              .start_time === ''
+                              ? ''
+                              : 'checked'
+                          }
+                        />
+                        &nbsp;&nbsp;
+                        <label htmlFor="saturday">Saturday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {Object.values(selectedSchedule.Saturday).map(
+                        (saturday, idx) => {
+                          return (
+                            <div className={classes.colData}>
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleSaturdayRemoveUpdate(idx)}
+                              >
+                                -
+                              </button>{' '}
+                              &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="saturday"
+                                name="start_time"
+                                value={saturday.start_time || ''}
+                                onChange={(e) => handleSaturdayUpdate(idx, e)}
+                              />
+                              &nbsp; - &nbsp;
+                              <input
+                                className={classes.colDataTime}
+                                type="time"
+                                id="saturday"
+                                name="end_time"
+                                value={saturday.end_time || ''}
+                                onChange={(e) => handleSaturdayUpdate(idx, e)}
+                              />{' '}
+                              &nbsp;
+                              <button
+                                style={{
+                                  padding: '0px',
+                                  margin: '0px',
+                                  width: '20px',
+                                  height: '25px',
+                                  border: '1px solid #2C2C2E',
+                                  borderRadius: ' 2px',
+                                  backgroundColor: '#F3F3F8',
+                                }}
+                                onClick={() => handleSaturdayAddUpdate()}
+                              >
+                                +
+                              </button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className={classes.colData}>
+                        <input type="checkbox" id="saturday" checked={''} />
+                        &nbsp;&nbsp;
+                        <label htmlFor="saturday">Saturday</label>
+                      </div>
+                    </Col>
+                    <Col>
+                      {saturdayFields.map((field, idx) => {
+                        return (
+                          <div className={classes.colData}>
+                            {console.log(saturdayFields)}
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleSaturdayRemove(idx)}
+                            >
+                              -
+                            </button>{' '}
+                            &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="saturday"
+                              name="start_time"
+                              onChange={(e) => handleSaturday(idx, e)}
+                            />
+                            &nbsp; - &nbsp;
+                            <input
+                              className={classes.colDataTime}
+                              type="time"
+                              id="saturday"
+                              name="end_time"
+                              onChange={(e) => handleSaturday(idx, e)}
+                            />{' '}
+                            &nbsp;
+                            <button
+                              style={{
+                                padding: '0px',
+                                margin: '0px',
+                                width: '20px',
+                                height: '25px',
+                                border: '1px solid #2C2C2E',
+                                borderRadius: ' 2px',
+                                backgroundColor: '#F3F3F8',
+                              }}
+                              onClick={() => handleSaturdayAdd()}
+                            >
+                              +
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </Col>
+                    {/* <Col></Col> */}
+                  </Row>
+                )}
+              </Col>
+            )}
+
+            {isLoading || isBusy ? (
               <Col
                 xs={7}
                 style={{
@@ -2405,7 +2533,7 @@ function Views() {
       )}
 
       <div className={classes.title}>ALL VIEWS</div>
-      {allViews.length === 0 ? (
+      {allViews.length === 0 || noViews ? (
         <div className={classes.subTitle}>No Views added</div>
       ) : (
         <div>
