@@ -20,29 +20,35 @@ const useStyles = makeStyles({
     padding: '20px',
   },
   timeslotButton: {
-    width: '12rem',
-    //height: '2rem',
+    backgroundColor: '#F3F3F8',
+    width: '25rem',
+    padding: '0.5rem',
     maxWidth: '80%',
-    color: 'white',
+    font: 'normal normal normal 14px/16px SF Pro Display',
+    color: '#2C2C2E',
     textAlign: 'center',
     textDecoration: 'none',
     fontSize: '20px',
-    borderRadius: '50px',
+    border: '2px solid #2C2C2E',
+    borderRadius: '3px',
     display: 'block',
-    margin: '6px 6px',
+    margin: '1rem 0rem',
 
     '&:hover': {
-      background: '#D3A625',
+      backgroundColor: '#2C2C2E',
+      border: '2px solid #2C2C2E',
       color: 'white',
     },
     '&:focus': {
-      background: '#D3A625',
+      backgroundColor: '#2C2C2E',
+      border: '2px solid #2C2C2E',
       color: 'white',
       outline: 'none',
       boxShadow: 'none',
     },
     '&:active': {
-      background: '#D3A625',
+      backgroundColor: '#2C2C2E',
+      border: '2px solid #2C2C2E',
       color: 'white',
       outline: 'none',
       boxShadow: 'none',
@@ -120,7 +126,7 @@ export default function CreateMeet() {
     if (successfull) {
       getGoogleAuthorizedEmail();
     }
-    console.log('booknowbtn', successfull);
+    //console.log('booknowbtn', successfull);
   };
   //console.log(googleAuthedEmail, googleAuthedName);
   useEffect(() => {
@@ -149,7 +155,7 @@ export default function CreateMeet() {
         axios
           .get(BASE_URL + `UserDetails/${userID}`)
           .then((response) => {
-            console.log(response.data);
+            //console.log(response.data);
             setAccessToken(response.data.google_auth_token);
             setRefreshToken(response.data.google_refresh_token);
             setSelectedUser(response.data.user_unique_id);
@@ -160,17 +166,17 @@ export default function CreateMeet() {
             );
             var old_at = response.data.google_auth_token;
             var refresh_token = response.data.google_refresh_token;
-            console.log(refresh_token);
-            console.log('in events', old_at);
+            //console.log(refresh_token);
+            //console.log('in events', old_at);
             fetch(
               `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
               {
                 method: 'GET',
               }
             ).then((response) => {
-              console.log('in events', response);
+              //console.log('in events', response);
               if (response['status'] === 400) {
-                console.log('in events if');
+                //console.log('in events if');
                 let authorization_url =
                   'https://accounts.google.com/o/oauth2/token';
 
@@ -180,7 +186,7 @@ export default function CreateMeet() {
                   client_secret: CLIENT_SECRET,
                   grant_type: 'refresh_token',
                 };
-                console.log(details);
+                //console.log(details);
                 var formBody = [];
                 for (var property in details) {
                   var encodedKey = encodeURIComponent(property);
@@ -205,10 +211,10 @@ export default function CreateMeet() {
                     return responseData;
                   })
                   .then((data) => {
-                    console.log(data);
+                    //console.log(data);
                     let at = data['access_token'];
                     setAccessToken(at);
-                    console.log('in events', at);
+                    //console.log('in events', at);
                     let url = BASE_URL + `UpdateAccessToken/${userID}`;
                     axios
                       .post(url, {
@@ -225,7 +231,7 @@ export default function CreateMeet() {
                   });
               } else {
                 setAccessToken(old_at);
-                console.log(old_at);
+                //console.log(old_at);
               }
             });
           })
@@ -257,11 +263,11 @@ export default function CreateMeet() {
             endTime
         )
         .then((res) => {
-          console.log(
-            'This is the information we got' + res,
-            duration,
-            dateString + '/' + duration + '/' + startTime + ',' + endTime
-          );
+          // console.log(
+          //   'This is the information we got' + res,
+          //   duration,
+          //   dateString + '/' + duration + '/' + startTime + ',' + endTime
+          // );
 
           res.data.result.map((r) => {
             timeAASlots.push(r['begin_time']);
@@ -291,9 +297,9 @@ export default function CreateMeet() {
       };
       const timeMin = dateString + 'T' + startTime + ':00-0800';
       const timeMax = dateString + 'T' + endTime + ':00-0800';
-      console.log(headers);
-      console.log(data);
-      console.log(duration);
+      // console.log(headers);
+      // console.log(data);
+      // console.log(duration);
       //console.log(startTime, timeMin, endTime, timeMax);
       axios
         .post(
@@ -312,7 +318,7 @@ export default function CreateMeet() {
           let appt_start_time = start_time;
 
           let seconds = convert(duration);
-          console.log(seconds);
+          //console.log(seconds);
           // console.log(
           //   start_time,
           //   end_time,
@@ -360,10 +366,10 @@ export default function CreateMeet() {
 
             // If we made it through all appts and the slot is still available, it's an open slot.
             if (slot_available) {
-              console.log(
-                'slot available',
-                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
-              );
+              // console.log(
+              //   'slot available',
+              //   moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
+              // );
               free.push(
                 moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
               );
@@ -506,7 +512,7 @@ export default function CreateMeet() {
   const createNewMeetModal = () => {
     const modalStyle = {
       position: 'absolute',
-      top: '30%',
+      //top: '10%',
       left: '30%',
       width: '400px',
     };
@@ -519,14 +525,14 @@ export default function CreateMeet() {
       fontWeight: 'bold',
       color: '#2C2C2E',
       textTransform: 'uppercase',
-      backgroundColor: viewColor,
+      backgroundColor: ' #F3F3F8',
     };
     const footerStyle = {
       border: 'none',
-      backgroundColor: viewColor,
+      backgroundColor: ' #F3F3F8',
     };
     const bodyStyle = {
-      backgroundColor: viewColor,
+      backgroundColor: ' #F3F3F8',
     };
     const colHeader = {
       margin: '5px',
@@ -548,7 +554,7 @@ export default function CreateMeet() {
             <input
               style={{
                 width: '344px',
-                backgroundColor: viewColor,
+                backgroundColor: ' #F3F3F8',
                 border: '1px solid #636366',
                 borderRadius: '3px',
               }}
@@ -563,7 +569,7 @@ export default function CreateMeet() {
                 type="date"
                 style={{
                   width: '162px',
-                  backgroundColor: viewColor,
+                  backgroundColor: ' #F3F3F8',
                   border: '1px solid #636366',
                   borderRadius: '3px',
                 }}
@@ -576,7 +582,7 @@ export default function CreateMeet() {
                 type="time"
                 style={{
                   width: '162px',
-                  backgroundColor: viewColor,
+                  backgroundColor: ' #F3F3F8',
                   border: '1px solid #636366',
                   borderRadius: '3px',
                 }}
@@ -622,7 +628,7 @@ export default function CreateMeet() {
                 <input
                   style={{
                     width: '254px',
-                    backgroundColor: viewColor,
+                    backgroundColor: ' #F3F3F8',
                     border: '1px solid #636366',
                     borderRadius: '3px',
                   }}
@@ -637,7 +643,7 @@ export default function CreateMeet() {
             <input
               style={{
                 width: '254px',
-                backgroundColor: viewColor,
+                backgroundColor: ' #F3F3F8',
                 border: '1px solid #636366',
                 borderRadius: '3px',
               }}
@@ -651,7 +657,7 @@ export default function CreateMeet() {
             <Col xs={4}>
               <button
                 style={{
-                  backgroundColor: viewColor,
+                  backgroundColor: ' #F3F3F8',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
                   color: '#2C2C2E',
@@ -669,7 +675,7 @@ export default function CreateMeet() {
                   background: '#2C2C2E 0% 0% no-repeat padding-box',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: viewColor,
+                  color: ' #F3F3F8',
                 }}
                 onClick={(e) => {
                   createMeet();
@@ -737,8 +743,8 @@ export default function CreateMeet() {
     }
     //result.join(',');
     //resultDay.join(',');
-    //console.log(result);
-    //console.log(resultDay);
+    // console.log(result);
+    // console.log(resultDay);
     // date = {
     //   day: resultDay,
     //   date: result,
@@ -762,15 +768,13 @@ export default function CreateMeet() {
           ));
     }
 
-    console.log('Merged', result);
+    //console.log('Merged', result);
     return (
-      <Grid container xs={11}>
+      <Grid container xs={4} style={{ height: '20rem', overflow: 'scroll' }}>
         {result.map(function (element) {
           return (
             <button
               style={{
-                backgroundColor: `${viewColor}`,
-                border: `2px solid ${viewColor}`,
                 cursor: 'pointer',
               }}
               className={classes.timeslotButton}
@@ -805,8 +809,9 @@ export default function CreateMeet() {
     // }
     let dateRange = Last7Days();
     //console.log(dateRange);
+
     return (
-      <Row>
+      <Col>
         {selectedSchedule.Sunday[0].start_time === '' ? (
           ''
         ) : (
@@ -814,8 +819,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Sunday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -828,8 +831,7 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Sunday[0].end_time);
                 }}
               >
-                <div>Sunday</div>
-                {dateRange['Sunday']}
+                Sunday, {dateRange['Sunday']}
               </Col>
             ) : (
               <div></div>
@@ -843,8 +845,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Monday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -857,7 +857,7 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Monday[0].end_time);
                 }}
               >
-                <div>Monday</div>
+                Monday, {''}
                 {dateRange['Monday']}
               </Col>
             ) : (
@@ -873,8 +873,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Tuesday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -887,8 +885,7 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Tuesday[0].end_time);
                 }}
               >
-                <div>Tuesday</div>
-                {dateRange['Tuesday']}
+                Tuesday, {dateRange['Tuesday']}
               </Col>
             ) : (
               <div></div>
@@ -902,8 +899,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Wednesday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -916,8 +911,7 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Wednesday[0].end_time);
                 }}
               >
-                <div>Wednesday</div>
-                {dateRange['Wednesday']}
+                Wednesday, {dateRange['Wednesday']}
               </Col>
             ) : (
               <div></div>
@@ -931,8 +925,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Thursday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -945,8 +937,7 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Thursday[0].end_time);
                 }}
               >
-                <div>Thursday</div>
-                {dateRange['Thursday']}
+                Thursday, {dateRange['Thursday']}
               </Col>
             ) : (
               <div></div>
@@ -960,8 +951,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Friday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -974,8 +963,7 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Friday[0].end_time);
                 }}
               >
-                <div>Friday</div>
-                {dateRange['Friday']}
+                Friday, {dateRange['Friday']}
               </Col>
             ) : (
               <div></div>
@@ -989,8 +977,6 @@ export default function CreateMeet() {
             {dateRange.hasOwnProperty('Saturday') ? (
               <Col
                 style={{
-                  backgroundColor: `${viewColor}`,
-                  border: `2px solid ${viewColor}`,
                   cursor: 'pointer',
                 }}
                 className={classes.timeslotButton}
@@ -1003,15 +989,14 @@ export default function CreateMeet() {
                   setEndTime(selectedSchedule.Saturday[0].end_time);
                 }}
               >
-                <div>Saturday</div>
-                {dateRange['Saturday']}
+                Saturday, {dateRange['Saturday']}
               </Col>
             ) : (
               <div></div>
             )}
           </div>
         )}
-      </Row>
+      </Col>
     );
   }
 
@@ -1020,112 +1005,140 @@ export default function CreateMeet() {
       {isLoading ? (
         <h1>No Views</h1>
       ) : (
-        <div>
-          <div
-            style={{
-              marginTop: '20px',
-              marginLeft: '10px',
-              width: '213px',
-              cursor: 'pointer',
-              backgroundColor: `${viewColor}`,
-              padding: '0px 10px',
-            }}
-            onClick={() => {
-              getAuthToGoogle();
-              setSignedIn(true);
-              setTimeSelected(false);
-              setTimeSlots([]);
-              setTimeAASlots([]);
-              setDuration(selectedEvent.duration);
-              getView();
-              setViewID(selectedEvent.view_id);
-              setEventName(selectedEvent.event_name);
-            }}
-          >
-            <Row>
-              <Col style={{ paddingLeft: '7px' }}>
-                <Typography
-                  style={{
-                    textTransform: 'uppercase',
-                    fontSize: '24px',
-                    color: '#2C2C2E',
-                    padding: '0',
-                    font: 'normal normal normal 24px/30px Prohibition',
-                  }}
-                >
-                  {selectedEvent.event_name}
-                </Typography>
-              </Col>
-            </Row>
+        <Row>
+          <Col>
             <div
               style={{
-                fontSize: '14px',
-                fontWeight: 'normal',
-                font: 'normal normal normal 14px/16px SF Pro Display',
+                marginTop: '20px',
+                width: '212px',
+                marginLeft: '10px',
+                cursor: 'pointer',
+                backgroundColor: `${viewColor}`,
+                padding: '0px 10px',
+              }}
+              onClick={() => {
+                getAuthToGoogle();
+                setSignedIn(true);
+                setTimeSelected(false);
+                setTimeSlots([]);
+                setTimeAASlots([]);
+                setDuration(selectedEvent.duration);
+                getView();
+                setViewID(selectedEvent.view_id);
+                setEventName(selectedEvent.event_name);
               }}
             >
-              <div>
-                {console.log(duration, selectedEvent.duration)}
-                {Number(selectedEvent.duration.substring(0, 2)) > 1
-                  ? selectedEvent.duration.substring(3, 5) !== '59'
-                    ? Number(selectedEvent.duration.substring(0, 2)) +
-                      ' hrs ' +
-                      Number(selectedEvent.duration.substring(3, 5)) +
-                      ' min'
-                    : Number(selectedEvent.duration.substring(0, 2)) +
-                      1 +
-                      ' hrs'
-                  : Number(selectedEvent.duration.substring(0, 2)) == 1
-                  ? '60 min'
-                  : selectedEvent.duration.substring(3, 5) + ' min'}
-              </div>
-              <div>
-                Location:{' '}
-                {selectedEvent.location === ''
-                  ? 'None Specified'
-                  : selectedEvent.location}
-              </div>
-              <div>
-                -
-                {JSON.parse(selectedEvent.buffer_time).before.time.substring(
-                  3,
-                  5
-                )}{' '}
-                / +
-                {JSON.parse(selectedEvent.buffer_time).after.time.substring(
-                  3,
-                  5
-                )}
+              <Col>
+                <Col style={{ paddingLeft: '7px' }}>
+                  <Typography
+                    style={{
+                      textTransform: 'uppercase',
+                      fontSize: '24px',
+                      color: '#2C2C2E',
+                      padding: '0',
+                      font: 'normal normal normal 24px/30px Prohibition',
+                    }}
+                  >
+                    {selectedEvent.event_name}
+                  </Typography>
+                </Col>
+              </Col>
+              <div
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 'normal',
+                  font: 'normal normal normal 14px/16px SF Pro Display',
+                }}
+              >
+                <div>
+                  {Number(selectedEvent.duration.substring(0, 2)) > 1
+                    ? selectedEvent.duration.substring(3, 5) !== '59'
+                      ? Number(selectedEvent.duration.substring(0, 2)) +
+                        ' hrs ' +
+                        Number(selectedEvent.duration.substring(3, 5)) +
+                        ' min'
+                      : Number(selectedEvent.duration.substring(0, 2)) +
+                        1 +
+                        ' hrs'
+                    : Number(selectedEvent.duration.substring(0, 2)) == 1
+                    ? '60 min'
+                    : selectedEvent.duration.substring(3, 5) + ' min'}
+                </div>
+                <div>
+                  Location:{' '}
+                  {selectedEvent.location === ''
+                    ? 'None Specified'
+                    : selectedEvent.location}
+                </div>
+                <div>
+                  -
+                  {JSON.parse(selectedEvent.buffer_time).before.time.substring(
+                    3,
+                    5
+                  )}{' '}
+                  / +
+                  {JSON.parse(selectedEvent.buffer_time).after.time.substring(
+                    3,
+                    5
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </Col>
           <div>{showCreateNewMeetModal && createNewMeetModal()}</div>
-          <Row
-            fluid
+          <Col
+            xs={4}
             style={{
-              justifyContent: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'start',
               margin: '20px 0px',
               padding: '0px',
             }}
           >
+            {' '}
+            <Typography
+              style={{
+                textTransform: 'none',
+                //fontSize: '24px',
+                color: '#2C2C2E',
+                padding: '0',
+                font: 'normal normal bold 18px/21px SF Pro Display',
+              }}
+            >
+              Select a Date & Time
+            </Typography>
             {showDays === true && googleAuthedEmail.length != 0 ? (
               <div>{showAvailableDays()}</div>
             ) : (
               <div></div>
             )}
-          </Row>
-          <Row
-            fluid
+          </Col>
+          <Col
+            xs={4}
             style={{
               justifyContent: 'center',
               margin: '20px 0px',
               padding: '0px',
             }}
           >
+            {' '}
+            <Typography
+              style={{
+                textTransform: 'none',
+                //fontSize: '24px',
+                color: '#2C2C2E',
+                padding: '0',
+                font: 'normal normal bold 14px/16px SF Pro Display',
+              }}
+            >
+              Available Times{' '}
+            </Typography>
             {renderAvailableApptsVertical()}
-          </Row>
-        </div>
+          </Col>
+        </Row>
       )}
+      <hr />
     </div>
   );
 }

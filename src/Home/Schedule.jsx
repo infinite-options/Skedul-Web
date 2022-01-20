@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
 import { Typography } from '@material-ui/core';
 import moment from 'moment';
 import LoginContext from '../LoginContext';
 import Bookmark from '../images/bookmark.svg';
-
+import Edit from '../images/edit.svg';
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -43,6 +44,18 @@ const useStyles = makeStyles({
       boxShadow: 'none',
     },
   },
+  colHeader: {
+    fontSize: '14px',
+    color: '#2C2C2E',
+    padding: '10px 0px',
+    font: 'normal normal bold 14px/16px SF Pro Display',
+  },
+  colBody: {
+    textAlign: ' left',
+    font: 'normal normal normal 14px/16px SF Pro Display',
+    letterSpacing: '0px',
+    color: '#636366',
+  },
 });
 export default function Schedule(props) {
   const classes = useStyles();
@@ -52,12 +65,13 @@ export default function Schedule(props) {
   const [allMeetings, setAllMeetings] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
-
+  const [allGoogleMeetings, setAllGoogleMeetings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [showUpdateMeetModal, setShowUpdateMeetModal] = useState(false);
-
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState('');
   var selectedUser = '';
   if (
     document.cookie
@@ -71,16 +85,32 @@ export default function Schedule(props) {
   }
   var accessToken = '';
   var userEmail = '';
-  accessToken = loginContext.loginState.user.user_access;
+  if (
+    document.cookie
+      .split(';')
+      .some((item) => item.trim().startsWith('user_uid='))
+  ) {
+    accessToken = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('user_access='))
+      .split('=')[1];
+  }
+  // accessToken = loginContext.loginState.user.user_access;
   userEmail = loginContext.loginState.user.email;
-  console.log('selecteduser', selectedUser);
+  // console.log(
+  //   'selecteduser',
+  //   selectedUser,
+  //   accessToken,
+  //   loginContext,
+  //   document.cookie
+  // );
 
   useEffect(() => {
     const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
+        //console.log(json);
         setAllViews(json.result.result);
         setSelectedSchedule(JSON.parse(json.result.result[0].schedule));
       })
@@ -92,7 +122,7 @@ export default function Schedule(props) {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
+        //console.log(json);
         setAllEvents(json.result.result);
       })
       .catch((error) => console.log(error));
@@ -103,7 +133,7 @@ export default function Schedule(props) {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
+        //console.log(json);
         setAllSchedule(json.result);
       })
       .catch((error) => console.log(error));
@@ -113,13 +143,35 @@ export default function Schedule(props) {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
-        console.log(json.result.result);
+        // console.log(json);
+        // console.log(json.result.result);
         setAllMeetings(json.result.result);
       })
       .catch((error) => console.log(error));
   }, [refreshKey]);
 
+  useEffect(() => {
+    let today = new Date();
+    let dateNew = moment(today);
+    let startDate = dateNew.startOf('week').format('YYYY-MM-DD');
+    let start = startDate + 'T00:00:00-07:00';
+    let endDate = moment(startDate).add(12, 'days').format('YYYY-MM-DD');
+    let end = endDate + 'T23:59:59-07:00';
+    const headers = {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + accessToken,
+    };
+    //console.log(startDate, start, endDate, end);
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}`;
+    axios
+      .get(url, {
+        headers: headers,
+      })
+      .then((response) => {
+        setAllGoogleMeetings(response.data.items);
+      })
+      .catch((error) => console.log(error));
+  }, [refreshKey]);
   useEffect(() => {
     if (allSchedule != undefined) {
       if (
@@ -132,6 +184,387 @@ export default function Schedule(props) {
     }
   }, [allViews, allEvents, allSchedule, selectedSchedule, refreshKey]);
 
+  const openUpdateMeetModal = () => {
+    setShowUpdateMeetModal((prevState) => {
+      return { showUpdateMeetModal: !prevState.showUpdateMeetModal };
+    });
+  };
+
+  const closeUpdateMeetModal = () => {
+    setShowUpdateMeetModal(false);
+  };
+
+  const updateModal = () => {
+    const modalStyle = {
+      position: 'absolute',
+      top: '10%',
+      left: '38%',
+      width: '400px',
+    };
+    const headerStyle = {
+      border: 'none',
+      //textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#2C2C2E',
+      textTransform: 'uppercase',
+      backgroundColor: ' #F3F3F8',
+    };
+    const footerStyle = {
+      border: 'none',
+      backgroundColor: ' #F3F3F8',
+    };
+    const bodyStyle = {
+      backgroundColor: ' #F3F3F8',
+    };
+    const colHeader = {
+      margin: '5px',
+    };
+
+    return (
+      <Modal
+        show={showUpdateMeetModal}
+        onHide={closeUpdateMeetModal}
+        style={modalStyle}
+      >
+        <Modal.Header style={headerStyle} closeButton>
+          <Modal.Title></Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body style={bodyStyle}>
+          <Typography className={classes.colHeader}>Meeting Name</Typography>
+          <Row style={colHeader}>
+            {/* <input
+              style={{
+                width: '344px',
+                backgroundColor: ' #F3F3F8',
+                border: '1px solid #636366',
+                borderRadius: '3px',
+              }}
+              value={meetName}
+              onChange={(e) => setMeetName(e.target.value)}
+            /> */}
+          </Row>
+          <Typography className={classes.colHeader}>Date and Time</Typography>
+          <Row>
+            <Col>
+              {/* <input
+                type="date"
+                style={{
+                  width: '162px',
+                  backgroundColor: ' #F3F3F8',
+                  border: '1px solid #636366',
+                  borderRadius: '3px',
+                }}
+                value={meetDate}
+                onChange={(e) => setMeetDate(e.target.value)}
+              /> */}
+            </Col>
+            <Col>
+              {/* <input
+                type="time"
+                style={{
+                  width: '162px',
+                  backgroundColor: ' #F3F3F8',
+                  border: '1px solid #636366',
+                  borderRadius: '3px',
+                }}
+                value={meetTime}
+                onChange={(e) => setMeetTime(e.target.value)}
+              /> */}
+            </Col>
+          </Row>
+          <Typography className={classes.colHeader}> Event Type </Typography>
+          <Row style={colHeader}>
+            {/* {eventName}-
+            {Number(duration.substring(0, 2)) > '01'
+              ? duration.substring(3, 5) !== '59'
+                ? Number(duration.substring(0, 2)) +
+                  ' hours ' +
+                  Number(duration.substring(3, 5)) +
+                  ' minutes'
+                : Number(duration.substring(0, 2)) + 1 + ' hours'
+              : Number(duration.substring(0, 2)) == '01'
+              ? '60 minutes'
+              : duration.substring(3, 5) + ' minutes'}
+            meeting */}
+          </Row>
+
+          <Typography className={classes.colHeader}> Guests </Typography>
+
+          <div
+            style={{
+              padding: '0',
+              backgroundColor: 'inherit',
+              color: '#636366',
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+            // onClick={() => handleAdd()}
+          >
+            + Add Guests
+          </div>
+          <Row style={colHeader}>
+            {/* {attendees.map((field, idx) => {
+              return (
+                <input
+                  style={{
+                    width: '254px',
+                    backgroundColor: ' #F3F3F8',
+                    border: '1px solid #636366',
+                    borderRadius: '3px',
+                  }}
+                  type="text"
+                  onChange={(e) => handleChange(idx, e)}
+                />
+              );
+            })} */}
+          </Row>
+          <Typography className={classes.colHeader}> Location </Typography>
+          <Row style={colHeader}>
+            {/* <input
+              style={{
+                width: '254px',
+                backgroundColor: ' #F3F3F8',
+                border: '1px solid #636366',
+                borderRadius: '3px',
+              }}
+              value={meetLocation}
+              onChange={(e) => setMeetLocation(e.target.value)}
+            /> */}
+          </Row>
+        </Modal.Body>
+        <Modal.Footer style={footerStyle}>
+          <Row>
+            <Col xs={4}>
+              <button
+                style={{
+                  backgroundColor: ' #F3F3F8',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: '#2C2C2E',
+                }}
+                onClick={() => {
+                  closeUpdateMeetModal();
+                }}
+              >
+                Cancel
+              </button>
+            </Col>
+            <Col>
+              <button
+                style={{
+                  background: '#2C2C2E 0% 0% no-repeat padding-box',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: ' #F3F3F8',
+                }}
+                // onClick={(e) => {
+                //   createMeet();
+                //   UpdateMeet();
+                // }}
+              >
+                Update Meeting
+              </button>
+            </Col>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
+  const openAcceptModal = () => {
+    setShowAcceptModal((prevState) => {
+      return { showAcceptModal: !prevState.showAcceptModal };
+    });
+  };
+
+  const closeAcceptModal = () => {
+    setShowAcceptModal(false);
+  };
+  const acceptModal = () => {
+    const modalStyle = {
+      position: 'absolute',
+      top: '10%',
+      left: '10%',
+      width: '400px',
+    };
+    const headerStyle = {
+      border: 'none',
+      //textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#2C2C2E',
+      textTransform: 'uppercase',
+      backgroundColor: ' #F3F3F8',
+    };
+    const footerStyle = {
+      border: 'none',
+      backgroundColor: ' #F3F3F8',
+    };
+    const bodyStyle = {
+      backgroundColor: ' #F3F3F8',
+    };
+    const colHeader = {
+      margin: '5px',
+    };
+
+    return (
+      <Modal
+        show={showAcceptModal}
+        onHide={closeAcceptModal}
+        style={modalStyle}
+      >
+        <Modal.Header style={headerStyle} closeButton>
+          <Modal.Title></Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body style={bodyStyle}>
+          <Row>
+            <Col
+              //className={classes.colHeader}
+              style={{
+                textAlign: 'left',
+                font: 'normal normal bold 20px/24px SF Pro Display',
+                letterSpacing: '0px',
+                color: '#2C2C2E',
+                opacity: 1,
+                textTransform: 'capitalize',
+              }}
+            >
+              {selectedMeeting['summary']}
+            </Col>
+            <Col>
+              <span
+                style={{
+                  //textAlign: 'right',
+                  font: 'normal normal bold 12px/14px SF Pro Display',
+                  letterSpacing: '0px',
+                  color: '#636366',
+                  opacity: 1,
+                  textTransform: 'capitalize',
+                  textDecoration: 'underline',
+                }}
+              >
+                {' '}
+                Edit Event
+              </span>
+              &nbsp;&nbsp;
+              <img
+                src={Edit}
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  cursor: 'pointer',
+                  marginRight: '5px',
+                }}
+                onClick={() => {
+                  openUpdateMeetModal();
+                }}
+                alt="edit event"
+              />
+            </Col>
+          </Row>
+          <Typography className={classes.colHeader}>Date and Time</Typography>
+          <Row>
+            <Col className={classes.colBody}>
+              {moment(selectedMeeting['start']['dateTime']).format(
+                'MMMM DD, YYYY'
+              )}
+            </Col>
+            <Col className={classes.colBody}>
+              {moment(selectedMeeting['start']['dateTime']).format('hh:mm a')}-
+              {moment(selectedMeeting['end']['dateTime']).format('hh:mm a')}
+            </Col>
+          </Row>
+          <Typography className={classes.colHeader}> Event Type </Typography>
+          <Row style={colHeader} className={classes.colBody}>
+            None Specified
+          </Row>
+
+          <Typography className={classes.colHeader}> Email </Typography>
+          <Row style={colHeader} className={classes.colBody}>
+            Organizer : &nbsp;{selectedMeeting['creator']['email']}
+          </Row>
+          <Row style={colHeader} className={classes.colBody}>
+            Attendees : &nbsp;
+            <div>
+              {selectedMeeting['attendees'].map((attendee) => (
+                <div>{attendee['email']}</div>
+              ))}
+            </div>
+          </Row>
+
+          <Row></Row>
+          <Typography className={classes.colHeader}> Location </Typography>
+          {selectedMeeting['location'] === undefined ? (
+            <Row style={colHeader} className={classes.colBody}>
+              No location given
+            </Row>
+          ) : (
+            <Row style={colHeader} className={classes.colBody}>
+              {selectedMeeting['location']}
+            </Row>
+          )}
+        </Modal.Body>
+        <Modal.Footer style={footerStyle}>
+          <Row>
+            <Col>
+              <button
+                style={{
+                  backgroundColor: ' #F3F3F8',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: '#2C2C2E',
+                }}
+                // onClick={() => {
+                //   closeAcceptModal();
+                // }}
+              >
+                Accept
+              </button>
+            </Col>
+            <Col>
+              <button
+                style={{
+                  backgroundColor: ' #F3F3F8',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: ' #2C2C2E',
+                }}
+                // onClick={(e) => {
+                //   createMeet();
+                //   Accept();
+                // }}
+              >
+                Decline
+              </button>
+            </Col>
+            <Col>
+              <button
+                style={{
+                  backgroundColor: ' #F3F3F8',
+                  border: '2px solid #2C2C2E',
+                  borderRadius: '3px',
+                  color: ' #2C2C2E',
+                }}
+                // onClick={(e) => {
+                //   createMeet();
+                //   Accept();
+                // }}
+              >
+                Reschedule
+              </button>
+            </Col>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
   const weekdaysAndDateDisplay = () => {
     let arr = [];
     let today = new Date();
@@ -201,7 +634,7 @@ export default function Schedule(props) {
 
   const sortSchedule = () => {
     var arr = Object.values(allSchedule);
-    console.log(arr);
+    //console.log(arr);
     var dic = {};
     let today = new Date();
 
@@ -210,7 +643,7 @@ export default function Schedule(props) {
     for (let i = 0; i < arr.length; i++) {
       //console.log(arr[i], arr.length);
       let day = arr[i];
-      //console.log(day);
+      //xconsole.log(day);
       for (let j = 0; j < day.length; j++) {
         //console.log(day[j]);
         let tempStart = day[j].schedule.start_time;
@@ -224,21 +657,37 @@ export default function Schedule(props) {
         dic[key].push(day[j]);
       }
     }
+    for (let i = 0; i < arr.length; i++) {
+      //console.log(arr[i], arr.length);
+      let day = arr[i];
+      // console.log(day);
+      for (let j = 0; j < day.length; j++) {
+        //console.log(day[j]);
+        let tempStart = day[j].schedule.start_time;
+        let tempEnd = day[j].schedule.end_time;
+        //console.log(day[j], day.length);
+        let key = 6 + i + '_' + tempStart.substring(0, 2);
+        //console.log(key);
+        if (dic[key] == null) {
+          dic[key] = [];
+        }
+        dic[key].push(day[j]);
+      }
+    }
+
     return dic;
   };
   const sortMeetings = () => {
-    var arr = Object.values(allMeetings);
+    var arr = allGoogleMeetings;
 
     console.log('meetings', arr);
     var dic = {};
-
-    let today = new Date();
-
     for (let i = 0; i < arr.length; i++) {
-      let tempStart = arr[i].start_time;
-      let tempEnd = arr[i].end_time;
-      let key = i + '_' + tempStart.substring(0, 2);
-      //console.log(key);
+      let tempStart = arr[i].start.dateTime;
+      let tempEnd = arr[i].end.dateTime;
+      let tempStartTime = new Date(new Date(tempStart).toLocaleString('en-US'));
+      // console.log(tempStartTime.getDate());
+      let key = tempStartTime.getDate() + '_' + tempStartTime.getHours();
       if (dic[key] == null) {
         dic[key] = [];
       }
@@ -332,6 +781,7 @@ export default function Schedule(props) {
       //console.log(arr[i]);
       tempStart = arr[i].schedule.start_time;
       tempEnd = arr[i].schedule.end_time;
+      // console.log(tempStart, tempEnd);
       let minsToMarginTop = (tempStart.substring(3, 5) / 60) * 55;
       let hourDiff = tempEnd.substring(0, 2) - tempStart.substring(0, 2);
       let minDiff =
@@ -373,15 +823,6 @@ export default function Schedule(props) {
         color = `${arr[i].color}`;
       }
 
-      // Need to strip trailing zeros because the data in the database
-      // is inconsistent about this
-      const start_time = arr[i].schedule.start_time
-        .substring(11)
-        .split(/[:\s+]/);
-      if (start_time[0][0] == '0') start_time[0] = start_time[0][1];
-      const end_time = arr[i].schedule.end_time.substring(11).split(/[:\s+]/);
-      if (end_time[0][0] == '0') end_time[0] = end_time[0][1];
-
       let newElement = (
         <div key={'event' + i}>
           <div
@@ -420,6 +861,7 @@ export default function Schedule(props) {
     }
     return res;
   };
+  console.log('selectedmeeting', selectedMeeting);
   const getMeetItemFromDic = (day, hour, dic) => {
     let today = new Date();
     let dateNew = moment(today);
@@ -436,32 +878,39 @@ export default function Schedule(props) {
     if (arr == null) {
       return;
     }
-    console.log(arr);
+    //console.log(arr);
     for (let i = 0; i < arr.length; i++) {
-      console.log(arr[i]);
-      tempStart = arr[i].start + ' ' + arr[i].start_time;
-      tempEnd = arr[i].end + ' ' + arr[i].end_time;
+      //console.log(arr[i], arr.length);
+      tempStart = arr[i].start.dateTime;
+      tempEnd = arr[i].end.dateTime;
 
-      let tempStartTime = new Date(tempStart.replace(/-/g, '/'));
-      let tempEndTime = new Date(tempEnd.replace(/-/g, '/'));
-      console.log(tempStart, tempStartTime, tempEnd, tempEndTime);
+      let tempStartTime = new Date(new Date(tempStart).toLocaleString('en-US'));
+      let tempEndTime = new Date(new Date(tempEnd).toLocaleString('en-US'));
+      //console.log(tempStart, tempStartTime, tempEnd, tempEndTime);
       let minsToMarginTop = (tempStartTime.getMinutes() / 60) * 55;
+
       let hourDiff = tempEndTime.getHours() - tempStartTime.getHours();
       let minDiff =
         tempEndTime.getMinutes() / 60 - tempStartTime.getMinutes() / 60;
       let height = (hourDiff + minDiff) * 55;
+      //console.log(tempStartTime.getMinutes(), tempStartTime.getHours());
       sameTimeEventCount++;
       let color = 'lightslategray';
       //check if there is already an event there overlapping from another hour
-
+      //check if there is already an event there overlapping from another hour
       for (let i = 0; i < arr.length; i++) {
-        let tempStartTime = new Date(tempStart);
-        let tempEndTime = new Date(tempEnd);
+        tempStart = arr[i].start.dateTime;
+        tempEnd = arr[i].end.dateTime;
+        let tempStartTime = new Date(
+          new Date(tempStart).toLocaleString('en-US')
+        );
+        let tempEndTime = new Date(new Date(tempEnd).toLocaleString('en-US'));
         if (tempStartTime.getHours() < hour && tempEndTime.getHours() > hour) {
           addmarginLeft += 20;
           itemWidth = itemWidth - 20;
         }
       }
+
       if (sameTimeEventCount <= 1) {
         unique.push(arr[i]);
       }
@@ -474,17 +923,15 @@ export default function Schedule(props) {
         fontSize = 8;
       }
 
-      // Need to strip trailing zeros because the data in the database
-      // is inconsistent about this
-      const start_time =
-        arr[i].start + '' + arr[i].start_time.substring(11).split(/[:\s+]/);
-      if (start_time[0][0] == '0') start_time[0] = start_time[0][1];
-      const end_time =
-        arr[i].end + '' + arr[i].end_time.substring(11).split(/[:\s+]/);
-      if (end_time[0][0] == '0') end_time[0] = end_time[0][1];
-
       let newElement = (
-        <div key={'event' + i}>
+        <div
+          key={'event' + i}
+          onClick={() => {
+            openAcceptModal();
+            setSelectedMeeting(arr[i]);
+            console.log(arr[i]);
+          }}
+        >
           <div
             className="clickButton"
             data-toggle="tooltip"
@@ -536,33 +983,41 @@ export default function Schedule(props) {
     var x = [];
     let dicMeet = sortMeetings();
     console.log(dic, dicMeet);
+    let today = new Date();
+    let dateNew = moment(today);
+    let startDate = dateNew.startOf('week');
+    //console.log(new Date(startDate).getDate());
+    for (let i = 0; i < 12; ++i) {
+      var arr = [];
+      //console.log(new Date(startDate).getDate());
+      for (let j = 0; j < 24; ++j) {
+        arr.push(
+          <Container
+            key={'weekschedule' + i + j}
+            style={{ marginLeft: '1rem' }}
+          >
+            <Row style={{ position: 'relative' }}>
+              <Col
+                style={{
+                  position: 'relative',
+                  // borderTop: '1px solid lavender',
+                  // background: 'aliceblue',
+                  height: '50px',
+                  color: 'black',
+                  borderTop: '1px solid #AFAFB3',
+                  margin: '0px',
+                  padding: '0px',
+                  width: '100%',
+                }}
+              >
+                {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
+                {getMeetItemFromDic(new Date(startDate).getDate(), j, dicMeet)}
+              </Col>
+            </Row>
+          </Container>
+        );
+      }
 
-    for (let i = 0; i < 7; ++i) {
-      var arr = [];
-      for (let j = 0; j < 24; ++j) {
-        arr.push(
-          <Container key={'weekschedule' + i + j}>
-            <Row style={{ position: 'relative' }}>
-              <Col
-                style={{
-                  position: 'relative',
-                  // borderTop: '1px solid lavender',
-                  // background: 'aliceblue',
-                  height: '50px',
-                  color: 'white',
-                  borderTop: '1px solid #AFAFB3',
-                  margin: '0px',
-                  padding: '0px',
-                  width: '100%',
-                }}
-              >
-                {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
-                {getMeetItemFromDic(i, leftFillNum(j, 2), dicMeet)}
-              </Col>
-            </Row>
-          </Container>
-        );
-      }
       res.push(
         <Col
           key={'daySchedule' + i}
@@ -572,51 +1027,15 @@ export default function Schedule(props) {
           }}
         >
           {arr}
+          {startDate.format('D')}
         </Col>
       );
+      startDate.add(1, 'day');
     }
-    for (let i = 0; i < 5; ++i) {
-      var arr = [];
-      for (let j = 0; j < 24; ++j) {
-        arr.push(
-          <Container key={'weekschedule' + i + j}>
-            <Row style={{ position: 'relative' }}>
-              <Col
-                style={{
-                  position: 'relative',
-                  // borderTop: '1px solid lavender',
-                  // background: 'aliceblue',
-                  height: '50px',
-                  color: 'white',
-                  borderTop: '1px solid #AFAFB3',
-                  margin: '0px',
-                  padding: '0px',
-                  width: '100%',
-                }}
-              >
-                {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
-                {getMeetItemFromDic(i, leftFillNum(j, 2), dicMeet)}
-              </Col>
-            </Row>
-          </Container>
-        );
-      }
-      //console.log(arr);
-      res.push(
-        <Col
-          key={'daySchedule' + i}
-          style={{
-            margin: '0px',
-            padding: '0px',
-          }}
-        >
-          {arr}
-        </Col>
-      );
-      //console.log(res);
-    }
+
     return res;
   };
+
   return (
     <div className={classes.container}>
       {isLoading ? (
@@ -771,6 +1190,8 @@ export default function Schedule(props) {
             <Col>
               <Row>{weekViewItems()}</Row>
             </Col>
+            <div>{showAcceptModal && acceptModal()}</div>
+            <div>{showUpdateMeetModal && updateModal()}</div>
           </Row>
         </div>
       )}
