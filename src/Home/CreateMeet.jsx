@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Row, Col, Modal } from 'react-bootstrap';
 import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import Item from '@material-ui/core/Grid';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import {
   signInToGoogle,
@@ -21,14 +22,13 @@ const useStyles = makeStyles({
   },
   timeslotButton: {
     backgroundColor: '#F3F3F8',
-    width: '25rem',
+    width: '20rem',
     padding: '0.5rem',
     maxWidth: '80%',
     font: 'normal normal normal 14px/16px SF Pro Display',
     color: '#2C2C2E',
     textAlign: 'center',
     textDecoration: 'none',
-    fontSize: '20px',
     border: '2px solid #2C2C2E',
     borderRadius: '3px',
     display: 'block',
@@ -39,20 +39,73 @@ const useStyles = makeStyles({
       border: '2px solid #2C2C2E',
       color: 'white',
     },
-    '&:focus': {
+  },
+  activeTimeSlotButton: {
+    width: '20rem',
+    padding: '0.5rem',
+    maxWidth: '80%',
+    font: 'normal normal normal 14px/16px SF Pro Display',
+    textAlign: 'center',
+    textDecoration: 'none',
+    borderRadius: '3px',
+    display: 'block',
+    margin: '1rem 0rem',
+    backgroundColor: '#2C2C2E',
+    color: 'white',
+    outline: 'none',
+    boxShadow: 'none',
+  },
+  timeButton: {
+    backgroundColor: '#F3F3F8',
+    width: '6rem',
+    height: '2rem',
+    padding: '0.5rem',
+    maxWidth: '80%',
+    font: 'normal normal normal 14px/16px SF Pro Display',
+    color: '#2C2C2E',
+    textAlign: 'center',
+    textDecoration: 'none',
+    border: '2px solid #2C2C2E',
+    borderRadius: '3px',
+    display: 'block',
+    margin: '0.5rem 0.5rem',
+
+    '&:hover': {
       backgroundColor: '#2C2C2E',
       border: '2px solid #2C2C2E',
       color: 'white',
-      outline: 'none',
-      boxShadow: 'none',
     },
-    '&:active': {
-      backgroundColor: '#2C2C2E',
-      border: '2px solid #2C2C2E',
-      color: 'white',
-      outline: 'none',
-      boxShadow: 'none',
-    },
+  },
+  activeTimeButton: {
+    width: '6rem',
+    height: '2rem',
+    padding: '0.5rem',
+    maxWidth: '80%',
+    font: 'normal normal normal 14px/16px SF Pro Display',
+    textAlign: 'center',
+    textDecoration: 'none',
+    borderRadius: '3px',
+    display: 'block',
+    margin: '0.5rem 0.5rem',
+    backgroundColor: '#2C2C2E',
+    border: '2px solid #2C2C2E',
+    color: 'white',
+    outline: 'none',
+    boxShadow: 'none',
+  },
+  colHeader: {
+    fontSize: '14px',
+    color: '#2C2C2E',
+    padding: '10px 0px',
+    font: 'normal normal bold 14px/16px SF Pro Display',
+    margin: '5px',
+  },
+  colBody: {
+    textAlign: ' left',
+    font: 'normal normal normal 14px/16px SF Pro Display',
+    letterSpacing: '0px',
+    color: '#636366',
+    margin: '5px',
   },
 });
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -509,187 +562,6 @@ export default function CreateMeet() {
     setMeetTime('');
     setAttendees([{ email: '' }]);
   }
-  const createNewMeetModal = () => {
-    const modalStyle = {
-      position: 'absolute',
-      //top: '10%',
-      left: '30%',
-      width: '400px',
-    };
-    const headerStyle = {
-      border: 'none',
-      //textAlign: 'center',
-      display: 'flex',
-      alignItems: 'center',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: '#2C2C2E',
-      textTransform: 'uppercase',
-      backgroundColor: ' #F3F3F8',
-    };
-    const footerStyle = {
-      border: 'none',
-      backgroundColor: ' #F3F3F8',
-    };
-    const bodyStyle = {
-      backgroundColor: ' #F3F3F8',
-    };
-    const colHeader = {
-      margin: '5px',
-    };
-
-    return (
-      <Modal
-        show={showCreateNewMeetModal}
-        onHide={closeCreateNewMeetModal}
-        style={modalStyle}
-      >
-        <Modal.Header style={headerStyle} closeButton>
-          <Modal.Title></Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body style={bodyStyle}>
-          <Typography className={classes.colHeader}>Meeting Name</Typography>
-          <Row style={colHeader}>
-            <input
-              style={{
-                width: '344px',
-                backgroundColor: ' #F3F3F8',
-                border: '1px solid #636366',
-                borderRadius: '3px',
-              }}
-              value={meetName}
-              onChange={(e) => setMeetName(e.target.value)}
-            />
-          </Row>
-          <Typography className={classes.colHeader}>Date and Time</Typography>
-          <Row>
-            <Col>
-              <input
-                type="date"
-                style={{
-                  width: '162px',
-                  backgroundColor: ' #F3F3F8',
-                  border: '1px solid #636366',
-                  borderRadius: '3px',
-                }}
-                value={meetDate}
-                onChange={(e) => setMeetDate(e.target.value)}
-              />
-            </Col>
-            <Col>
-              <input
-                type="time"
-                style={{
-                  width: '162px',
-                  backgroundColor: ' #F3F3F8',
-                  border: '1px solid #636366',
-                  borderRadius: '3px',
-                }}
-                value={meetTime}
-                onChange={(e) => setMeetTime(e.target.value)}
-              />
-            </Col>
-          </Row>
-          <Typography className={classes.colHeader}> Event Type </Typography>
-          <Row style={colHeader}>
-            {eventName}-
-            {Number(duration.substring(0, 2)) > '01'
-              ? duration.substring(3, 5) !== '59'
-                ? Number(duration.substring(0, 2)) +
-                  ' hours ' +
-                  Number(duration.substring(3, 5)) +
-                  ' minutes'
-                : Number(duration.substring(0, 2)) + 1 + ' hours'
-              : Number(duration.substring(0, 2)) == '01'
-              ? '60 minutes'
-              : duration.substring(3, 5) + ' minutes'}
-            meeting
-          </Row>
-
-          <Typography className={classes.colHeader}> Guests </Typography>
-          <Typography>{googleAuthedName}</Typography>
-          <Typography>{userName}</Typography>
-          <div
-            style={{
-              padding: '0',
-              backgroundColor: 'inherit',
-              color: '#636366',
-              textAlign: 'left',
-              cursor: 'pointer',
-            }}
-            onClick={() => handleAdd()}
-          >
-            + Add Guests
-          </div>
-          <Row style={colHeader}>
-            {attendees.map((field, idx) => {
-              return (
-                <input
-                  style={{
-                    width: '254px',
-                    backgroundColor: ' #F3F3F8',
-                    border: '1px solid #636366',
-                    borderRadius: '3px',
-                  }}
-                  type="text"
-                  onChange={(e) => handleChange(idx, e)}
-                />
-              );
-            })}
-          </Row>
-          <Typography className={classes.colHeader}> Location </Typography>
-          <Row style={colHeader}>
-            <input
-              style={{
-                width: '254px',
-                backgroundColor: ' #F3F3F8',
-                border: '1px solid #636366',
-                borderRadius: '3px',
-              }}
-              value={meetLocation}
-              onChange={(e) => setMeetLocation(e.target.value)}
-            />
-          </Row>
-        </Modal.Body>
-        <Modal.Footer style={footerStyle}>
-          <Row>
-            <Col xs={4}>
-              <button
-                style={{
-                  backgroundColor: ' #F3F3F8',
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color: '#2C2C2E',
-                }}
-                onClick={() => {
-                  closeCreateNewMeetModal();
-                }}
-              >
-                Cancel
-              </button>
-            </Col>
-            <Col>
-              <button
-                style={{
-                  background: '#2C2C2E 0% 0% no-repeat padding-box',
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color: ' #F3F3F8',
-                }}
-                onClick={(e) => {
-                  createMeet();
-                  createNewMeet();
-                }}
-              >
-                Create Meeting
-              </button>
-            </Col>
-          </Row>
-        </Modal.Footer>
-      </Modal>
-    );
-  };
 
   function formatTime(date, time) {
     if (time == null) {
@@ -770,26 +642,39 @@ export default function CreateMeet() {
 
     //console.log('Merged', result);
     return (
-      <Grid container xs={4} style={{ height: '20rem', overflow: 'scroll' }}>
-        {result.map(function (element) {
-          return (
-            <button
-              style={{
-                cursor: 'pointer',
-              }}
-              className={classes.timeslotButton}
-              onClick={() => {
-                selectApptTime(element);
-                openCreateNewMeetModal();
-                setMeetDate(dateString);
-                setMeetTime(element);
-              }}
-            >
-              {formatTime(dateString, element)}
-            </button>
-          );
-        })}
-      </Grid>
+      <div>
+        <div style={{ height: '10rem' }}>
+          <Grid
+            container
+            direction="column"
+            spacing={1}
+            style={{ height: '20rem' }}
+          >
+            {result.map(function (element) {
+              return (
+                <Item
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                  className={
+                    meetTime === element
+                      ? `${classes.activeTimeButton}`
+                      : `${classes.timeButton}`
+                  }
+                  onClick={() => {
+                    selectApptTime(element);
+
+                    setMeetDate(dateString);
+                    setMeetTime(element);
+                  }}
+                >
+                  {formatTime(dateString, element)}
+                </Item>
+              );
+            })}
+          </Grid>
+        </div>
+      </div>
     );
   }
   function selectApptTime(element) {
@@ -821,7 +706,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Sunday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Sunday']);
@@ -847,7 +736,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Monday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Monday']);
@@ -875,7 +768,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Tuesday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Tuesday']);
@@ -901,7 +798,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Wednesday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Wednesday']);
@@ -927,7 +828,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Thursday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Thursday']);
@@ -953,7 +858,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Friday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Friday']);
@@ -979,7 +888,11 @@ export default function CreateMeet() {
                 style={{
                   cursor: 'pointer',
                 }}
-                className={classes.timeslotButton}
+                className={
+                  dateString === dateRange['Saturday']
+                    ? `${classes.activeTimeSlotButton}`
+                    : `${classes.timeslotButton}`
+                }
                 onClick={() => {
                   setTimeSelected(true);
                   setDateString(dateRange['Saturday']);
@@ -1005,140 +918,356 @@ export default function CreateMeet() {
       {isLoading ? (
         <h1>No Views</h1>
       ) : (
-        <Row>
-          <Col>
-            <div
-              style={{
-                marginTop: '20px',
-                width: '212px',
-                marginLeft: '10px',
-                cursor: 'pointer',
-                backgroundColor: `${viewColor}`,
-                padding: '0px 10px',
-              }}
-              onClick={() => {
-                getAuthToGoogle();
-                setSignedIn(true);
-                setTimeSelected(false);
-                setTimeSlots([]);
-                setTimeAASlots([]);
-                setDuration(selectedEvent.duration);
-                getView();
-                setViewID(selectedEvent.view_id);
-                setEventName(selectedEvent.event_name);
-              }}
-            >
-              <Col>
-                <Col style={{ paddingLeft: '7px' }}>
-                  <Typography
-                    style={{
-                      textTransform: 'uppercase',
-                      fontSize: '24px',
-                      color: '#2C2C2E',
-                      padding: '0',
-                      font: 'normal normal normal 24px/30px Prohibition',
-                    }}
-                  >
-                    {selectedEvent.event_name}
-                  </Typography>
-                </Col>
-              </Col>
+        <div>
+          <Row>
+            <Col xs={2}>
               <div
                 style={{
-                  fontSize: '14px',
-                  fontWeight: 'normal',
-                  font: 'normal normal normal 14px/16px SF Pro Display',
+                  marginTop: '20px',
+                  width: '212px',
+                  marginLeft: '10px',
+                  cursor: 'pointer',
+                  backgroundColor: `${viewColor}`,
+                  padding: '0px 10px',
+                }}
+                onClick={() => {
+                  getAuthToGoogle();
+                  setSignedIn(true);
+                  setTimeSelected(false);
+                  setTimeSlots([]);
+                  setTimeAASlots([]);
+                  setDuration(selectedEvent.duration);
+                  getView();
+                  setViewID(selectedEvent.view_id);
+                  setEventName(selectedEvent.event_name);
+                }}
+              >
+                <Col>
+                  <Col style={{ paddingLeft: '7px' }}>
+                    <Typography
+                      style={{
+                        textTransform: 'uppercase',
+                        fontSize: '24px',
+                        color: '#2C2C2E',
+                        padding: '0',
+                        font: 'normal normal normal 24px/30px Prohibition',
+                      }}
+                    >
+                      {selectedEvent.event_name}
+                    </Typography>
+                  </Col>
+                </Col>
+                <div
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 'normal',
+                    font: 'normal normal normal 14px/16px SF Pro Display',
+                  }}
+                >
+                  <div>
+                    {Number(selectedEvent.duration.substring(0, 2)) > 1
+                      ? selectedEvent.duration.substring(3, 5) !== '59'
+                        ? Number(selectedEvent.duration.substring(0, 2)) +
+                          ' hrs ' +
+                          Number(selectedEvent.duration.substring(3, 5)) +
+                          ' min'
+                        : Number(selectedEvent.duration.substring(0, 2)) +
+                          1 +
+                          ' hrs'
+                      : Number(selectedEvent.duration.substring(0, 2)) == 1
+                      ? '60 min'
+                      : selectedEvent.duration.substring(3, 5) + ' min'}
+                  </div>
+                  <div>
+                    Location:{' '}
+                    {selectedEvent.location === ''
+                      ? 'None Specified'
+                      : selectedEvent.location}
+                  </div>
+                  <div>
+                    -
+                    {JSON.parse(
+                      selectedEvent.buffer_time
+                    ).before.time.substring(3, 5)}{' '}
+                    / +
+                    {JSON.parse(selectedEvent.buffer_time).after.time.substring(
+                      3,
+                      5
+                    )}
+                  </div>
+                </div>
+              </div>
+              {console.log(showCreateNewMeetModal)}
+              <div hidden={!showCreateNewMeetModal}>
+                <Typography
+                  style={{
+                    textTransform: 'none',
+                    //fontSize: '24px',
+                    color: '#2C2C2E',
+                    padding: '0',
+                    font: 'normal normal bold 18px/21px SF Pro Display',
+                  }}
+                >
+                  {meetTime.substring(0, 5)} <br />
+                  {moment(meetDate).format('MMMM DD, YYYY')}
+                </Typography>
+              </div>
+            </Col>
+            {/* <div>{showCreateNewMeetModal && createNewMeetModal()}</div> */}
+            <Col
+              xs={3}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'start',
+                margin: '20px 20px',
+                padding: '0px',
+              }}
+              hidden={showCreateNewMeetModal}
+            >
+              {' '}
+              {showDays === true && googleAuthedEmail.length != 0 ? (
+                <div>
+                  <Typography
+                    style={{
+                      textTransform: 'none',
+                      //fontSize: '24px',
+                      color: '#2C2C2E',
+                      padding: '0',
+                      font: 'normal normal bold 18px/21px SF Pro Display',
+                    }}
+                  >
+                    Select a Date & Time
+                  </Typography>
+                  {showAvailableDays()}
+                </div>
+              ) : (
+                <div></div>
+              )}
+            </Col>
+
+            <Col
+              xs={4}
+              style={{
+                justifyContent: 'center',
+                margin: '20px 0px',
+                padding: '0px',
+              }}
+              hidden={showCreateNewMeetModal}
+            >
+              {dateString.length != 0 && timeSelected === true ? (
+                <div>
+                  {' '}
+                  <Typography
+                    style={{
+                      textTransform: 'none',
+                      //fontSize: '24px',
+                      color: '#2C2C2E',
+                      padding: '0',
+                      font: 'normal normal bold 14px/16px SF Pro Display',
+                    }}
+                  >
+                    Available Times
+                  </Typography>
+                  {renderAvailableApptsVertical()}
+                </div>
+              ) : (
+                <div></div>
+              )}
+            </Col>
+            {showCreateNewMeetModal ? (
+              <Col
+                xs={6}
+                //hidden={!showCreateNewMeetModal}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyItems: 'left',
+                  alignItems: 'center',
                 }}
               >
                 <div>
-                  {Number(selectedEvent.duration.substring(0, 2)) > 1
-                    ? selectedEvent.duration.substring(3, 5) !== '59'
-                      ? Number(selectedEvent.duration.substring(0, 2)) +
-                        ' hrs ' +
-                        Number(selectedEvent.duration.substring(3, 5)) +
-                        ' min'
-                      : Number(selectedEvent.duration.substring(0, 2)) +
-                        1 +
-                        ' hrs'
-                    : Number(selectedEvent.duration.substring(0, 2)) == 1
-                    ? '60 min'
-                    : selectedEvent.duration.substring(3, 5) + ' min'}
+                  {console.log('here')}
+                  <Typography className={classes.colHeader}>
+                    Meeting Name
+                  </Typography>
+                  <Row>
+                    <input
+                      style={{
+                        width: '344px',
+                        backgroundColor: ' #F3F3F8',
+                        border: '1px solid #636366',
+                        borderRadius: '3px',
+                      }}
+                      value={meetName}
+                      onChange={(e) => setMeetName(e.target.value)}
+                    />
+                  </Row>
+                  <Typography className={classes.colHeader}>
+                    Date and Time
+                  </Typography>
+                  <Row>
+                    <Col>
+                      <input
+                        type="date"
+                        style={{
+                          width: '162px',
+                          backgroundColor: ' #F3F3F8',
+                          border: '1px solid #636366',
+                          borderRadius: '3px',
+                        }}
+                        value={meetDate}
+                        onChange={(e) => setMeetDate(e.target.value)}
+                      />
+                    </Col>
+                    <Col>
+                      <input
+                        type="time"
+                        style={{
+                          width: '162px',
+                          backgroundColor: ' #F3F3F8',
+                          border: '1px solid #636366',
+                          borderRadius: '3px',
+                        }}
+                        value={meetTime}
+                        onChange={(e) => setMeetTime(e.target.value)}
+                      />
+                    </Col>
+                  </Row>
+                  <Typography className={classes.colHeader}>
+                    {' '}
+                    Event Type{' '}
+                  </Typography>
+                  <Row className={classes.colBody}>
+                    {eventName}-
+                    {Number(duration.substring(0, 2)) > '01'
+                      ? duration.substring(3, 5) !== '59'
+                        ? Number(duration.substring(0, 2)) +
+                          ' hours ' +
+                          Number(duration.substring(3, 5)) +
+                          ' minutes'
+                        : Number(duration.substring(0, 2)) + 1 + ' hours'
+                      : Number(duration.substring(0, 2)) == '01'
+                      ? '60 minutes'
+                      : duration.substring(3, 5) + ' minutes'}
+                    meeting
+                  </Row>
+
+                  <Typography className={classes.colHeader}>
+                    {' '}
+                    Guests{' '}
+                  </Typography>
+                  <Typography className={classes.colBody}>
+                    {googleAuthedName}
+                  </Typography>
+                  <Typography className={classes.colBody}>
+                    {userName}
+                  </Typography>
+                  <div
+                    style={{
+                      padding: '0',
+                      backgroundColor: 'inherit',
+                      color: '#636366',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleAdd()}
+                  >
+                    + Add Guests
+                  </div>
+                  <Row>
+                    {attendees.map((field, idx) => {
+                      return (
+                        <input
+                          style={{
+                            width: '254px',
+                            backgroundColor: ' #F3F3F8',
+                            border: '1px solid #636366',
+                            borderRadius: '3px',
+                          }}
+                          type="text"
+                          onChange={(e) => handleChange(idx, e)}
+                        />
+                      );
+                    })}
+                  </Row>
+                  <Typography className={classes.colHeader}>
+                    {' '}
+                    Location{' '}
+                  </Typography>
+                  <Row>
+                    <input
+                      style={{
+                        width: '254px',
+                        backgroundColor: ' #F3F3F8',
+                        border: '1px solid #636366',
+                        borderRadius: '3px',
+                      }}
+                      value={meetLocation}
+                      onChange={(e) => setMeetLocation(e.target.value)}
+                    />
+                  </Row>
+
+                  <Row style={{ margin: '5px' }}>
+                    <Col xs={4}>
+                      <button
+                        style={{
+                          backgroundColor: ' #F3F3F8',
+                          border: '2px solid #2C2C2E',
+                          borderRadius: '3px',
+                          color: '#2C2C2E',
+                        }}
+                        onClick={() => {
+                          closeCreateNewMeetModal();
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </Col>
+                    <Col>
+                      <button
+                        style={{
+                          background: '#2C2C2E 0% 0% no-repeat padding-box',
+                          border: '2px solid #2C2C2E',
+                          borderRadius: '3px',
+                          color: ' #F3F3F8',
+                        }}
+                        onClick={(e) => {
+                          createMeet();
+                          createNewMeet();
+                        }}
+                      >
+                        Schedule Meeting
+                      </button>
+                    </Col>
+                  </Row>
                 </div>
-                <div>
-                  Location:{' '}
-                  {selectedEvent.location === ''
-                    ? 'None Specified'
-                    : selectedEvent.location}
-                </div>
-                <div>
-                  -
-                  {JSON.parse(selectedEvent.buffer_time).before.time.substring(
-                    3,
-                    5
-                  )}{' '}
-                  / +
-                  {JSON.parse(selectedEvent.buffer_time).after.time.substring(
-                    3,
-                    5
-                  )}
-                </div>
-              </div>
-            </div>
-          </Col>
-          <div>{showCreateNewMeetModal && createNewMeetModal()}</div>
-          <Col
-            xs={4}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'start',
-              margin: '20px 0px',
-              padding: '0px',
-            }}
-          >
-            {' '}
-            <Typography
+              </Col>
+            ) : null}
+          </Row>
+          {meetTime.length != 0 && showCreateNewMeetModal === false ? (
+            <Row
               style={{
-                textTransform: 'none',
-                //fontSize: '24px',
-                color: '#2C2C2E',
-                padding: '0',
-                font: 'normal normal bold 18px/21px SF Pro Display',
+                marginTop: '8rem',
               }}
             >
-              Select a Date & Time
-            </Typography>
-            {showDays === true && googleAuthedEmail.length != 0 ? (
-              <div>{showAvailableDays()}</div>
-            ) : (
-              <div></div>
-            )}
-          </Col>
-          <Col
-            xs={4}
-            style={{
-              justifyContent: 'center',
-              margin: '20px 0px',
-              padding: '0px',
-            }}
-          >
-            {' '}
-            <Typography
-              style={{
-                textTransform: 'none',
-                //fontSize: '24px',
-                color: '#2C2C2E',
-                padding: '0',
-                font: 'normal normal bold 14px/16px SF Pro Display',
-              }}
-            >
-              Available Times{' '}
-            </Typography>
-            {renderAvailableApptsVertical()}
-          </Col>
-        </Row>
+              <Col
+                xs={12}
+                style={{ display: 'flex', justifyContent: 'center' }}
+              >
+                <button
+                  className={classes.activeTimeSlotButton}
+                  onClick={() => {
+                    openCreateNewMeetModal();
+                  }}
+                >
+                  Confirm Date and Time
+                </button>
+              </Col>
+            </Row>
+          ) : null}
+        </div>
       )}
-      <hr />
     </div>
   );
 }

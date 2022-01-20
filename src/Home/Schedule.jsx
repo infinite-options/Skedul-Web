@@ -7,6 +7,7 @@ import moment from 'moment';
 import LoginContext from '../LoginContext';
 import Bookmark from '../images/bookmark.svg';
 import Edit from '../images/edit.svg';
+import { updateTheCalenderEvent } from './GoogleApiService';
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -72,6 +73,11 @@ export default function Schedule(props) {
   const [showUpdateMeetModal, setShowUpdateMeetModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState('');
+  const [selectedMeetingDate, setSelectedMeetingDate] = useState('');
+  const [selectedMeetingTime, setSelectedMeetingTime] = useState('');
+  const [selectedMeetingDuration, setSelectedMeetingDuration] = useState('');
+  const [responseStatus, setResponseStatus] = useState('');
+
   var selectedUser = '';
   if (
     document.cookie
@@ -193,7 +199,54 @@ export default function Schedule(props) {
   const closeUpdateMeetModal = () => {
     setShowUpdateMeetModal(false);
   };
+  // function updateMeet(event_id) {
+  //   var event = {
+  //     event_name: selectedEvent.event_name,
+  //     duration: selectedEvent.duration,
+  //     location: selectedEvent.location,
+  //     buffer_time: {
+  //       before: {
+  //         is_enabled: selectedEventBuffer.before.is_enabled,
+  //         time: selectedEventBuffer.before.time,
+  //       },
+  //       after: {
+  //         is_enabled: selectedEventBuffer.after.is_enabled,
+  //         time: selectedEventBuffer.after.time,
+  //       },
+  //     },
+  //   };
 
+  //   axios
+  //     .post(BASE_URL + `UpdateEvent/${event_id}`, event)
+  //     .then((response) => {
+  //       setRefreshKey((oldKey) => oldKey + 1);
+  //     })
+  //     .catch((error) => {
+  //       console.log('error', error);
+  //     });
+  //   setShowUpdateEventModal(false);
+  // }
+  // function handleUpdate(i, event) {
+  //   const emails = [...attendees];
+  //   console.log(emails);
+  //   emails[i].email = event.target.value;
+  //   setAttendees(emails);
+  //   console.log(emails);
+  // }
+
+  // function handleAdd() {
+  //   const emails = [...attendees];
+  //   console.log(emails);
+  //   emails.push({ email: userEmail });
+  //   setAttendees(emails);
+  // }
+
+  // function handleRemove(i) {
+  //   const emails = [...attendees];
+  //   emails.splice(i, 1);
+  //   setAttendees(emails);
+  // }
+  function update() {}
   const updateModal = () => {
     const modalStyle = {
       position: 'absolute',
@@ -234,23 +287,28 @@ export default function Schedule(props) {
         </Modal.Header>
 
         <Modal.Body style={bodyStyle}>
-          <Typography className={classes.colHeader}>Meeting Name</Typography>
           <Row style={colHeader}>
-            {/* <input
+            <input
               style={{
-                width: '344px',
+                width: '345px',
                 backgroundColor: ' #F3F3F8',
-                border: '1px solid #636366',
+                border: '2px solid #636366',
                 borderRadius: '3px',
               }}
-              value={meetName}
-              onChange={(e) => setMeetName(e.target.value)}
-            /> */}
+              value={selectedMeeting['summary']}
+              //value={eventName}
+              onChange={(e) => {
+                setSelectedMeeting({
+                  ...selectedMeeting,
+                  summary: e.target.value,
+                });
+              }}
+            />
           </Row>
           <Typography className={classes.colHeader}>Date and Time</Typography>
           <Row>
             <Col>
-              {/* <input
+              <input
                 type="date"
                 style={{
                   width: '162px',
@@ -258,12 +316,12 @@ export default function Schedule(props) {
                   border: '1px solid #636366',
                   borderRadius: '3px',
                 }}
-                value={meetDate}
-                onChange={(e) => setMeetDate(e.target.value)}
-              /> */}
+                value={selectedMeetingDate}
+                onChange={(e) => setSelectedMeetingDate(e.target.value)}
+              />
             </Col>
             <Col>
-              {/* <input
+              <input
                 type="time"
                 style={{
                   width: '162px',
@@ -271,69 +329,86 @@ export default function Schedule(props) {
                   border: '1px solid #636366',
                   borderRadius: '3px',
                 }}
-                value={meetTime}
-                onChange={(e) => setMeetTime(e.target.value)}
-              /> */}
+                value={selectedMeetingTime}
+                onChange={(e) => setSelectedMeetingTime(e.target.value)}
+              />
             </Col>
           </Row>
-          <Typography className={classes.colHeader}> Event Type </Typography>
-          <Row style={colHeader}>
-            {/* {eventName}-
-            {Number(duration.substring(0, 2)) > '01'
-              ? duration.substring(3, 5) !== '59'
-                ? Number(duration.substring(0, 2)) +
-                  ' hours ' +
-                  Number(duration.substring(3, 5)) +
-                  ' minutes'
-                : Number(duration.substring(0, 2)) + 1 + ' hours'
-              : Number(duration.substring(0, 2)) == '01'
-              ? '60 minutes'
-              : duration.substring(3, 5) + ' minutes'}
-            meeting */}
+
+          <Typography className={classes.colHeader}> Email </Typography>
+          <Row style={colHeader} className={classes.colBody}>
+            Organizer : &nbsp;{selectedMeeting['creator']['email']}
+          </Row>
+          <Row style={colHeader} className={classes.colBody}>
+            Attendees : &nbsp;
           </Row>
 
-          <Typography className={classes.colHeader}> Guests </Typography>
-
-          <div
-            style={{
-              padding: '0',
-              backgroundColor: 'inherit',
-              color: '#636366',
-              textAlign: 'left',
-              cursor: 'pointer',
-            }}
-            // onClick={() => handleAdd()}
-          >
-            + Add Guests
-          </div>
           <Row style={colHeader}>
-            {/* {attendees.map((field, idx) => {
+            {selectedMeeting['attendees'].map((field, idx) => {
               return (
-                <input
-                  style={{
-                    width: '254px',
-                    backgroundColor: ' #F3F3F8',
-                    border: '1px solid #636366',
-                    borderRadius: '3px',
-                  }}
-                  type="text"
-                  onChange={(e) => handleChange(idx, e)}
-                />
+                <div>
+                  <button
+                    style={{
+                      padding: '0px',
+                      margin: '0px',
+                      width: '20px',
+                      height: '25px',
+                      border: '1px solid #2C2C2E',
+                      borderRadius: ' 2px',
+                      backgroundColor: '#F3F3F8',
+                    }}
+                    //onClick={() => handleRemove(idx)}
+                  >
+                    -
+                  </button>{' '}
+                  &nbsp;
+                  <input
+                    style={{
+                      width: '254px',
+                      backgroundColor: ' #F3F3F8',
+                      border: '1px solid #636366',
+                      borderRadius: '3px',
+                    }}
+                    type="text"
+                    value={field['email']}
+                    //onChange={(e) => handleUpdate(idx, e)}
+                  />{' '}
+                  &nbsp;
+                  <button
+                    style={{
+                      padding: '0px',
+                      margin: '0px',
+                      width: '20px',
+                      height: '25px',
+                      border: '1px solid #2C2C2E',
+                      borderRadius: ' 2px',
+                      backgroundColor: '#F3F3F8',
+                    }}
+                    //onClick={() => handleAdd()}
+                  >
+                    +
+                  </button>
+                </div>
               );
-            })} */}
+            })}
           </Row>
           <Typography className={classes.colHeader}> Location </Typography>
           <Row style={colHeader}>
-            {/* <input
+            <input
               style={{
                 width: '254px',
                 backgroundColor: ' #F3F3F8',
                 border: '1px solid #636366',
                 borderRadius: '3px',
               }}
-              value={meetLocation}
-              onChange={(e) => setMeetLocation(e.target.value)}
-            /> */}
+              value={selectedMeeting['location']}
+              onChange={(e) => {
+                setSelectedMeeting({
+                  ...selectedMeeting,
+                  location: e.target.value,
+                });
+              }}
+            />
           </Row>
         </Modal.Body>
         <Modal.Footer style={footerStyle}>
@@ -356,10 +431,11 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  background: '#2C2C2E 0% 0% no-repeat padding-box',
+                  backgroundColor: ' #F3F3F8',
+
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: ' #F3F3F8',
+                  color: ' #2C2C2E',
                 }}
                 // onClick={(e) => {
                 //   createMeet();
@@ -384,6 +460,32 @@ export default function Schedule(props) {
   const closeAcceptModal = () => {
     setShowAcceptModal(false);
   };
+  function accept() {
+    const headers = {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + accessToken,
+    };
+    let meetID = selectedMeeting['id'];
+
+    var response = {
+      attendees: [{ email: userEmail, responseStatus: responseStatus }],
+    };
+    // updateTheCalenderEvent(event);
+    // closeAcceptModal();
+    console.log(response);
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events/${meetID}?key=${API_KEY}`;
+    axios
+      .patch(url, response, {
+        headers: headers,
+      })
+      .then((response) => {
+        console.log(response);
+
+        closeAcceptModal();
+        setRefreshKey((oldKey) => oldKey + 1);
+      })
+      .catch((error) => console.log(error));
+  }
   const acceptModal = () => {
     const modalStyle = {
       position: 'absolute',
@@ -481,10 +583,10 @@ export default function Schedule(props) {
               {moment(selectedMeeting['end']['dateTime']).format('hh:mm a')}
             </Col>
           </Row>
-          <Typography className={classes.colHeader}> Event Type </Typography>
+          {/* <Typography className={classes.colHeader}> Event Type </Typography>
           <Row style={colHeader} className={classes.colBody}>
             None Specified
-          </Row>
+          </Row> */}
 
           <Typography className={classes.colHeader}> Email </Typography>
           <Row style={colHeader} className={classes.colBody}>
@@ -516,14 +618,23 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor: ' #F3F3F8',
+                  backgroundColor:
+                    selectedMeeting['attendees'][0]['responseStatus'] ===
+                    'accepted'
+                      ? '#2C2C2E'
+                      : '#F3F3F8',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: '#2C2C2E',
+                  color:
+                    selectedMeeting['attendees'][0]['responseStatus'] ===
+                    'accepted'
+                      ? '#F3F3F8'
+                      : '#2C2C2E',
                 }}
-                // onClick={() => {
-                //   closeAcceptModal();
-                // }}
+                onClick={() => {
+                  setResponseStatus('accepted');
+                  accept();
+                }}
               >
                 Accept
               </button>
@@ -531,15 +642,23 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor: ' #F3F3F8',
+                  backgroundColor:
+                    selectedMeeting['attendees'][0]['responseStatus'] ===
+                    'declined'
+                      ? '#2C2C2E'
+                      : '#F3F3F8',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: ' #2C2C2E',
+                  color:
+                    selectedMeeting['attendees'][0]['responseStatus'] ===
+                    'declined'
+                      ? '#F3F3F8'
+                      : '#2C2C2E',
                 }}
-                // onClick={(e) => {
-                //   createMeet();
-                //   Accept();
-                // }}
+                onClick={() => {
+                  setResponseStatus('declined');
+                  accept();
+                }}
               >
                 Decline
               </button>
@@ -552,10 +671,9 @@ export default function Schedule(props) {
                   borderRadius: '3px',
                   color: ' #2C2C2E',
                 }}
-                // onClick={(e) => {
-                //   createMeet();
-                //   Accept();
-                // }}
+                onClick={(e) => {
+                  openUpdateMeetModal();
+                }}
               >
                 Reschedule
               </button>
@@ -778,7 +896,7 @@ export default function Schedule(props) {
     }
     //console.log(arr);
     for (let i = 0; i < arr.length; i++) {
-      //console.log(arr[i]);
+      // console.log(arr[i]);
       tempStart = arr[i].schedule.start_time;
       tempEnd = arr[i].schedule.end_time;
       // console.log(tempStart, tempEnd);
@@ -829,6 +947,9 @@ export default function Schedule(props) {
             className="clickButton"
             data-toggle="tooltip"
             data-placement="right"
+            title={
+              arr[i].view_name + '\nStart: ' + tempStart + '\nEnd: ' + tempEnd
+            }
             key={i}
             style={{
               zIndex: 1,
@@ -836,6 +957,7 @@ export default function Schedule(props) {
               marginLeft: addmarginLeft + 'px',
               padding: '3px',
               fontSize: fontSize + 'px',
+
               // border: '1px lightgray solid ',
               // border:
               //   this.props.highLight === arr[i].title
@@ -929,6 +1051,11 @@ export default function Schedule(props) {
           onClick={() => {
             openAcceptModal();
             setSelectedMeeting(arr[i]);
+            setSelectedMeetingDate(moment(tempStartTime).format('YYYY-MM-DD'));
+            setSelectedMeetingTime(moment(tempStartTime).format('hh:mm'));
+            setSelectedMeetingDuration(
+              moment.duration(moment(tempEndTime).diff(moment(tempStartTime)))
+            );
             console.log(arr[i]);
           }}
         >
@@ -937,7 +1064,7 @@ export default function Schedule(props) {
             data-toggle="tooltip"
             data-placement="right"
             title={
-              arr[i].meeting_unique_id +
+              arr[i].summary +
               '\nStart: ' +
               tempStartTime +
               '\nEnd: ' +
@@ -1027,7 +1154,6 @@ export default function Schedule(props) {
           }}
         >
           {arr}
-          {startDate.format('D')}
         </Col>
       );
       startDate.add(1, 'day');
