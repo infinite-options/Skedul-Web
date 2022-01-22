@@ -63,7 +63,9 @@ export default function Login() {
           'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
         loginContext.setLoginState({
           ...loginContext.loginState,
+          loggedIn: true,
           user: {
+            ...loginContext.loginState.user,
             id: response['data']['user_unique_id'],
             email: response['data']['user_email_id'],
             user_access: response['data']['google_auth_token'],

@@ -60,8 +60,12 @@ const useStyles = makeStyles({
 });
 export default function Schedule(props) {
   const classes = useStyles();
+
+  const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
   const loginContext = useContext(LoginContext);
   const [allViews, setAllViews] = useState([]);
+
   const [allSchedule, setAllSchedule] = useState([]);
   const [allMeetings, setAllMeetings] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
@@ -77,6 +81,12 @@ export default function Schedule(props) {
   const [selectedMeetingTime, setSelectedMeetingTime] = useState('');
   const [selectedMeetingDuration, setSelectedMeetingDuration] = useState('');
   const [responseStatus, setResponseStatus] = useState('');
+  console.log(
+    'selecteduser',
+
+    loginContext,
+    document.cookie
+  );
 
   var selectedUser = '';
   if (
@@ -89,24 +99,26 @@ export default function Schedule(props) {
       .find((row) => row.startsWith('user_uid='))
       .split('=')[1];
   }
-  var accessToken = '';
+  var at = '';
+
   var userEmail = '';
-  if (
-    document.cookie
-      .split(';')
-      .some((item) => item.trim().startsWith('user_uid='))
-  ) {
-    accessToken = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('user_access='))
-      .split('=')[1];
-  }
-  // accessToken = loginContext.loginState.user.user_access;
+  // if (
+  //   document.cookie
+  //     .split(';')
+  //     .some((item) => item.trim().startsWith('user_uid='))
+  // ) {
+  //   at = document.cookie
+  //     .split('; ')
+  //     .find((row) => row.startsWith('user_access='))
+  //     .split('=')[1];
+  // }
+  at = loginContext.loginState.user.user_access;
   userEmail = loginContext.loginState.user.email;
+
+  const [accessToken, setAccessToken] = useState(at);
   // console.log(
   //   'selecteduser',
-  //   selectedUser,
-  //   accessToken,
+
   //   loginContext,
   //   document.cookie
   // );
@@ -121,6 +133,86 @@ export default function Schedule(props) {
         setSelectedSchedule(JSON.parse(json.result.result[0].schedule));
       })
       .catch((error) => console.log(error));
+    axios
+      .get(BASE_URL + `UserDetails/${selectedUser}`)
+      .then((response) => {
+        console.log(response.data);
+
+        var old_at = response.data.google_auth_token;
+        var refresh_token = response.data.google_refresh_token;
+        //console.log(refresh_token);
+        setAccessToken(old_at);
+        console.log('in events', old_at);
+        fetch(
+          `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
+          {
+            method: 'GET',
+          }
+        ).then((response) => {
+          //console.log('in events', response);
+          if (response['status'] === 400) {
+            //console.log('in events if');
+            let authorization_url =
+              'https://accounts.google.com/o/oauth2/token';
+
+            var details = {
+              refresh_token: refresh_token,
+              client_id: CLIENT_ID,
+              client_secret: CLIENT_SECRET,
+              grant_type: 'refresh_token',
+            };
+            //console.log(details);
+            var formBody = [];
+            for (var property in details) {
+              var encodedKey = encodeURIComponent(property);
+              var encodedValue = encodeURIComponent(details[property]);
+              formBody.push(encodedKey + '=' + encodedValue);
+            }
+            formBody = formBody.join('&');
+
+            fetch(authorization_url, {
+              method: 'POST',
+              headers: {
+                'Content-Type':
+                  'application/x-www-form-urlencoded;charset=UTF-8',
+              },
+              body: formBody,
+            })
+              .then((response) => {
+                return response.json();
+              })
+              .then((responseData) => {
+                console.log(responseData);
+                return responseData;
+              })
+              .then((data) => {
+                //console.log(data);
+                let at = data['access_token'];
+                setAccessToken(at);
+                console.log('in events', at);
+                let url = BASE_URL + `UpdateAccessToken/${selectedUser}`;
+                axios
+                  .post(url, {
+                    google_auth_token: at,
+                  })
+                  .then((response) => {})
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                return accessToken;
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            setAccessToken(old_at);
+            console.log(old_at);
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [refreshKey]);
 
   useEffect(() => {
@@ -156,6 +248,29 @@ export default function Schedule(props) {
       .catch((error) => console.log(error));
   }, [refreshKey]);
 
+  // useEffect(() => {
+  //   let today = new Date();
+  //   let dateNew = moment(today);
+  //   let startDate = dateNew.startOf('week').format('YYYY-MM-DD');
+  //   let start = startDate + 'T00:00:00-08:00';
+  //   let endDate = moment(startDate).add(12, 'days').format('YYYY-MM-DD');
+  //   let end = endDate + 'T23:59:59-08:00';
+  //   const headers = {
+  //     Accept: 'application/json',
+  //     Authorization: 'Bearer ' + accessToken,
+  //   };
+  //   console.log(accessToken);
+  //   const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
+  //   fetch(url, {
+  //     headers: headers,
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data.items);
+  //       setAllGoogleMeetings(data.items);
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, [accessToken]);
   useEffect(() => {
     let today = new Date();
     let dateNew = moment(today);
@@ -167,8 +282,8 @@ export default function Schedule(props) {
       Accept: 'application/json',
       Authorization: 'Bearer ' + accessToken,
     };
-    //console.log(startDate, start, endDate, end);
-    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}`;
+    console.log(accessToken);
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
     axios
       .get(url, {
         headers: headers,
@@ -179,16 +294,25 @@ export default function Schedule(props) {
       .catch((error) => console.log(error));
   }, [refreshKey]);
   useEffect(() => {
-    if (allSchedule != undefined) {
+    if (allSchedule != undefined && allGoogleMeetings != undefined) {
       if (
         allEvents.length !== 0 ||
         allSchedule.length !== 0 ||
-        allViews.length !== 0
+        allViews.length !== 0 ||
+        allGoogleMeetings != undefined
       ) {
         setIsLoading(false);
       }
     }
-  }, [allViews, allEvents, allSchedule, selectedSchedule, refreshKey]);
+  }, [
+    allViews,
+    allEvents,
+    allSchedule,
+    allGoogleMeetings,
+    selectedSchedule,
+    //accessToken,
+    refreshKey,
+  ]);
 
   const openUpdateMeetModal = () => {
     setShowUpdateMeetModal((prevState) => {
@@ -199,54 +323,90 @@ export default function Schedule(props) {
   const closeUpdateMeetModal = () => {
     setShowUpdateMeetModal(false);
   };
-  // function updateMeet(event_id) {
-  //   var event = {
-  //     event_name: selectedEvent.event_name,
-  //     duration: selectedEvent.duration,
-  //     location: selectedEvent.location,
-  //     buffer_time: {
-  //       before: {
-  //         is_enabled: selectedEventBuffer.before.is_enabled,
-  //         time: selectedEventBuffer.before.time,
-  //       },
-  //       after: {
-  //         is_enabled: selectedEventBuffer.after.is_enabled,
-  //         time: selectedEventBuffer.after.time,
-  //       },
-  //     },
-  //   };
+  function updateMeet() {
+    let startTime =
+      selectedMeetingDate + 'T' + selectedMeetingTime + ':00-08:00';
 
-  //   axios
-  //     .post(BASE_URL + `UpdateEvent/${event_id}`, event)
-  //     .then((response) => {
-  //       setRefreshKey((oldKey) => oldKey + 1);
-  //     })
-  //     .catch((error) => {
-  //       console.log('error', error);
-  //     });
-  //   setShowUpdateEventModal(false);
-  // }
-  // function handleUpdate(i, event) {
-  //   const emails = [...attendees];
-  //   console.log(emails);
-  //   emails[i].email = event.target.value;
-  //   setAttendees(emails);
-  //   console.log(emails);
-  // }
+    let duration = moment.utc(selectedMeetingDuration).format('HH:mm:ss');
 
-  // function handleAdd() {
-  //   const emails = [...attendees];
-  //   console.log(emails);
-  //   emails.push({ email: userEmail });
-  //   setAttendees(emails);
-  // }
+    let etime = moment(selectedMeetingTime, 'HH:mm:ss')
+      .add(duration, 'milliseconds')
+      .format('HH:mm');
 
-  // function handleRemove(i) {
-  //   const emails = [...attendees];
-  //   emails.splice(i, 1);
-  //   setAttendees(emails);
-  // }
-  function update() {}
+    let endTime = selectedMeetingDate + 'T' + etime + ':00-08:00';
+    console.log(selectedMeetingDuration, duration);
+    console.log(selectedMeetingTime, etime);
+    console.log(startTime, endTime);
+    var event = {
+      id: selectedMeeting['id'],
+      summary: selectedMeeting['summary'],
+      location: selectedMeeting['location'],
+      creator: selectedMeeting['creator'],
+      organizer: selectedMeeting['organizer'],
+      start: {
+        dateTime: startTime,
+      },
+      end: {
+        dateTime: endTime,
+      },
+
+      attendees: selectedMeeting['attendees'],
+    };
+    console.log(event);
+    const headers = {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + accessToken,
+    };
+    let meetID = selectedMeeting['id'];
+
+    // updateTheCalenderEvent(event);
+    // closeAcceptModal();
+
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events/${meetID}?key=${API_KEY}`;
+    axios
+      .patch(url, event, {
+        headers: headers,
+      })
+      .then((response) => {
+        console.log(response);
+
+        // closeAcceptModal();
+        setRefreshKey((oldKey) => oldKey + 1);
+        closeUpdateMeetModal();
+        closeAcceptModal();
+      })
+      .catch((error) => console.log(error));
+  }
+  function handleUpdate(i, event) {
+    const fields = [...selectedMeeting['attendees']];
+    //console.log(i);
+    fields[i][event.target.name] = event.target.value;
+    setSelectedMeeting({
+      ...selectedMeeting,
+      attendees: fields,
+    });
+  }
+
+  function handleAdd() {
+    const fields = [...selectedMeeting['attendees']];
+    //console.log(fields);
+    fields.push({ email: '' });
+    //console.log(fields);
+    setSelectedMeeting({
+      ...selectedMeeting,
+      attendees: fields,
+    });
+  }
+
+  function handleRemove(i) {
+    const emails = [...selectedMeeting['attendees']];
+    emails.splice(i, 1);
+    setSelectedMeeting({
+      ...selectedMeeting,
+      attendees: emails,
+    });
+  }
+
   const updateModal = () => {
     const modalStyle = {
       position: 'absolute',
@@ -344,7 +504,7 @@ export default function Schedule(props) {
           </Row>
 
           <Row style={colHeader}>
-            {selectedMeeting['attendees'].map((field, idx) => {
+            {Object.values(selectedMeeting.attendees).map((field, idx) => {
               return (
                 <div>
                   <button
@@ -357,7 +517,7 @@ export default function Schedule(props) {
                       borderRadius: ' 2px',
                       backgroundColor: '#F3F3F8',
                     }}
-                    //onClick={() => handleRemove(idx)}
+                    onClick={() => handleRemove(idx)}
                   >
                     -
                   </button>{' '}
@@ -370,8 +530,10 @@ export default function Schedule(props) {
                       borderRadius: '3px',
                     }}
                     type="text"
-                    value={field['email']}
-                    //onChange={(e) => handleUpdate(idx, e)}
+                    id="email"
+                    name="email"
+                    value={field.email}
+                    onChange={(e) => handleUpdate(idx, e)}
                   />{' '}
                   &nbsp;
                   <button
@@ -384,7 +546,7 @@ export default function Schedule(props) {
                       borderRadius: ' 2px',
                       backgroundColor: '#F3F3F8',
                     }}
-                    //onClick={() => handleAdd()}
+                    onClick={() => handleAdd()}
                   >
                     +
                   </button>
@@ -437,10 +599,10 @@ export default function Schedule(props) {
                   borderRadius: '3px',
                   color: ' #2C2C2E',
                 }}
-                // onClick={(e) => {
-                //   createMeet();
-                //   UpdateMeet();
-                // }}
+                onClick={(e) => {
+                  //createMeet();
+                  updateMeet();
+                }}
               >
                 Update Meeting
               </button>
@@ -481,7 +643,7 @@ export default function Schedule(props) {
       .then((response) => {
         console.log(response);
 
-        closeAcceptModal();
+        // closeAcceptModal();
         setRefreshKey((oldKey) => oldKey + 1);
       })
       .catch((error) => console.log(error));
@@ -619,20 +781,23 @@ export default function Schedule(props) {
               <button
                 style={{
                   backgroundColor:
+                    responseStatus === 'accepted' ||
                     selectedMeeting['attendees'][0]['responseStatus'] ===
-                    'accepted'
+                      'accepted'
                       ? '#2C2C2E'
                       : '#F3F3F8',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
                   color:
+                    responseStatus === 'accepted' ||
                     selectedMeeting['attendees'][0]['responseStatus'] ===
-                    'accepted'
+                      'accepted'
                       ? '#F3F3F8'
                       : '#2C2C2E',
                 }}
                 onClick={() => {
                   setResponseStatus('accepted');
+                  setRefreshKey((oldKey) => oldKey + 1);
                   accept();
                 }}
               >
@@ -643,15 +808,17 @@ export default function Schedule(props) {
               <button
                 style={{
                   backgroundColor:
+                    responseStatus === 'declined' ||
                     selectedMeeting['attendees'][0]['responseStatus'] ===
-                    'declined'
+                      'declined'
                       ? '#2C2C2E'
                       : '#F3F3F8',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
                   color:
+                    responseStatus === 'declined' ||
                     selectedMeeting['attendees'][0]['responseStatus'] ===
-                    'declined'
+                      'declined'
                       ? '#F3F3F8'
                       : '#2C2C2E',
                 }}
@@ -666,10 +833,10 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor: ' #F3F3F8',
+                  backgroundColor: showUpdateMeetModal ? '#2C2C2E' : '#F3F3F8',
                   border: '2px solid #2C2C2E',
                   borderRadius: '3px',
-                  color: ' #2C2C2E',
+                  color: showUpdateMeetModal ? '#F3F3F8' : '#2C2C2E',
                 }}
                 onClick={(e) => {
                   openUpdateMeetModal();
@@ -798,7 +965,7 @@ export default function Schedule(props) {
   const sortMeetings = () => {
     var arr = allGoogleMeetings;
 
-    console.log('meetings', arr);
+    console.log('meetings', arr, allGoogleMeetings);
     var dic = {};
     for (let i = 0; i < arr.length; i++) {
       let tempStart = arr[i].start.dateTime;
@@ -947,9 +1114,7 @@ export default function Schedule(props) {
             className="clickButton"
             data-toggle="tooltip"
             data-placement="right"
-            title={
-              arr[i].view_name + '\nStart: ' + tempStart + '\nEnd: ' + tempEnd
-            }
+            title={arr[i].name + '\nStart: ' + tempStart + '\nEnd: ' + tempEnd}
             key={i}
             style={{
               zIndex: 1,
@@ -983,7 +1148,7 @@ export default function Schedule(props) {
     }
     return res;
   };
-  console.log('selectedmeeting', selectedMeeting);
+  //console.log('selectedmeeting', selectedMeeting);
   const getMeetItemFromDic = (day, hour, dic) => {
     let today = new Date();
     let dateNew = moment(today);
@@ -1052,11 +1217,11 @@ export default function Schedule(props) {
             openAcceptModal();
             setSelectedMeeting(arr[i]);
             setSelectedMeetingDate(moment(tempStartTime).format('YYYY-MM-DD'));
-            setSelectedMeetingTime(moment(tempStartTime).format('hh:mm'));
+            setSelectedMeetingTime(moment(tempStartTime).format('HH:mm'));
             setSelectedMeetingDuration(
-              moment.duration(moment(tempEndTime).diff(moment(tempStartTime)))
+              moment(tempEndTime).diff(moment(tempStartTime))
             );
-            console.log(arr[i]);
+            //console.log(arr[i]);
           }}
         >
           <div
@@ -1109,7 +1274,7 @@ export default function Schedule(props) {
     let dic = sortSchedule();
     var x = [];
     let dicMeet = sortMeetings();
-    console.log(dic, dicMeet);
+    //console.log(dic, dicMeet);
     let today = new Date();
     let dateNew = moment(today);
     let startDate = dateNew.startOf('week');

@@ -118,24 +118,22 @@ export default function CreateMeet() {
   const [viewColor, setViewColor] = useState('');
   const [viewID, setViewID] = useState('');
   const [eventName, setEventName] = useState([]);
-  const [selectedView, setSelectedView] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [timeSlots, setTimeSlots] = useState([]);
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [buttonSelect, setButtonSelect] = useState(false);
   const [timeSelected, setTimeSelected] = useState(false);
   const [showDays, setShowDays] = useState(false);
+  const [showTimes, setShowTimes] = useState(false);
+  const [showButton, setShowButton] = useState(false);
   const [duration, setDuration] = useState(null);
   const [dateString, setDateString] = useState('');
   const [timeAASlots, setTimeAASlots] = useState([]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-
+  const [meetingConfirmed, setMeetingConfirmed] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const [refreshToken, setRefreshToken] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
@@ -196,7 +194,7 @@ export default function CreateMeet() {
           .get(BASE_URL + `GetView/${viewID}`)
           .then((response) => {
             let schedule = JSON.parse(response.data.result.result[0].schedule);
-            setSelectedView(response.data.result.result[0]);
+
             setSelectedSchedule(schedule);
             setViewID(response.data.result.result[0].view_unique_id);
             setViewColor(response.data.result.result[0].color);
@@ -210,7 +208,6 @@ export default function CreateMeet() {
           .then((response) => {
             //console.log(response.data);
             setAccessToken(response.data.google_auth_token);
-            setRefreshToken(response.data.google_refresh_token);
             setSelectedUser(response.data.user_unique_id);
             setUserEmail(response.data.user_email_id);
             setAttendees([{ email: response.data.user_email_id }]);
@@ -450,7 +447,7 @@ export default function CreateMeet() {
       .then((response) => {
         //console.log(JSON.parse(response.data.result.result[0].schedule));
         let schedule = JSON.parse(response.data.result.result[0].schedule);
-        setSelectedView(response.data.result.result[0]);
+
         setSelectedSchedule(schedule);
       })
       .catch((error) => {
@@ -459,6 +456,7 @@ export default function CreateMeet() {
   }
 
   const openCreateNewMeetModal = () => {
+    setShowButton(false);
     setShowCreateNewMeetModal((prevState) => {
       return { showCreateNewMeetModal: !prevState.showCreateNewMeetModal };
     });
@@ -512,12 +510,14 @@ export default function CreateMeet() {
     setShowCreateNewMeetModal(false);
     setTimeSelected(false);
     setShowDays(false);
+    setShowTimes(false);
+    setMeetingConfirmed(true);
     setTimeAASlots([]);
     setTimeSlots([]);
     setMeetName('');
-    setMeetDate('');
+    //setMeetDate('');
     setMeetLocation('');
-    setMeetTime('');
+    //setMeetTime('');
     setAttendees([{ email: '' }]);
   }
   function createMeet() {
@@ -556,10 +556,12 @@ export default function CreateMeet() {
     publishTheCalenderEvent(meet);
     setTimeSelected(false);
     setShowDays(false);
+    setShowTimes(false);
+    setMeetingConfirmed(true);
     setMeetName('');
-    setMeetDate('');
+    //setMeetDate('');
     setMeetLocation('');
-    setMeetTime('');
+    //setMeetTime('');
     setAttendees([{ email: '' }]);
   }
 
@@ -662,10 +664,9 @@ export default function CreateMeet() {
                       : `${classes.timeButton}`
                   }
                   onClick={() => {
-                    selectApptTime(element);
-
                     setMeetDate(dateString);
                     setMeetTime(element);
+                    setShowButton(true);
                   }}
                 >
                   {formatTime(dateString, element)}
@@ -677,12 +678,7 @@ export default function CreateMeet() {
       </div>
     );
   }
-  function selectApptTime(element) {
-    //console.log('selected time', element);
-    setSelectedTime(element);
-    //setTimeSelected(true);
-    setButtonSelect(true);
-  }
+
   //console.log(dateString)
   function showAvailableDays() {
     // let x = Last7Days();
@@ -713,6 +709,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Sunday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -743,6 +740,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Monday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -775,6 +773,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Tuesday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -805,6 +804,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Wednesday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -835,6 +835,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Thursday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -865,6 +866,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Friday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -895,6 +897,7 @@ export default function CreateMeet() {
                 }
                 onClick={() => {
                   setTimeSelected(true);
+                  setShowTimes(true);
                   setDateString(dateRange['Saturday']);
                   setTimeAASlots([]);
                   setTimeSlots([]);
@@ -933,6 +936,7 @@ export default function CreateMeet() {
                 onClick={() => {
                   getAuthToGoogle();
                   setSignedIn(true);
+                  setMeetingConfirmed(false);
                   setTimeSelected(false);
                   setTimeSlots([]);
                   setTimeAASlots([]);
@@ -1023,7 +1027,7 @@ export default function CreateMeet() {
                 margin: '20px 20px',
                 padding: '0px',
               }}
-              hidden={showCreateNewMeetModal}
+              hidden={showCreateNewMeetModal || meetingConfirmed}
             >
               {' '}
               {showDays === true && googleAuthedEmail.length != 0 ? (
@@ -1053,9 +1057,9 @@ export default function CreateMeet() {
                 margin: '20px 0px',
                 padding: '0px',
               }}
-              hidden={showCreateNewMeetModal}
+              hidden={showCreateNewMeetModal || meetingConfirmed}
             >
-              {dateString.length != 0 && timeSelected === true ? (
+              {showTimes === true ? (
                 <div>
                   {' '}
                   <Typography
@@ -1244,8 +1248,35 @@ export default function CreateMeet() {
                 </div>
               </Col>
             ) : null}
+            {meetingConfirmed ? (
+              <Col
+                //xs={6}
+                //hidden={!showCreateNewMeetModal}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  //justifyItems: 'left',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  style={{
+                    margin: '5rem',
+                    textTransform: 'none',
+                    //fontSize: '24px',
+                    color: '#2C2C2E',
+                    padding: '0',
+                    font: 'normal normal bold 20px SF Pro Display',
+                  }}
+                >
+                  You are all set for {moment(meetDate).format('MMMM DD, YYYY')}{' '}
+                  at {meetTime.substring(0, 5)} <br /> The email invite has been
+                  sent to the {userEmail}.
+                </Typography>
+              </Col>
+            ) : null}
           </Row>
-          {meetTime.length != 0 && showCreateNewMeetModal === false ? (
+          {showButton === true ? (
             <Row
               style={{
                 marginTop: '8rem',
