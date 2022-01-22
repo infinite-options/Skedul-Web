@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { Row, Col, Modal } from 'react-bootstrap';
+
+import { useHistory } from 'react-router-dom';
+import { Row, Col, Container, Form, Modal } from 'react-bootstrap';
 import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Item from '@material-ui/core/Grid';
@@ -12,7 +14,9 @@ import {
   getSignedInUserEmail,
   publishTheCalenderEvent,
 } from './GoogleApiService';
+import GoogleLogin from 'react-google-login';
 
+import LoginContext from 'LoginContext';
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 const useStyles = makeStyles({
@@ -114,26 +118,45 @@ export default function CreateMeet() {
   const classes = useStyles();
   const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
   const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
+
+  const loginContext = useContext(LoginContext);
+  const history = useHistory();
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [newFName, setNewFName] = useState('');
+  const [newLName, setNewLName] = useState('');
+  const [socialId, setSocialId] = useState('');
+  const [refreshToken, setrefreshToken] = useState('');
+  const [accessToken, setAccessToken] = useState('');
+  const [accessExpiresIn, setaccessExpiresIn] = useState('');
+
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [viewColor, setViewColor] = useState('');
   const [viewID, setViewID] = useState('');
   const [eventName, setEventName] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  const [timeSlots, setTimeSlots] = useState([]);
+  const [googleAuthedEmail, setgoogleAuthedEmail] = useState('');
+  const [googleAuthedName, setgoogleAuthedName] = useState('');
+
+  const [signedin, setSignedIn] = useState(false);
+  const [signUp, setSignUp] = useState(false);
   const [timeSelected, setTimeSelected] = useState(false);
   const [showDays, setShowDays] = useState(false);
   const [showTimes, setShowTimes] = useState(false);
   const [showButton, setShowButton] = useState(false);
+  const [meetingConfirmed, setMeetingConfirmed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [timeAASlots, setTimeAASlots] = useState([]);
   const [duration, setDuration] = useState(null);
   const [dateString, setDateString] = useState('');
-  const [timeAASlots, setTimeAASlots] = useState([]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [meetingConfirmed, setMeetingConfirmed] = useState(false);
-  const [accessToken, setAccessToken] = useState('');
+
   const [selectedUser, setSelectedUser] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
@@ -146,9 +169,131 @@ export default function CreateMeet() {
   const [meetTime, setMeetTime] = useState('');
   const [attendees, setAttendees] = useState([{ email: '' }]);
 
-  const [signedin, setSignedIn] = useState(false);
-  const [googleAuthedEmail, setgoogleAuthedEmail] = useState('');
-  const [googleAuthedName, setgoogleAuthedName] = useState('');
+  const client_id = CLIENT_ID;
+  const client_secret = CLIENT_SECRET;
+
+  const responseGoogle = (response) => {
+    console.log('response', response);
+
+    let auth_code = response.code;
+    let authorization_url = 'https://accounts.google.com/o/oauth2/token';
+
+    console.log('auth_code', auth_code);
+    var details = {
+      code: auth_code,
+      client_id: client_id,
+      client_secret: client_secret,
+      //redirect_uri: 'https://manifestmy.space',
+      redirect_uri: 'http://localhost:3000',
+      //redirectUri: 'https://skedul.online',
+      grant_type: 'authorization_code',
+    };
+
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + '=' + encodedValue);
+    }
+    formBody = formBody.join('&');
+
+    fetch(authorization_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+      body: formBody,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
+        console.log(responseData);
+        return responseData;
+      })
+      .then((data) => {
+        console.log(data);
+        let at = data['access_token'];
+        let rt = data['refresh_token'];
+        let ax = data['expires_in'].toString();
+        setAccessToken(at);
+        setrefreshToken(rt);
+        setaccessExpiresIn(ax);
+        console.log('res', at, rt);
+
+        axios
+          .get(
+            'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' +
+              at
+          )
+          .then((response) => {
+            console.log(response.data);
+
+            let data = response.data;
+            //setUserInfo(data);
+            let e = data['email'];
+            let fn = data['given_name'];
+            let ln = data['family_name'];
+            let si = data['id'];
+
+            setNewEmail(e);
+            setNewFName(fn);
+            setNewLName(ln);
+            setSocialId(si);
+            axios.get(BASE_URL + 'GetEmailId/' + e).then((response) => {
+              console.log(response.data);
+              if (response.data.message === 'User EmailID doesnt exist') {
+                setSocialSignUpModalShow(!socialSignUpModalShow);
+              } else {
+                console.log('ACCESS', accessToken);
+                document.cookie = 'user_uid=' + response.data.result;
+                document.cookie = 'user_email=' + e;
+                document.cookie = 'user_access=' + accessToken.toString();
+                setLoggedIn(true);
+                setgoogleAuthedEmail(e.toString());
+                loginContext.setLoginState({
+                  ...loginContext.loginState,
+                  loggedIn: true,
+                  user: {
+                    ...loginContext.loginState.user,
+                    id: response.data.result.toString(),
+                    email: e.toString(),
+                    user_access: accessToken.toString(),
+                  },
+                });
+
+                history.push({
+                  pathname: document.location.href.substring(21, 39),
+                  state: {
+                    email: e.toString(),
+                    accessToken: accessToken.toString(),
+                  },
+                });
+              }
+            });
+          })
+          .catch((error) => {
+            console.log('its in landing page');
+            console.log(error);
+          });
+
+        // setSocialSignUpModalShow(!socialSignUpModalShow);
+
+        return (
+          accessToken,
+          refreshToken,
+          accessExpiresIn,
+          newEmail,
+          newFName,
+          newLName,
+          socialId
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   let curURL = window.location.href;
   const eventID = curURL.substring(curURL.length - 10);
   useEffect(() => {
@@ -169,7 +314,7 @@ export default function CreateMeet() {
       let fullName = profile[1];
       setgoogleAuthedEmail(email);
       setgoogleAuthedName(fullName);
-      setShowDays(true);
+      setSignedIn(true);
     }
   };
   const getAuthToGoogle = async () => {
@@ -313,16 +458,9 @@ export default function CreateMeet() {
             endTime
         )
         .then((res) => {
-          // console.log(
-          //   'This is the information we got' + res,
-          //   duration,
-          //   dateString + '/' + duration + '/' + startTime + ',' + endTime
-          // );
-
           res.data.result.map((r) => {
             timeAASlots.push(r['begin_time']);
           });
-
           setTimeAASlots(timeAASlots);
         });
     }
@@ -347,10 +485,7 @@ export default function CreateMeet() {
       };
       const timeMin = dateString + 'T' + startTime + ':00-0800';
       const timeMax = dateString + 'T' + endTime + ':00-0800';
-      // console.log(headers);
-      // console.log(data);
-      // console.log(duration);
-      //console.log(startTime, timeMin, endTime, timeMax);
+
       axios
         .post(
           `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`,
@@ -366,29 +501,13 @@ export default function CreateMeet() {
           let end_time = Date.parse(timeMax) / 1000;
           let free = [];
           let appt_start_time = start_time;
-
           let seconds = convert(duration);
-          //console.log(seconds);
-          // console.log(
-          //   start_time,
-          //   end_time,
-          //   startTime,
-          //   timeMin,
-          //   endTime,
-          //   timeMax,
-          //   duration,
-          //   seconds
-          // );
           // Loop through each appt slot in the search range.
           while (appt_start_time < end_time) {
             //console.log('in while');
             // Add appt duration to the appt start time so we know where the appt will end.
             let appt_end_time = appt_start_time + seconds;
-            // console.log(
-            //   moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
-            //   moment(new Date(appt_end_time * 1000)).format('HH:mm:ss'),
-            //   moment(new Date(end_time * 1000)).format('HH:mm:ss')
-            // );
+
             // For each appt slot, loop through the current appts to see if it falls
             // in a slot that is already taken.
             let slot_available = true;
@@ -396,10 +515,7 @@ export default function CreateMeet() {
             busy.forEach((times) => {
               let this_start = Date.parse(times['start']) / 1000;
               let this_end = Date.parse(times['end']) / 1000;
-              // console.log(
-              //   moment(new Date(this_start * 1000)).format('HH:mm:ss'),
-              //   moment(new Date(this_end * 1000)).format('HH:mm:ss')
-              // );
+
               // If the appt start time or appt end time falls on a current appt, slot is taken.
 
               if (
@@ -416,21 +532,12 @@ export default function CreateMeet() {
 
             // If we made it through all appts and the slot is still available, it's an open slot.
             if (slot_available) {
-              // console.log(
-              //   'slot available',
-              //   moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
-              // );
               free.push(
                 moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
               );
             }
             // + duration minutes
             appt_start_time += 60 * 30;
-            // console.log(
-            //   'free',
-            //   moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
-            //   free
-            // );
           }
           setTimeSlots(free);
         })
@@ -445,7 +552,6 @@ export default function CreateMeet() {
     axios
       .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
-        //console.log(JSON.parse(response.data.result.result[0].schedule));
         let schedule = JSON.parse(response.data.result.result[0].schedule);
 
         setSelectedSchedule(schedule);
@@ -615,21 +721,10 @@ export default function CreateMeet() {
       resultDay.push(x);
       date[x] = moment(d).format('YYYY-MM-DD');
     }
-    //result.join(',');
-    //resultDay.join(',');
-    // console.log(result);
-    // console.log(resultDay);
-    // date = {
-    //   day: resultDay,
-    //   date: result,
-    // };
-    //console.log(date);
+
     return date;
   }
   function renderAvailableApptsVertical() {
-    //console.log('TimeSlots', timeSlots);
-    //console.log('TimeSlotsAA', timeAASlots);
-
     Last7Days();
     let result = [];
     {
@@ -642,7 +737,6 @@ export default function CreateMeet() {
           ));
     }
 
-    //console.log('Merged', result);
     return (
       <div>
         <div style={{ height: '10rem' }}>
@@ -681,13 +775,6 @@ export default function CreateMeet() {
 
   //console.log(dateString)
   function showAvailableDays() {
-    // let x = Last7Days();
-    // //console.log(x);
-    // for (var i = 0; i < 7; i++) {
-    //   if (x.day[i] == 'Sunday') {
-    //     console.log(x.date[i]);
-    //   }
-    // }
     let dateRange = Last7Days();
     //console.log(dateRange);
 
@@ -916,272 +1003,473 @@ export default function CreateMeet() {
     );
   }
 
-  return (
-    <div className={classes.container}>
-      {isLoading ? (
-        <h1>No Views</h1>
-      ) : (
-        <div>
-          <Row>
-            <Col xs={2}>
-              <div
-                style={{
-                  marginTop: '20px',
-                  width: '212px',
-                  marginLeft: '10px',
-                  cursor: 'pointer',
-                  backgroundColor: `${viewColor}`,
-                  padding: '0px 10px',
-                }}
-                onClick={() => {
-                  getAuthToGoogle();
-                  setSignedIn(true);
-                  setMeetingConfirmed(false);
-                  setTimeSelected(false);
-                  setTimeSlots([]);
-                  setTimeAASlots([]);
-                  setDuration(selectedEvent.duration);
-                  getView();
-                  setViewID(selectedEvent.view_id);
-                  setEventName(selectedEvent.event_name);
-                }}
-              >
-                <Col>
-                  <Col style={{ paddingLeft: '7px' }}>
-                    <Typography
-                      style={{
-                        textTransform: 'uppercase',
-                        fontSize: '24px',
-                        color: '#2C2C2E',
-                        padding: '0',
-                        font: 'normal normal normal 24px/30px Prohibition',
-                      }}
-                    >
-                      {selectedEvent.event_name}
-                    </Typography>
-                  </Col>
-                </Col>
-                <div
+  const hideSignUp = () => {
+    //setSignUpModalShow(false);
+    setSocialSignUpModalShow(false);
+    //history.push(document.location.href.substring(21, 39));
+    setRefreshKey((oldKey) => oldKey + 1);
+    setSignedIn(true);
+    setNewFName('');
+    setNewLName('');
+  };
+  const handleNewEmailChange = (event) => {
+    setNewEmail(event.target.value);
+  };
+
+  const handleNewFNameChange = (event) => {
+    setNewFName(event.target.value);
+  };
+
+  const handleNewLNameChange = (event) => {
+    setNewLName(event.target.value);
+  };
+
+  const handleSocialSignUpDone = () => {
+    axios
+      .post(BASE_URL + 'UserSocialSignUp', {
+        email_id: newEmail,
+        first_name: newFName,
+        last_name: newLName,
+        time_zone: '',
+        google_auth_token: accessToken,
+        google_refresh_token: refreshToken,
+        social_id: socialId,
+        access_expires_in: accessExpiresIn,
+      })
+      .then((response) => {
+        console.log(response);
+        setSignedIn(true);
+        setgoogleAuthedEmail(newEmail);
+        hideSignUp();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const socialSignUpModal = () => {
+    return (
+      <Modal
+        show={socialSignUpModalShow}
+        onHide={hideSignUp}
+        style={{ marginTop: '70px' }}
+      >
+        <Form as={Container}>
+          <h3
+            className="bigfancytext formEltMargin"
+            style={{
+              textAlign: 'center',
+              letterSpacing: '0.49px',
+              color: '#000000',
+              opacity: 1,
+            }}
+          >
+            Sign Up with Social Media
+          </h3>
+          <Form.Group className="formEltMargin">
+            <Form.Group as={Row} className="formEltMargin">
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="First Name"
+                  value={newFName}
+                  onChange={handleNewFNameChange}
                   style={{
-                    fontSize: '14px',
-                    fontWeight: 'normal',
-                    font: 'normal normal normal 14px/16px SF Pro Display',
+                    background: '#FFFFFF 0% 0% no-repeat padding-box',
+                    borderRadius: '26px',
+                    opacity: 1,
+                    width: '230px',
                   }}
-                >
-                  <div>
-                    {Number(selectedEvent.duration.substring(0, 2)) > 1
-                      ? selectedEvent.duration.substring(3, 5) !== '59'
-                        ? Number(selectedEvent.duration.substring(0, 2)) +
-                          ' hrs ' +
-                          Number(selectedEvent.duration.substring(3, 5)) +
-                          ' min'
-                        : Number(selectedEvent.duration.substring(0, 2)) +
-                          1 +
-                          ' hrs'
-                      : Number(selectedEvent.duration.substring(0, 2)) == 1
-                      ? '60 min'
-                      : selectedEvent.duration.substring(3, 5) + ' min'}
-                  </div>
-                  <div>
-                    Location:{' '}
-                    {selectedEvent.location === ''
-                      ? 'None Specified'
-                      : selectedEvent.location}
-                  </div>
-                  <div>
-                    -
-                    {JSON.parse(
-                      selectedEvent.buffer_time
-                    ).before.time.substring(3, 5)}{' '}
-                    / +
-                    {JSON.parse(selectedEvent.buffer_time).after.time.substring(
-                      3,
-                      5
-                    )}
-                  </div>
-                </div>
-              </div>
-              {console.log(showCreateNewMeetModal)}
-              <div hidden={!showCreateNewMeetModal}>
-                <Typography
+                />
+              </Col>
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="Last Name"
+                  value={newLName}
+                  onChange={handleNewLNameChange}
                   style={{
-                    textTransform: 'none',
-                    //fontSize: '24px',
-                    color: '#2C2C2E',
-                    padding: '0',
-                    font: 'normal normal bold 18px/21px SF Pro Display',
+                    background: '#FFFFFF 0% 0% no-repeat padding-box',
+                    borderRadius: '26px',
+                    opacity: 1,
+                    width: '230px',
                   }}
-                >
-                  {meetTime.substring(0, 5)} <br />
-                  {moment(meetDate).format('MMMM DD, YYYY')}
-                </Typography>
-              </div>
+                />
+              </Col>
+            </Form.Group>
+
+            <Col>
+              <Form.Group as={Row} className="formEltMargin">
+                <Form.Control
+                  plaintext
+                  readOnly
+                  value={newEmail}
+                  style={{
+                    background: '#FFFFFF 0% 0% no-repeat padding-box',
+                    borderRadius: '26px',
+                    opacity: 1,
+                    width: '500px',
+                  }}
+                />
+              </Form.Group>
             </Col>
-            {/* <div>{showCreateNewMeetModal && createNewMeetModal()}</div> */}
-            <Col
-              xs={3}
+          </Form.Group>
+
+          <Form.Group className="formEltMargin">
+            <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'start',
-                margin: '20px 20px',
-                padding: '0px',
-              }}
-              hidden={showCreateNewMeetModal || meetingConfirmed}
-            >
-              {' '}
-              {showDays === true && googleAuthedEmail.length != 0 ? (
-                <div>
-                  <Typography
-                    style={{
-                      textTransform: 'none',
-                      //fontSize: '24px',
-                      color: '#2C2C2E',
-                      padding: '0',
-                      font: 'normal normal bold 18px/21px SF Pro Display',
-                    }}
-                  >
-                    Select a Date & Time
-                  </Typography>
-                  {showAvailableDays()}
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </Col>
-
-            <Col
-              xs={4}
-              style={{
+                alignItems: 'center',
                 justifyContent: 'center',
-                margin: '20px 0px',
-                padding: '0px',
               }}
-              hidden={showCreateNewMeetModal || meetingConfirmed}
             >
-              {showTimes === true ? (
-                <div>
-                  {' '}
-                  <Typography
-                    style={{
-                      textTransform: 'none',
-                      //fontSize: '24px',
-                      color: '#2C2C2E',
-                      padding: '0',
-                      font: 'normal normal bold 14px/16px SF Pro Display',
-                    }}
-                  >
-                    Available Times
-                  </Typography>
-                  {renderAvailableApptsVertical()}
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </Col>
-            {showCreateNewMeetModal ? (
-              <Col
-                xs={6}
-                //hidden={!showCreateNewMeetModal}
+              <button
+                variant="primary"
+                type="submit"
+                onClick={handleSocialSignUpDone}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyItems: 'left',
-                  alignItems: 'center',
+                  background: '#F8BE28 0% 0% no-repeat padding-box',
+                  borderRadius: '20px',
+                  opacity: 1,
+                  width: '300px',
                 }}
               >
-                <div>
-                  {console.log('here')}
-                  <Typography className={classes.colHeader}>
-                    Meeting Name
-                  </Typography>
-                  <Row>
-                    <input
-                      style={{
-                        width: '344px',
-                        backgroundColor: ' #F3F3F8',
-                        border: '1px solid #636366',
-                        borderRadius: '3px',
-                      }}
-                      value={meetName}
-                      onChange={(e) => setMeetName(e.target.value)}
-                    />
-                  </Row>
-                  <Typography className={classes.colHeader}>
-                    Date and Time
-                  </Typography>
-                  <Row>
-                    <Col>
-                      <input
-                        type="date"
-                        style={{
-                          width: '162px',
-                          backgroundColor: ' #F3F3F8',
-                          border: '1px solid #636366',
-                          borderRadius: '3px',
-                        }}
-                        value={meetDate}
-                        onChange={(e) => setMeetDate(e.target.value)}
-                      />
-                    </Col>
-                    <Col>
-                      <input
-                        type="time"
-                        style={{
-                          width: '162px',
-                          backgroundColor: ' #F3F3F8',
-                          border: '1px solid #636366',
-                          borderRadius: '3px',
-                        }}
-                        value={meetTime}
-                        onChange={(e) => setMeetTime(e.target.value)}
-                      />
-                    </Col>
-                  </Row>
-                  <Typography className={classes.colHeader}>
-                    {' '}
-                    Event Type{' '}
-                  </Typography>
-                  <Row className={classes.colBody}>
-                    {eventName}-
-                    {Number(duration.substring(0, 2)) > '01'
-                      ? duration.substring(3, 5) !== '59'
-                        ? Number(duration.substring(0, 2)) +
-                          ' hours ' +
-                          Number(duration.substring(3, 5)) +
-                          ' minutes'
-                        : Number(duration.substring(0, 2)) + 1 + ' hours'
-                      : Number(duration.substring(0, 2)) == '01'
-                      ? '60 minutes'
-                      : duration.substring(3, 5) + ' minutes'}
-                    meeting
-                  </Row>
+                Sign Up
+              </button>
 
-                  <Typography className={classes.colHeader}>
-                    {' '}
-                    Guests{' '}
-                  </Typography>
-                  <Typography className={classes.colBody}>
-                    {googleAuthedName}
-                  </Typography>
-                  <Typography className={classes.colBody}>
-                    {userName}
-                  </Typography>
+              <button
+                variant="primary"
+                type="submit"
+                onClick={hideSignUp}
+                style={{
+                  marginTop: '10px',
+                  background: '#FF6B4A 0% 0% no-repeat padding-box',
+                  borderRadius: '20px',
+                  opacity: 1,
+                  width: '300px',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </Form.Group>
+        </Form>
+      </Modal>
+    );
+  };
+  return (
+    <div className={classes.container}>
+      {isLoading ? (
+        <Row>
+          <Col>
+            <Typography>Just schedule this meeting</Typography>
+            <button
+              style={{
+                background: '#2C2C2E 0% 0% no-repeat padding-box',
+                border: '2px solid #2C2C2E',
+                borderRadius: '3px',
+                color: ' #F3F3F8',
+              }}
+            >
+              Proceed
+            </button>
+          </Col>
+          <Col>
+            <Typography>Sign up for SKEDUL and stay in control</Typography>
+            <button
+              style={{
+                background: '#2C2C2E 0% 0% no-repeat padding-box',
+                border: '2px solid #2C2C2E',
+                borderRadius: '3px',
+                color: ' #F3F3F8',
+              }}
+            >
+              Sign Up
+            </button>
+          </Col>
+        </Row>
+      ) : (
+        <div>
+          {signedin ? (
+            <div>
+              <Row>
+                <Col xs={2}>
                   <div
                     style={{
-                      padding: '0',
-                      backgroundColor: 'inherit',
-                      color: '#636366',
-                      textAlign: 'left',
+                      marginTop: '20px',
+                      width: '212px',
+                      marginLeft: '10px',
                       cursor: 'pointer',
+                      backgroundColor: `${viewColor}`,
+                      padding: '0px 10px',
                     }}
-                    onClick={() => handleAdd()}
+                    onClick={() => {
+                      // getAuthToGoogle();
+                      // setSignedIn(true);
+                      setShowDays(true);
+                      setMeetingConfirmed(false);
+                      setTimeSelected(false);
+                      setTimeSlots([]);
+                      setTimeAASlots([]);
+                      setDuration(selectedEvent.duration);
+                      getView();
+                      setViewID(selectedEvent.view_id);
+                      setEventName(selectedEvent.event_name);
+                    }}
                   >
-                    + Add Guests
+                    <Col>
+                      <Col style={{ paddingLeft: '7px' }}>
+                        <Typography
+                          style={{
+                            textTransform: 'uppercase',
+                            fontSize: '24px',
+                            color: '#2C2C2E',
+                            padding: '0',
+                            font: 'normal normal normal 24px/30px Prohibition',
+                          }}
+                        >
+                          {selectedEvent.event_name}
+                        </Typography>
+                      </Col>
+                    </Col>
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        fontWeight: 'normal',
+                        font: 'normal normal normal 14px/16px SF Pro Display',
+                      }}
+                    >
+                      <div>
+                        {Number(selectedEvent.duration.substring(0, 2)) > 1
+                          ? selectedEvent.duration.substring(3, 5) !== '59'
+                            ? Number(selectedEvent.duration.substring(0, 2)) +
+                              ' hrs ' +
+                              Number(selectedEvent.duration.substring(3, 5)) +
+                              ' min'
+                            : Number(selectedEvent.duration.substring(0, 2)) +
+                              1 +
+                              ' hrs'
+                          : Number(selectedEvent.duration.substring(0, 2)) == 1
+                          ? '60 min'
+                          : selectedEvent.duration.substring(3, 5) + ' min'}
+                      </div>
+                      <div>
+                        Location:{' '}
+                        {selectedEvent.location === ''
+                          ? 'None Specified'
+                          : selectedEvent.location}
+                      </div>
+                      <div>
+                        -
+                        {JSON.parse(
+                          selectedEvent.buffer_time
+                        ).before.time.substring(3, 5)}{' '}
+                        / +
+                        {JSON.parse(
+                          selectedEvent.buffer_time
+                        ).after.time.substring(3, 5)}
+                      </div>
+                    </div>
                   </div>
-                  <Row>
-                    {attendees.map((field, idx) => {
-                      return (
+                  {console.log(showCreateNewMeetModal)}
+                  <div hidden={!showCreateNewMeetModal}>
+                    <Typography
+                      style={{
+                        textTransform: 'none',
+                        //fontSize: '24px',
+                        color: '#2C2C2E',
+                        padding: '0',
+                        font: 'normal normal bold 18px/21px SF Pro Display',
+                      }}
+                    >
+                      {meetTime.substring(0, 5)} <br />
+                      {moment(meetDate).format('MMMM DD, YYYY')}
+                    </Typography>
+                  </div>
+                </Col>
+                {/* <div>{showCreateNewMeetModal && createNewMeetModal()}</div> */}
+                <Col
+                  xs={3}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'start',
+                    margin: '20px 20px',
+                    padding: '0px',
+                  }}
+                  hidden={showCreateNewMeetModal || meetingConfirmed}
+                >
+                  {' '}
+                  {showDays === true && googleAuthedEmail.length != 0 ? (
+                    <div>
+                      <Typography
+                        style={{
+                          textTransform: 'none',
+                          //fontSize: '24px',
+                          color: '#2C2C2E',
+                          padding: '0',
+                          font: 'normal normal bold 18px/21px SF Pro Display',
+                        }}
+                      >
+                        Select a Date & Time
+                      </Typography>
+                      {showAvailableDays()}
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </Col>
+
+                <Col
+                  xs={4}
+                  style={{
+                    justifyContent: 'center',
+                    margin: '20px 0px',
+                    padding: '0px',
+                  }}
+                  hidden={showCreateNewMeetModal || meetingConfirmed}
+                >
+                  {showTimes === true ? (
+                    <div>
+                      {' '}
+                      <Typography
+                        style={{
+                          textTransform: 'none',
+                          //fontSize: '24px',
+                          color: '#2C2C2E',
+                          padding: '0',
+                          font: 'normal normal bold 14px/16px SF Pro Display',
+                        }}
+                      >
+                        Available Times
+                      </Typography>
+                      {renderAvailableApptsVertical()}
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </Col>
+                {showCreateNewMeetModal ? (
+                  <Col
+                    xs={6}
+                    //hidden={!showCreateNewMeetModal}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyItems: 'left',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      {console.log('here')}
+                      <Typography className={classes.colHeader}>
+                        Meeting Name
+                      </Typography>
+                      <Row>
+                        <input
+                          style={{
+                            width: '344px',
+                            backgroundColor: ' #F3F3F8',
+                            border: '1px solid #636366',
+                            borderRadius: '3px',
+                          }}
+                          value={meetName}
+                          onChange={(e) => setMeetName(e.target.value)}
+                        />
+                      </Row>
+                      <Typography className={classes.colHeader}>
+                        Date and Time
+                      </Typography>
+                      <Row>
+                        <Col>
+                          <input
+                            type="date"
+                            style={{
+                              width: '162px',
+                              backgroundColor: ' #F3F3F8',
+                              border: '1px solid #636366',
+                              borderRadius: '3px',
+                            }}
+                            value={meetDate}
+                            onChange={(e) => setMeetDate(e.target.value)}
+                          />
+                        </Col>
+                        <Col>
+                          <input
+                            type="time"
+                            style={{
+                              width: '162px',
+                              backgroundColor: ' #F3F3F8',
+                              border: '1px solid #636366',
+                              borderRadius: '3px',
+                            }}
+                            value={meetTime}
+                            onChange={(e) => setMeetTime(e.target.value)}
+                          />
+                        </Col>
+                      </Row>
+                      <Typography className={classes.colHeader}>
+                        {' '}
+                        Event Type{' '}
+                      </Typography>
+                      <Row className={classes.colBody}>
+                        {eventName}-
+                        {Number(duration.substring(0, 2)) > '01'
+                          ? duration.substring(3, 5) !== '59'
+                            ? Number(duration.substring(0, 2)) +
+                              ' hours ' +
+                              Number(duration.substring(3, 5)) +
+                              ' minutes'
+                            : Number(duration.substring(0, 2)) + 1 + ' hours'
+                          : Number(duration.substring(0, 2)) == '01'
+                          ? '60 minutes'
+                          : duration.substring(3, 5) + ' minutes'}
+                        meeting
+                      </Row>
+
+                      <Typography className={classes.colHeader}>
+                        {' '}
+                        Guests{' '}
+                      </Typography>
+                      <Typography className={classes.colBody}>
+                        {googleAuthedName}
+                      </Typography>
+                      <Typography className={classes.colBody}>
+                        {userName}
+                      </Typography>
+                      <div
+                        style={{
+                          padding: '0',
+                          backgroundColor: 'inherit',
+                          color: '#636366',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleAdd()}
+                      >
+                        + Add Guests
+                      </div>
+                      <Row>
+                        {attendees.map((field, idx) => {
+                          return (
+                            <input
+                              style={{
+                                width: '254px',
+                                backgroundColor: ' #F3F3F8',
+                                border: '1px solid #636366',
+                                borderRadius: '3px',
+                              }}
+                              type="text"
+                              onChange={(e) => handleChange(idx, e)}
+                            />
+                          );
+                        })}
+                      </Row>
+                      <Typography className={classes.colHeader}>
+                        {' '}
+                        Location{' '}
+                      </Typography>
+                      <Row>
                         <input
                           style={{
                             width: '254px',
@@ -1189,114 +1477,211 @@ export default function CreateMeet() {
                             border: '1px solid #636366',
                             borderRadius: '3px',
                           }}
-                          type="text"
-                          onChange={(e) => handleChange(idx, e)}
+                          value={meetLocation}
+                          onChange={(e) => setMeetLocation(e.target.value)}
                         />
-                      );
-                    })}
-                  </Row>
-                  <Typography className={classes.colHeader}>
-                    {' '}
-                    Location{' '}
-                  </Typography>
-                  <Row>
-                    <input
-                      style={{
-                        width: '254px',
-                        backgroundColor: ' #F3F3F8',
-                        border: '1px solid #636366',
-                        borderRadius: '3px',
-                      }}
-                      value={meetLocation}
-                      onChange={(e) => setMeetLocation(e.target.value)}
-                    />
-                  </Row>
+                      </Row>
 
-                  <Row style={{ margin: '5px' }}>
-                    <Col xs={4}>
-                      <button
-                        style={{
-                          backgroundColor: ' #F3F3F8',
-                          border: '2px solid #2C2C2E',
-                          borderRadius: '3px',
-                          color: '#2C2C2E',
-                        }}
-                        onClick={() => {
-                          closeCreateNewMeetModal();
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </Col>
-                    <Col>
-                      <button
-                        style={{
-                          background: '#2C2C2E 0% 0% no-repeat padding-box',
-                          border: '2px solid #2C2C2E',
-                          borderRadius: '3px',
-                          color: ' #F3F3F8',
-                        }}
-                        onClick={(e) => {
-                          createMeet();
-                          createNewMeet();
-                        }}
-                      >
-                        Schedule Meeting
-                      </button>
-                    </Col>
-                  </Row>
-                </div>
-              </Col>
-            ) : null}
-            {meetingConfirmed ? (
+                      <Row style={{ margin: '5px' }}>
+                        <Col xs={4}>
+                          <button
+                            style={{
+                              backgroundColor: ' #F3F3F8',
+                              border: '2px solid #2C2C2E',
+                              borderRadius: '3px',
+                              color: '#2C2C2E',
+                            }}
+                            onClick={() => {
+                              closeCreateNewMeetModal();
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </Col>
+                        <Col>
+                          <button
+                            style={{
+                              background: '#2C2C2E 0% 0% no-repeat padding-box',
+                              border: '2px solid #2C2C2E',
+                              borderRadius: '3px',
+                              color: ' #F3F3F8',
+                            }}
+                            onClick={(e) => {
+                              createMeet();
+                              createNewMeet();
+                            }}
+                          >
+                            Schedule Meeting
+                          </button>
+                        </Col>
+                      </Row>
+                    </div>
+                  </Col>
+                ) : null}
+                {meetingConfirmed ? (
+                  <Col
+                    //xs={6}
+                    //hidden={!showCreateNewMeetModal}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      //justifyItems: 'left',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        margin: '5rem',
+                        textTransform: 'none',
+                        //fontSize: '24px',
+                        color: '#2C2C2E',
+                        padding: '0',
+                        font: 'normal normal bold 20px SF Pro Display',
+                      }}
+                    >
+                      You are all set for{' '}
+                      {moment(meetDate).format('MMMM DD, YYYY')} at{' '}
+                      {meetTime.substring(0, 5)} <br /> The email invite has
+                      been sent to the {userEmail}.
+                    </Typography>
+                  </Col>
+                ) : null}
+              </Row>
+              {showButton === true ? (
+                <Row
+                  style={{
+                    marginTop: '8rem',
+                  }}
+                >
+                  <Col
+                    xs={12}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <button
+                      className={classes.activeTimeSlotButton}
+                      onClick={() => {
+                        openCreateNewMeetModal();
+                      }}
+                    >
+                      Confirm Date and Time
+                    </button>
+                  </Col>
+                </Row>
+              ) : null}
+            </div>
+          ) : (
+            <Row
+              style={{
+                margin: '6rem 20px',
+                padding: '0px',
+              }}
+            >
               <Col
-                //xs={6}
-                //hidden={!showCreateNewMeetModal}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  //justifyItems: 'left',
+                  justifyItems: 'left',
                   alignItems: 'center',
                 }}
               >
                 <Typography
                   style={{
-                    margin: '5rem',
-                    textTransform: 'none',
-                    //fontSize: '24px',
+                    textAlign: 'center',
+                    font: 'normal normal normal 36px SF Pro Display',
+                    letterSpacing: '0px',
                     color: '#2C2C2E',
-                    padding: '0',
-                    font: 'normal normal bold 20px SF Pro Display',
+                    marginBottom: '3rem',
                   }}
                 >
-                  You are all set for {moment(meetDate).format('MMMM DD, YYYY')}{' '}
-                  at {meetTime.substring(0, 5)} <br /> The email invite has been
-                  sent to the {userEmail}.
+                  Just schedule this meeting
                 </Typography>
-              </Col>
-            ) : null}
-          </Row>
-          {showButton === true ? (
-            <Row
-              style={{
-                marginTop: '8rem',
-              }}
-            >
-              <Col
-                xs={12}
-                style={{ display: 'flex', justifyContent: 'center' }}
-              >
                 <button
-                  className={classes.activeTimeSlotButton}
+                  style={{
+                    background: '#2C2C2E 0% 0% no-repeat padding-box',
+                    border: '2px solid #2C2C2E',
+                    borderRadius: '3px',
+                    color: ' #F3F3F8',
+                    font: 'normal normal normal 18px SF Pro Display',
+                    width: '6rem',
+                    height: '3rem',
+                    padding: '0.5rem',
+                  }}
                   onClick={() => {
-                    openCreateNewMeetModal();
+                    getAuthToGoogle();
                   }}
                 >
-                  Confirm Date and Time
+                  Proceed
                 </button>
               </Col>
+              <Col
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyItems: 'left',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  style={{
+                    textAlign: 'center',
+                    font: 'normal normal normal 36px SF Pro Display',
+                    letterSpacing: '0px',
+                    color: '#2C2C2E',
+                    marginBottom: '3rem',
+                  }}
+                >
+                  Sign up for{' '}
+                  <span
+                    style={{ font: 'normal normal normal 36px Prohibition' }}
+                  >
+                    SKEDUL
+                  </span>{' '}
+                  and stay in control
+                </Typography>
+                <button
+                  style={{
+                    background: '#2C2C2E 0% 0% no-repeat padding-box',
+                    border: '2px solid #2C2C2E',
+                    borderRadius: '3px',
+                    color: ' #F3F3F8',
+                    font: 'normal normal normal 18px SF Pro Display',
+                    width: '6rem',
+                    height: '3rem',
+                    padding: '0.5rem',
+                  }}
+                >
+                  <GoogleLogin
+                    //clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                    clientId={client_id}
+                    accessType="offline"
+                    prompt="consent"
+                    responseType="code"
+                    buttonText="Log In"
+                    //redirectUri="https://manifestmy.space"
+                    ux_mode="redirect"
+                    redirectUri="http://localhost:3000"
+                    //redirectUri="https://skedul.online"
+                    scope="https://www.googleapis.com/auth/calendar"
+                    onSuccess={responseGoogle}
+                    onFailure={responseGoogle}
+                    isSignedIn={false}
+                    disable={true}
+                    cookiePolicy={'single_host_origin'}
+                    render={(renderProps) => (
+                      <div
+                        onClick={renderProps.onClick}
+                        disabled={renderProps.disabled}
+                        alt={''}
+                      >
+                        Sign Up
+                      </div>
+                    )}
+                  />
+                </button>
+              </Col>
+              {socialSignUpModal()}
             </Row>
-          ) : null}
+          )}
         </div>
       )}
     </div>
