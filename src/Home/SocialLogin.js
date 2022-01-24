@@ -60,9 +60,8 @@ function SocialLogin(props) {
       code: auth_code,
       client_id: client_id,
       client_secret: client_secret,
-      //redirect_uri: 'https://manifestmy.space',
-      redirect_uri: 'http://localhost:3000',
-      //redirectUri: 'https://skedul.online',
+      //redirect_uri: 'http://localhost:3000',
+      redirectUri: 'https://skedul.online',
       grant_type: 'authorization_code',
     };
 
@@ -415,10 +414,9 @@ function SocialLogin(props) {
             prompt="consent"
             responseType="code"
             buttonText="Log In"
-            //redirectUri="https://manifestmy.space"
             ux_mode="redirect"
-            redirectUri="http://localhost:3000"
-            //redirectUri="https://skedul.online"
+            //redirectUri="http://localhost:3000"
+            redirectUri="https://skedul.online"
             scope="https://www.googleapis.com/auth/calendar"
             onSuccess={responseGoogle}
             onFailure={responseGoogle}
