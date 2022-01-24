@@ -1,4 +1,6 @@
 import React, { useContext, useState } from 'react';
+
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import GoogleLogin from 'react-google-login';
 import axios from 'axios';
 import { Grid, Button } from '@material-ui/core';
@@ -13,9 +15,18 @@ const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
+const useStyles = makeStyles({
+  textFieldBackgorund: {
+    backgroundColor: '#F3F3F8',
+    border: '2px solid #636366',
+    borderRadius: '3px',
+  },
+});
+
 function SocialLogin(props) {
   // const Auth = useContext(AuthContext);
   const loginContext = useContext(LoginContext);
+  const classes = useStyles();
   const history = useHistory();
   const [loggedIn, setLoggedIn] = useState(false);
   const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
@@ -243,144 +254,146 @@ function SocialLogin(props) {
       });
   };
   const socialSignUpModal = () => {
+    const modalStyle = {
+      position: 'absolute',
+      top: '10%',
+      left: '38%',
+      width: '400px',
+    };
+    const headerStyle = {
+      border: 'none',
+      textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#2C2C2E',
+      textTransform: 'uppercase',
+      backgroundColor: ' #F3F3F8',
+    };
+    const footerStyle = {
+      border: 'none',
+      backgroundColor: ' #F3F3F8',
+    };
+    const bodyStyle = {
+      backgroundColor: ' #F3F3F8',
+    };
+    const colHeader = {
+      margin: '5px',
+    };
     return (
       <Modal
         show={socialSignUpModalShow}
         onHide={hideSignUp}
-        style={{ marginTop: '70px' }}
+        style={modalStyle}
       >
         <Form as={Container}>
-          <h3
-            className="bigfancytext formEltMargin"
-            style={{
-              textAlign: 'center',
-              letterSpacing: '0.49px',
-              color: '#000000',
-              opacity: 1,
-            }}
-          >
-            Sign Up with Social Media
-          </h3>
-          <Form.Group className="formEltMargin">
-            <Form.Group as={Row} className="formEltMargin">
+          <Modal.Header style={headerStyle} closeButton>
+            <Modal.Title>Sign Up with Social Media</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body style={bodyStyle}>
+            <Form.Group className="formEltMargin">
+              <Form.Group as={Row} className="formEltMargin">
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="First Name"
+                    value={newFName}
+                    onChange={handleNewFNameChange}
+                  />
+                </Col>
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="Last Name"
+                    value={newLName}
+                    onChange={handleNewLNameChange}
+                  />
+                </Col>
+              </Form.Group>
+
               <Col>
-                <Form.Control
-                  type="text"
-                  placeholder="First Name"
-                  value={newFName}
-                  onChange={handleNewFNameChange}
-                  style={{
-                    background: '#FFFFFF 0% 0% no-repeat padding-box',
-                    borderRadius: '26px',
-                    opacity: 1,
-                    width: '230px',
-                  }}
-                />
-              </Col>
-              <Col>
-                <Form.Control
-                  type="text"
-                  placeholder="Last Name"
-                  value={newLName}
-                  onChange={handleNewLNameChange}
-                  style={{
-                    background: '#FFFFFF 0% 0% no-repeat padding-box',
-                    borderRadius: '26px',
-                    opacity: 1,
-                    width: '230px',
-                  }}
-                />
+                <Form.Group as={Row} className="formEltMargin">
+                  <Form.Control
+                    plaintext
+                    readOnly
+                    value={newEmail}
+                    className={classes.textFieldBackgorund}
+                  />
+                </Form.Group>
               </Col>
             </Form.Group>
-            {/* <Col>
-              <Form.Group as={Row} className="formEltMargin">
-                <Form.Control
-                  type="text"
-                  placeholder="Employer"
-                  value={newEmployer}
-                  onChange={handleNewEmployerChange}
-                  style={{
-                    background: '#FFFFFF 0% 0% no-repeat padding-box',
-                    borderRadius: '26px',
-                    opacity: 1,
-                    width: '500px',
-                  }}
-                />
-              </Form.Group>
-            </Col> */}
-            {/* <Col>
-              <Form.Group as={Row} className="formEltMargin">
-                <Form.Control
-                  type="tel"
-                  placeholder="Phone Number"
-                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                  value={newPhoneNumber}
-                  onChange={handleNewPhoneNumberChange}
-                  style={{
-                    background: '#FFFFFF 0% 0% no-repeat padding-box',
-                    borderRadius: '26px',
-                    opacity: 1,
-                    width: '500px',
-                  }}
-                />
-              </Form.Group>
-            </Col> */}
-            <Col>
-              <Form.Group as={Row} className="formEltMargin">
-                <Form.Control
-                  plaintext
-                  readOnly
-                  value={newEmail}
-                  style={{
-                    background: '#FFFFFF 0% 0% no-repeat padding-box',
-                    borderRadius: '26px',
-                    opacity: 1,
-                    width: '500px',
-                  }}
-                />
-              </Form.Group>
-            </Col>
-          </Form.Group>
+          </Modal.Body>
 
-          <Form.Group className="formEltMargin">
-            <div
+          <Modal.Footer style={footerStyle}>
+            <Row
               style={{
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
+                marginTop: '1rem',
               }}
             >
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={handleSocialSignUpDone}
+              <Col
+                xs={6}
                 style={{
-                  background: '#F8BE28 0% 0% no-repeat padding-box',
-                  borderRadius: '20px',
-                  opacity: 1,
-                  width: '300px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                Sign Up
-              </Button>
+                <Button
+                  type="submit"
+                  onClick={hideSignUp}
+                  style={{
+                    marginTop: '1rem',
+                    width: '93px',
+                    height: '40px',
 
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={hideSignUp}
+                    font: 'normal normal normal 18px/21px SF Pro Display',
+                    letterSpacing: '0px',
+                    color: '#F3F3F8',
+                    textTransform: 'none',
+                    background: '#2C2C2E 0% 0% no-repeat padding-box',
+                    borderRadius: '3px',
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Col>
+              <Col
+                xs={6}
                 style={{
-                  marginTop: '10px',
-                  background: '#FF6B4A 0% 0% no-repeat padding-box',
-                  borderRadius: '20px',
-                  opacity: 1,
-                  width: '300px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                Cancel
-              </Button>
-            </div>
-          </Form.Group>
+                <Button
+                  type="submit"
+                  onClick={handleSocialSignUpDone}
+                  style={{
+                    marginTop: '1rem',
+                    width: '93px',
+                    height: '40px',
+
+                    font: 'normal normal normal 18px/21px SF Pro Display',
+                    letterSpacing: '0px',
+                    color: '#2C2C2E',
+                    textTransform: 'none',
+                    border: ' 2px solid #2C2C2E',
+                    borderRadius: ' 3px',
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </Col>
+            </Row>
+          </Modal.Footer>
         </Form>
       </Modal>
     );

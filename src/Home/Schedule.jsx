@@ -7,6 +7,7 @@ import moment from 'moment';
 import LoginContext from '../LoginContext';
 import Bookmark from '../images/bookmark.svg';
 import Edit from '../images/edit.svg';
+import Link from '../images/link.svg';
 import { updateTheCalenderEvent } from './GoogleApiService';
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
@@ -124,6 +125,13 @@ export default function Schedule(props) {
   // );
 
   useEffect(() => {
+    let today = new Date();
+    let dateNew = moment(today);
+    let startDate = dateNew.startOf('week').format('YYYY-MM-DD');
+    let start = startDate + 'T00:00:00-07:00';
+    let endDate = moment(startDate).add(12, 'days').format('YYYY-MM-DD');
+    let end = endDate + 'T23:59:59-07:00';
+
     const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
       .then((response) => response.json())
@@ -143,6 +151,21 @@ export default function Schedule(props) {
         //console.log(refresh_token);
         setAccessToken(old_at);
         console.log('in events', old_at);
+        const headers = {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + old_at,
+        };
+        setAccessToken(at);
+        console.log('in events', at);
+        const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
+        axios
+          .get(url, {
+            headers: headers,
+          })
+          .then((response) => {
+            setAllGoogleMeetings(response.data.items);
+          })
+          .catch((error) => console.log(error));
         fetch(
           `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
           {
@@ -188,11 +211,24 @@ export default function Schedule(props) {
               .then((data) => {
                 //console.log(data);
                 let at = data['access_token'];
+                const headers = {
+                  Accept: 'application/json',
+                  Authorization: 'Bearer ' + at,
+                };
                 setAccessToken(at);
                 console.log('in events', at);
-                let url = BASE_URL + `UpdateAccessToken/${selectedUser}`;
+                const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
                 axios
-                  .post(url, {
+                  .get(url, {
+                    headers: headers,
+                  })
+                  .then((response) => {
+                    setAllGoogleMeetings(response.data.items);
+                  })
+                  .catch((error) => console.log(error));
+                let updateURL = BASE_URL + `UpdateAccessToken/${selectedUser}`;
+                axios
+                  .post(updateURL, {
                     google_auth_token: at,
                   })
                   .then((response) => {})
@@ -252,47 +288,24 @@ export default function Schedule(props) {
   //   let today = new Date();
   //   let dateNew = moment(today);
   //   let startDate = dateNew.startOf('week').format('YYYY-MM-DD');
-  //   let start = startDate + 'T00:00:00-08:00';
+  //   let start = startDate + 'T00:00:00-07:00';
   //   let endDate = moment(startDate).add(12, 'days').format('YYYY-MM-DD');
-  //   let end = endDate + 'T23:59:59-08:00';
+  //   let end = endDate + 'T23:59:59-07:00';
   //   const headers = {
   //     Accept: 'application/json',
   //     Authorization: 'Bearer ' + accessToken,
   //   };
   //   console.log(accessToken);
   //   const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
-  //   fetch(url, {
-  //     headers: headers,
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data.items);
-  //       setAllGoogleMeetings(data.items);
+  //   axios
+  //     .get(url, {
+  //       headers: headers,
+  //     })
+  //     .then((response) => {
+  //       setAllGoogleMeetings(response.data.items);
   //     })
   //     .catch((error) => console.log(error));
-  // }, [accessToken]);
-  useEffect(() => {
-    let today = new Date();
-    let dateNew = moment(today);
-    let startDate = dateNew.startOf('week').format('YYYY-MM-DD');
-    let start = startDate + 'T00:00:00-07:00';
-    let endDate = moment(startDate).add(12, 'days').format('YYYY-MM-DD');
-    let end = endDate + 'T23:59:59-07:00';
-    const headers = {
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + accessToken,
-    };
-    console.log(accessToken);
-    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
-    axios
-      .get(url, {
-        headers: headers,
-      })
-      .then((response) => {
-        setAllGoogleMeetings(response.data.items);
-      })
-      .catch((error) => console.log(error));
-  }, [refreshKey]);
+  // }, [refreshKey]);
   useEffect(() => {
     if (allSchedule != undefined && allGoogleMeetings != undefined) {
       if (
@@ -1362,7 +1375,7 @@ export default function Schedule(props) {
                                   width: '213px',
                                   //height: '148px',
                                   backgroundColor: `${view.color}`,
-                                  padding: '0px 10px',
+                                  padding: '15px 10px',
                                 }}
                               >
                                 <Row>
@@ -1425,6 +1438,29 @@ export default function Schedule(props) {
                                     {JSON.parse(
                                       event.buffer_time
                                     ).after.time.substring(3, 5)}
+                                  </div>
+                                  <div
+                                    onClick={() =>
+                                      navigator.clipboard.writeText(
+                                        document.location.href.substring(
+                                          0,
+
+                                          document.location.href.length - 8
+                                        ) +
+                                          'event/' +
+                                          `${event.event_unique_id}`
+                                      )
+                                    }
+                                  >
+                                    <img
+                                      src={Link}
+                                      style={{
+                                        width: '13px',
+                                        height: '13px',
+                                        float: 'right',
+                                        cursor: 'pointer',
+                                      }}
+                                    />
                                   </div>
                                 </div>
                               </div>
