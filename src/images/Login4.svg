@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="903" height="311" viewBox="0 0 903 311">
+  <g id="Group_627" data-name="Group 627" transform="translate(-281 -1370)">
+    <g id="Group_607" data-name="Group 607" transform="translate(3 460)">
+      <g id="Component_22_87" data-name="Component 22 – 87" transform="translate(536 951)">
+        <rect id="Rectangle_209" data-name="Rectangle 209" width="213" height="148" fill="#f1e3c8"/>
+        <text id="_30_min_meeting" data-name="30 min meeting" transform="translate(12 33)" fill="#2c2c2e" font-size="24" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">30 min meeting</tspan></text>
+        <text id="_30_min" data-name="30 min" transform="translate(12 59)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">30 min</tspan></text>
+        <text id="Location:_None_specified" data-name="Location: None specified" transform="translate(12 79)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Location: None specified</tspan></text>
+        <text id="_-15_30" data-name="-15 / +30" transform="translate(12 99)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">-15 / +30</tspan></text>
+        <text id="View_booking_page" data-name="View booking page" transform="translate(12 137)" fill="#2c2c2e" font-size="12" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700" text-decoration="underline"><tspan x="0" y="0">View booking page</tspan></text>
+        <g id="Rectangle_210" data-name="Rectangle 210" transform="translate(0 148)" fill="#e5e5eb" stroke="#2c2c2e" stroke-width="1">
+          <rect width="213" height="48" stroke="none"/>
+          <rect x="0.5" y="0.5" width="212" height="47" fill="none"/>
+        </g>
+        <text id="Share" transform="translate(170 176)" fill="#636366" font-size="12" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700" text-decoration="underline"><tspan x="0" y="0">Share</tspan></text>
+        <g id="Component_5_2" data-name="Component 5 – 2" transform="translate(7 164)">
+          <path id="Icon_awesome-copy" data-name="Icon awesome-copy" d="M10.176,14.246v1.272a.763.763,0,0,1-.763.763H.763A.763.763,0,0,1,0,15.518V3.816a.763.763,0,0,1,.763-.763h2.29v9.412a1.783,1.783,0,0,0,1.781,1.781Zm0-10.939V0H4.833A.763.763,0,0,0,4.07.763v11.7a.763.763,0,0,0,.763.763h8.649a.763.763,0,0,0,.763-.763V4.07H10.939A.765.765,0,0,1,10.176,3.307Zm3.847-.987-2.1-2.1A.763.763,0,0,0,11.386,0h-.193V3.053h3.053V2.86a.763.763,0,0,0-.224-.54Z" transform="translate(0 0)" fill="#636366"/>
+          <text id="Copy_link" data-name="Copy link" transform="translate(20.123 13)" fill="#636366" font-size="14" font-family="HelveticaNeue, Helvetica Neue"><tspan x="0" y="0">Copy link</tspan></text>
+        </g>
+        <path id="Icon_material-edit" data-name="Icon material-edit" d="M4.5,14.6v2.658H7.158L15,9.417,12.338,6.759ZM17.051,7.361a.706.706,0,0,0,0-1L15.393,4.7a.706.706,0,0,0-1,0L13.1,6l2.658,2.658,1.3-1.3Z" transform="translate(164.953 121.504)" fill="#2c2c2e"/>
+        <path id="Icon_material-bookmark-border" data-name="Icon material-bookmark-border" d="M18.214,4.5H9.286A1.783,1.783,0,0,0,7.509,6.286L7.5,20.571l6.25-2.679L20,20.571V6.286A1.791,1.791,0,0,0,18.214,4.5Zm0,13.393L13.75,15.946,9.286,17.893V6.286h8.929Z" transform="translate(182 -4.5)"/>
+        <path id="Icon_material-delete" data-name="Icon material-delete" d="M8.209,15.843a1.422,1.422,0,0,0,1.418,1.418H15.3a1.422,1.422,0,0,0,1.418-1.418V7.336H8.209ZM17.425,5.209H14.944L14.235,4.5H10.69l-.709.709H7.5V6.627h9.925Z" transform="translate(182.995 121.501)" fill="#2c2c2e"/>
+        <path id="Icon_material-bookmark" data-name="Icon material-bookmark" d="M16.73,4.5H9.038A1.536,1.536,0,0,0,7.508,6.038L7.5,18.346l5.384-2.308,5.384,2.308V6.038A1.543,1.543,0,0,0,16.73,4.5Z" transform="translate(182.85 -3.964)"/>
+      </g>
+      <g id="Component_22_88" data-name="Component 22 – 88" transform="translate(765 951)">
+        <rect id="Rectangle_209-2" data-name="Rectangle 209" width="213" height="148" fill="#f1e3c8"/>
+        <text id="_60_min_meeting" data-name="60 min meeting" transform="translate(12 33)" fill="#2c2c2e" font-size="24" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">60 min meeting</tspan></text>
+        <text id="_60_min" data-name="60 min" transform="translate(12 59)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">60 min</tspan></text>
+        <text id="Location:_None_specified-2" data-name="Location: None specified" transform="translate(12 79)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Location: None specified</tspan></text>
+        <text id="_-15_30-2" data-name="-15 / +30" transform="translate(12 99)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">-15 / +30</tspan></text>
+        <text id="View_booking_page-2" data-name="View booking page" transform="translate(12 137)" fill="#2c2c2e" font-size="12" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700" text-decoration="underline"><tspan x="0" y="0">View booking page</tspan></text>
+        <g id="Rectangle_210-2" data-name="Rectangle 210" transform="translate(0 148)" fill="#e5e5eb" stroke="#2c2c2e" stroke-width="1">
+          <rect width="213" height="48" stroke="none"/>
+          <rect x="0.5" y="0.5" width="212" height="47" fill="none"/>
+        </g>
+        <text id="Share-2" data-name="Share" transform="translate(170 176)" fill="#636366" font-size="12" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700" text-decoration="underline"><tspan x="0" y="0">Share</tspan></text>
+        <g id="Component_5_2-2" data-name="Component 5 – 2" transform="translate(7 164)">
+          <path id="Icon_awesome-copy-2" data-name="Icon awesome-copy" d="M10.176,14.246v1.272a.763.763,0,0,1-.763.763H.763A.763.763,0,0,1,0,15.518V3.816a.763.763,0,0,1,.763-.763h2.29v9.412a1.783,1.783,0,0,0,1.781,1.781Zm0-10.939V0H4.833A.763.763,0,0,0,4.07.763v11.7a.763.763,0,0,0,.763.763h8.649a.763.763,0,0,0,.763-.763V4.07H10.939A.765.765,0,0,1,10.176,3.307Zm3.847-.987-2.1-2.1A.763.763,0,0,0,11.386,0h-.193V3.053h3.053V2.86a.763.763,0,0,0-.224-.54Z" transform="translate(0 0)" fill="#636366"/>
+          <text id="Copy_link-2" data-name="Copy link" transform="translate(20.123 13)" fill="#636366" font-size="14" font-family="HelveticaNeue, Helvetica Neue"><tspan x="0" y="0">Copy link</tspan></text>
+        </g>
+        <path id="Icon_material-edit-2" data-name="Icon material-edit" d="M4.5,14.6v2.658H7.158L15,9.417,12.338,6.759ZM17.051,7.361a.706.706,0,0,0,0-1L15.393,4.7a.706.706,0,0,0-1,0L13.1,6l2.658,2.658,1.3-1.3Z" transform="translate(164.953 121.504)" fill="#2c2c2e"/>
+        <path id="Icon_material-bookmark-border-2" data-name="Icon material-bookmark-border" d="M18.214,4.5H9.286A1.783,1.783,0,0,0,7.509,6.286L7.5,20.571l6.25-2.679L20,20.571V6.286A1.791,1.791,0,0,0,18.214,4.5Zm0,13.393L13.75,15.946,9.286,17.893V6.286h8.929Z" transform="translate(182 -4.5)"/>
+        <path id="Icon_material-delete-2" data-name="Icon material-delete" d="M8.209,15.843a1.422,1.422,0,0,0,1.418,1.418H15.3a1.422,1.422,0,0,0,1.418-1.418V7.336H8.209ZM17.425,5.209H14.944L14.235,4.5H10.69l-.709.709H7.5V6.627h9.925Z" transform="translate(182.995 121.501)" fill="#2c2c2e"/>
+        <path id="Icon_material-bookmark-2" data-name="Icon material-bookmark" d="M16.73,4.5H9.038A1.536,1.536,0,0,0,7.508,6.038L7.5,18.346l5.384-2.308,5.384,2.308V6.038A1.543,1.543,0,0,0,16.73,4.5Z" transform="translate(183.731 -3.964)"/>
+      </g>
+      <g id="Component_21_94" data-name="Component 21 – 94" transform="translate(307 951)">
+        <path id="Path_18" data-name="Path 18" d="M0,0H213V82H0Z" fill="#f1e3c8" opacity="0.996"/>
+        <text id="Business_Hours" data-name="Business Hours" transform="translate(36 27)" fill="#2c2c2e" font-size="20" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">Business Hours</tspan></text>
+        <text id="_9:00am_-_5:30pm" data-name="9:00am - 5:30pm" transform="translate(36 52)" fill="#636366" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">9:00am - 5:30pm</tspan></text>
+        <text id="_7:00pm_-_8:30pm" data-name="7:00pm - 8:30pm" transform="translate(36 71)" fill="#636366" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">7:00pm - 8:30pm</tspan></text>
+      </g>
+      <g id="Group_7" data-name="Group 7" transform="translate(-661 714)">
+        <rect id="Rectangle_231" data-name="Rectangle 231" width="213" height="50" transform="translate(968 324)" fill="#f1e3c8"/>
+        <text id="_new_EVENT_type" data-name="+ new EVENT type" transform="translate(989 359)" fill="#2c2c2e" font-size="24" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">+ new EVENT type</tspan></text>
+      </g>
+      <g id="Rectangle_286" data-name="Rectangle 286" transform="translate(278 910)" fill="none" stroke="#2c2c2e" stroke-width="1">
+        <rect width="903" height="311" stroke="none"/>
+        <rect x="0.5" y="0.5" width="902" height="310" fill="none"/>
+      </g>
+    </g>
+  </g>
+</svg>

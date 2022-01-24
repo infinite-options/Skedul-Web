@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="916" height="842" viewBox="0 0 916 842">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_287" data-name="Rectangle 287" width="916" height="790" transform="translate(281 1833)" fill="none" stroke="#2c2c2e" stroke-width="1"/>
+    </clipPath>
+  </defs>
+  <g id="Group_630" data-name="Group 630" transform="translate(-281 -3039)">
+    <g id="Mask_Group_1" data-name="Mask Group 1" transform="translate(0 1206)" clip-path="url(#clip-path)">
+      <g id="Group_15" data-name="Group 15" transform="translate(13 1743)">
+        <path id="Path_24" data-name="Path 24" d="M0,0H1352" transform="translate(284 371)" fill="none" stroke="#afafb3" stroke-width="1"/>
+        <g id="Component_24_46" data-name="Component 24 – 46" transform="translate(284 337)">
+          <path id="Icon_awesome-angle-down" data-name="Icon awesome-angle-down" d="M4.811,17.456.234,12.879a.8.8,0,0,1,0-1.141l.761-.761a.8.8,0,0,1,1.141,0L5.38,14.222l3.244-3.244a.8.8,0,0,1,1.141,0l.761.761a.8.8,0,0,1,0,1.141L5.948,17.456a.8.8,0,0,1-1.138,0Z" transform="translate(105.004 -6.74)" fill="#636366"/>
+          <text id="Upcoming_Events" data-name="Upcoming Events" transform="translate(0 11)" fill="#636366" font-size="12" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700" text-decoration="underline"><tspan x="0" y="0">Upcoming Events</tspan></text>
+        </g>
+        <text id="Sunday" transform="translate(398 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Sunday</tspan></text>
+        <text id="_21" data-name="21" transform="translate(398 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">21</tspan></text>
+        <text id="November" transform="translate(284 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">November</tspan></text>
+        <text id="_22" data-name="22" transform="translate(512 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">22</tspan></text>
+        <text id="_23" data-name="23" transform="translate(626 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">23</tspan></text>
+        <text id="_24" data-name="24" transform="translate(740 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">24</tspan></text>
+        <text id="_25" data-name="25" transform="translate(854 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">25</tspan></text>
+        <text id="_26" data-name="26" transform="translate(968 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">26</tspan></text>
+        <text id="_27" data-name="27" transform="translate(1082 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">27</tspan></text>
+        <text id="_28" data-name="28" transform="translate(1196 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">28</tspan></text>
+        <text id="_30" data-name="30" transform="translate(1310 421)" fill="#636366" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">30</tspan></text>
+        <text id="_1" data-name="1" transform="translate(1424 421)" fill="#afafb3" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">1</tspan></text>
+        <text id="_2" data-name="2" transform="translate(1538 421)" fill="#afafb3" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">2</tspan></text>
+        <text id="Sunday-2" data-name="Sunday" transform="translate(1196 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Sunday</tspan></text>
+        <text id="Monday" transform="translate(512 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Monday</tspan></text>
+        <text id="Monday-2" data-name="Monday" transform="translate(1310 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Monday</tspan></text>
+        <text id="Tuesday" transform="translate(626 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Tuesday</tspan></text>
+        <text id="Tuesday-2" data-name="Tuesday" transform="translate(1424 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Tuesday</tspan></text>
+        <text id="Wednesday" transform="translate(1538 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Wednesday</tspan></text>
+        <text id="Wednesday-2" data-name="Wednesday" transform="translate(740 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Wednesday</tspan></text>
+        <text id="Thursday" transform="translate(854 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Thursday</tspan></text>
+        <text id="Friday" transform="translate(968 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Friday</tspan></text>
+        <text id="Saturday" transform="translate(1082 393)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Bold, SF Pro Display" font-weight="700"><tspan x="0" y="13">Saturday</tspan></text>
+        <g id="Component_28_197" data-name="Component 28 – 197" transform="translate(284 475)">
+          <path id="Path_25" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_8_AM" data-name="8 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">8 AM</tspan></text>
+        </g>
+        <g id="Component_28_198" data-name="Component 28 – 198" transform="translate(284 511)">
+          <path id="Path_25-2" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_9_AM" data-name="9 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">9 AM</tspan></text>
+        </g>
+        <g id="Component_28_199" data-name="Component 28 – 199" transform="translate(284 547)">
+          <path id="Path_25-3" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_10_AM" data-name="10 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">10 AM</tspan></text>
+        </g>
+        <g id="Component_28_200" data-name="Component 28 – 200" transform="translate(284 583)">
+          <path id="Path_25-4" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_11_AM" data-name="11 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">11 AM</tspan></text>
+        </g>
+        <g id="Component_28_201" data-name="Component 28 – 201" transform="translate(284 619)">
+          <path id="Path_25-5" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_12_PM" data-name="12 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">12 PM</tspan></text>
+        </g>
+        <g id="Component_28_202" data-name="Component 28 – 202" transform="translate(284 655)">
+          <path id="Path_25-6" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_1_PM" data-name="1 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">1 PM</tspan></text>
+        </g>
+        <g id="Component_28_203" data-name="Component 28 – 203" transform="translate(284 691)">
+          <path id="Path_25-7" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_2_PM" data-name="2 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">2 PM</tspan></text>
+        </g>
+        <g id="Component_28_204" data-name="Component 28 – 204" transform="translate(284 727)">
+          <path id="Path_25-8" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_3_PM" data-name="3 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">3 PM</tspan></text>
+        </g>
+        <g id="Component_28_205" data-name="Component 28 – 205" transform="translate(284 763)">
+          <path id="Path_25-9" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_4_PM" data-name="4 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">4 PM</tspan></text>
+        </g>
+        <g id="Component_28_206" data-name="Component 28 – 206" transform="translate(284 799)">
+          <path id="Path_25-10" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_5_PM" data-name="5 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">5 PM</tspan></text>
+        </g>
+        <g id="Component_28_207" data-name="Component 28 – 207" transform="translate(284 835)">
+          <path id="Path_25-11" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_6_PM" data-name="6 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">6 PM</tspan></text>
+        </g>
+        <g id="Component_28_208" data-name="Component 28 – 208" transform="translate(284 871)">
+          <path id="Path_25-12" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_7_PM" data-name="7 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">7 PM</tspan></text>
+        </g>
+        <g id="Component_28_209" data-name="Component 28 – 209" transform="translate(284 907)">
+          <path id="Path_25-13" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_8_PM" data-name="8 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">8 PM</tspan></text>
+        </g>
+        <g id="Component_28_210" data-name="Component 28 – 210" transform="translate(284 943)">
+          <path id="Path_25-14" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_9_PM" data-name="9 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">9 PM</tspan></text>
+        </g>
+        <g id="Component_28_211" data-name="Component 28 – 211" transform="translate(284 979)">
+          <path id="Path_25-15" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_10_PM" data-name="10 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">10 PM</tspan></text>
+        </g>
+        <g id="Component_28_212" data-name="Component 28 – 212" transform="translate(284 1015)">
+          <path id="Path_25-16" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_11_PM" data-name="11 PM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">11 PM</tspan></text>
+        </g>
+        <g id="Component_28_213" data-name="Component 28 – 213" transform="translate(284 1051)">
+          <path id="Path_25-17" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_12_AM" data-name="12 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">12 AM</tspan></text>
+        </g>
+        <rect id="Rectangle_244" data-name="Rectangle 244" width="98" height="177" transform="translate(512 557)" fill="#f1e3c8" opacity="0.45"/>
+        <rect id="Rectangle_256" data-name="Rectangle 256" width="98" height="105" transform="translate(512 485)" fill="#ff867c" opacity="0.45"/>
+        <rect id="Rectangle_257" data-name="Rectangle 257" width="98" height="105" transform="translate(626 485)" fill="#ff867c" opacity="0.45"/>
+        <rect id="Rectangle_258" data-name="Rectangle 258" width="98" height="105" transform="translate(968 485)" fill="#ff867c" opacity="0.45"/>
+        <rect id="Rectangle_253" data-name="Rectangle 253" width="98" height="249" transform="translate(968 701)" fill="#dcedc8" opacity="0.5"/>
+        <rect id="Rectangle_259" data-name="Rectangle 259" width="98" height="249" transform="translate(1082 701)" fill="#dcedc8" opacity="0.5"/>
+        <rect id="Rectangle_260" data-name="Rectangle 260" width="98" height="249" transform="translate(1196 701)" fill="#dcedc8" opacity="0.5"/>
+        <rect id="Rectangle_261" data-name="Rectangle 261" width="98" height="249" transform="translate(398 701)" fill="#dcedc8" opacity="0.5"/>
+        <rect id="Rectangle_245" data-name="Rectangle 245" width="98" height="177" transform="translate(626 557)" fill="#f1e3c8" opacity="0.45"/>
+        <rect id="Rectangle_246" data-name="Rectangle 246" width="98" height="177" transform="translate(740 557)" fill="#f1e3c8" opacity="0.45"/>
+        <rect id="Rectangle_254" data-name="Rectangle 254" width="98" height="177" transform="translate(854 557)" fill="#f1e3c8" opacity="0.45"/>
+        <rect id="Rectangle_255" data-name="Rectangle 255" width="98" height="177" transform="translate(968 557)" fill="#f1e3c8" opacity="0.45"/>
+        <g id="Component_22_89" data-name="Component 22 – 89" transform="translate(512 557)">
+          <rect id="Rectangle_247" data-name="Rectangle 247" width="98" height="69" fill="#f1e3c8"/>
+          <text id="UI_UX" data-name="UI/UX" transform="translate(4 17)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">UI/UX</tspan></text>
+        </g>
+        <g id="Component_22_90" data-name="Component 22 – 90" transform="translate(626 626)">
+          <rect id="Rectangle_247-2" data-name="Rectangle 247" width="98" height="69" fill="#f1e3c8"/>
+          <text id="Development" transform="translate(4 17)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Development</tspan></text>
+        </g>
+        <g id="Component_22_91" data-name="Component 22 – 91" transform="translate(968 485)">
+          <rect id="Rectangle_247-3" data-name="Rectangle 247" width="98" height="33" fill="#ff867c"/>
+          <text id="Excl._hours" data-name="Excl. hours" transform="translate(4 17)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Excl. hours</tspan></text>
+        </g>
+        <g id="Component_22_92" data-name="Component 22 – 92" transform="translate(968 701)">
+          <rect id="Rectangle_247-4" data-name="Rectangle 247" width="98" height="106" fill="#dcedc8"/>
+          <text id="Family_board_games" data-name="Family board games" transform="translate(4 4)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="13">Family board </tspan><tspan x="0" y="29">games</tspan></text>
+        </g>
+        <g id="Component_28_214" data-name="Component 28 – 214" transform="translate(284 1087)">
+          <path id="Path_25-18" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_1_AM" data-name="1 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">1 AM</tspan></text>
+        </g>
+        <g id="Component_28_215" data-name="Component 28 – 215" transform="translate(284 1123)">
+          <path id="Path_25-19" data-name="Path 25" d="M0,0H1317" transform="translate(41 8)" fill="none" stroke="#afafb3" stroke-width="1"/>
+          <text id="_2_AM" data-name="2 AM" fill="#636366" font-size="12" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="11">2 AM</tspan></text>
+        </g>
+      </g>
+      <g id="Component_27_133" data-name="Component 27 – 133" transform="translate(294 1922)">
+        <rect id="Rectangle_266" data-name="Rectangle 266" width="212" height="100" fill="#f1e3c8"/>
+        <text id="_30_min_meeting" data-name="30 min meeting" transform="translate(10 29)" fill="#2c2c2e" font-size="20" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">30 min meeting</tspan></text>
+        <text id="_30_min" data-name="30 min" transform="translate(10 52)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">30 min</tspan></text>
+        <text id="Location:_None_specified" data-name="Location: None specified" transform="translate(10 71)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Location: None specified</tspan></text>
+        <text id="_-15_30" data-name="-15 / +30" transform="translate(10 90)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">-15 / +30</tspan></text>
+        <path id="Icon_ionic-ios-bookmark" data-name="Icon ionic-ios-bookmark" d="M9,4.938V23.492a.2.2,0,0,0,.313.156l5.7-4.492a.4.4,0,0,1,.469,0l5.7,4.492a.2.2,0,0,0,.313-.156V4.938a1.561,1.561,0,0,0-1.562-1.562H10.563A1.561,1.561,0,0,0,9,4.938Z" transform="translate(180.5 -3.375)"/>
+        <g id="Icon_feather-link" data-name="Icon feather-link" transform="translate(183.824 76.023)">
+          <path id="Path_59" data-name="Path 59" d="M22.2,4.21a3,3,0,0,0-4.52-.324l-1.8,1.8a3,3,0,1,0,4.239,4.239L21.148,8.9" transform="translate(-9.324 4.102)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+          <path id="Path_60" data-name="Path 60" d="M2.993,20.221a3.06,3.06,0,0,0,4.615.33l1.836-1.836a3.06,3.06,0,1,0-4.327-4.327L4.07,15.435" transform="translate(7.612 -10.441)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        </g>
+      </g>
+      <g id="Component_27_135" data-name="Component 27 – 135" transform="translate(749 1922)">
+        <path id="Path_30" data-name="Path 30" d="M0,0H212V100H0Z" fill="#dcedc8"/>
+        <text id="Game_Night" data-name="Game Night" transform="translate(10 29)" fill="#2c2c2e" font-size="20" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">Game Night</tspan></text>
+        <text id="_30_min-2" data-name="30 min" transform="translate(10 52)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">30 min</tspan></text>
+        <text id="Location:_None_specified-2" data-name="Location: None specified" transform="translate(10 71)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Location: None specified</tspan></text>
+        <text id="_-15_30-2" data-name="-15 / +30" transform="translate(10 90)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">-15 / +30</tspan></text>
+        <path id="Icon_ionic-ios-bookmark-2" data-name="Icon ionic-ios-bookmark" d="M9,4.938V23.492a.2.2,0,0,0,.313.156l5.7-4.492a.4.4,0,0,1,.469,0l5.7,4.492a.2.2,0,0,0,.313-.156V4.938a1.561,1.561,0,0,0-1.562-1.562H10.563A1.561,1.561,0,0,0,9,4.938Z" transform="translate(180.5 -3.375)"/>
+        <g id="Icon_feather-link-2" data-name="Icon feather-link" transform="translate(183.824 76.023)">
+          <path id="Path_59-2" data-name="Path 59" d="M22.2,4.21a3,3,0,0,0-4.52-.324l-1.8,1.8a3,3,0,1,0,4.239,4.239L21.148,8.9" transform="translate(-9.324 4.102)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+          <path id="Path_60-2" data-name="Path 60" d="M2.993,20.221a3.06,3.06,0,0,0,4.615.33l1.836-1.836a3.06,3.06,0,1,0-4.327-4.327L4.07,15.435" transform="translate(7.612 -10.441)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        </g>
+      </g>
+      <g id="Component_27_136" data-name="Component 27 – 136" transform="translate(977 1922)">
+        <path id="Path_30-2" data-name="Path 30" d="M0,0H212V100H0Z" fill="#dcedc8"/>
+        <text id="Group_call" data-name="Group call" transform="translate(10 29)" fill="#2c2c2e" font-size="20" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">Group call</tspan></text>
+        <text id="_30_min-3" data-name="30 min" transform="translate(10 52)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">30 min</tspan></text>
+        <text id="Location:_None_specified-3" data-name="Location: None specified" transform="translate(10 71)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Location: None specified</tspan></text>
+        <text id="_-15_30-3" data-name="-15 / +30" transform="translate(10 90)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">-15 / +30</tspan></text>
+        <path id="Icon_ionic-ios-bookmark-3" data-name="Icon ionic-ios-bookmark" d="M9,4.938V23.492a.2.2,0,0,0,.313.156l5.7-4.492a.4.4,0,0,1,.469,0l5.7,4.492a.2.2,0,0,0,.313-.156V4.938a1.561,1.561,0,0,0-1.562-1.562H10.563A1.561,1.561,0,0,0,9,4.938Z" transform="translate(180.5 -3.375)"/>
+        <g id="Icon_feather-link-3" data-name="Icon feather-link" transform="translate(183.824 76.023)">
+          <path id="Path_59-3" data-name="Path 59" d="M22.2,4.21a3,3,0,0,0-4.52-.324l-1.8,1.8a3,3,0,1,0,4.239,4.239L21.148,8.9" transform="translate(-9.324 4.102)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+          <path id="Path_60-3" data-name="Path 60" d="M2.993,20.221a3.06,3.06,0,0,0,4.615.33l1.836-1.836a3.06,3.06,0,1,0-4.327-4.327L4.07,15.435" transform="translate(7.612 -10.441)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        </g>
+      </g>
+      <g id="Component_27_138" data-name="Component 27 – 138" transform="translate(522 1922)">
+        <rect id="Rectangle_266-2" data-name="Rectangle 266" width="212" height="100" fill="#f1e3c8"/>
+        <text id="_60_min_meeting" data-name="60 min meeting" transform="translate(10 29)" fill="#2c2c2e" font-size="20" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">60 min meeting</tspan></text>
+        <text id="_30_min-4" data-name="30 min" transform="translate(10 52)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">30 min</tspan></text>
+        <text id="Location:_None_specified-4" data-name="Location: None specified" transform="translate(10 71)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">Location: None specified</tspan></text>
+        <text id="_-15_30-4" data-name="-15 / +30" transform="translate(10 90)" fill="#2c2c2e" font-size="14" font-family="SFProDisplay-Regular, SF Pro Display"><tspan x="0" y="0">-15 / +30</tspan></text>
+        <path id="Icon_ionic-ios-bookmark-4" data-name="Icon ionic-ios-bookmark" d="M9,4.938V23.492a.2.2,0,0,0,.313.156l5.7-4.492a.4.4,0,0,1,.469,0l5.7,4.492a.2.2,0,0,0,.313-.156V4.938a1.561,1.561,0,0,0-1.562-1.562H10.563A1.561,1.561,0,0,0,9,4.938Z" transform="translate(180.5 -3.375)"/>
+        <g id="Icon_feather-link-4" data-name="Icon feather-link" transform="translate(183.824 76.023)">
+          <path id="Path_59-4" data-name="Path 59" d="M22.2,4.21a3,3,0,0,0-4.52-.324l-1.8,1.8a3,3,0,1,0,4.239,4.239L21.148,8.9" transform="translate(-9.324 4.102)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+          <path id="Path_60-4" data-name="Path 60" d="M2.993,20.221a3.06,3.06,0,0,0,4.615.33l1.836-1.836a3.06,3.06,0,1,0-4.327-4.327L4.07,15.435" transform="translate(7.612 -10.441)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        </g>
+      </g>
+      <g id="Component_21_96" data-name="Component 21 – 96" transform="translate(294 1862)">
+        <path id="Path_18" data-name="Path 18" d="M0,0H440V50H0Z" fill="#f1e3c8" opacity="0.996"/>
+        <text id="Business_Hours" data-name="Business Hours" transform="translate(149 36)" fill="#2c2c2e" font-size="24" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">Business Hours</tspan></text>
+      </g>
+      <g id="Component_21_97" data-name="Component 21 – 97" transform="translate(749 1862)">
+        <path id="Path_18-2" data-name="Path 18" d="M0,0H440V50H0Z" fill="#dcedc8" opacity="0.996"/>
+        <text id="Family_Friends" data-name="Family / Friends" transform="translate(149 36)" fill="#2c2c2e" font-size="24" font-family="Prohibition-Regular, Prohibition"><tspan x="0" y="0">Family / Friends</tspan></text>
+      </g>
+    </g>
+    <g id="Rectangle_288" data-name="Rectangle 288" transform="translate(281 3039)" fill="none" stroke="#2c2c2e" stroke-width="1">
+      <rect width="916" height="842" stroke="none"/>
+      <rect x="0.5" y="0.5" width="915" height="841" fill="none"/>
+    </g>
+  </g>
+</svg>
