@@ -1,0 +1,925 @@
+
+> serving-fresh-react@0.1.0 start /home/dawn_of_van/Work/Infinite-Options/SF-Web-v2
+> react-scripts --max_old_space_size=4096 start
+
+[34mℹ[39m [90m｢wds｣[39m: Project is running at http://192.168.1.185/
+[34mℹ[39m [90m｢wds｣[39m: webpack output is served from 
+[34mℹ[39m [90m｢wds｣[39m: Content not from webpack is served from /home/dawn_of_van/Work/Infinite-Options/SF-Web-v2/public
+[34mℹ[39m [90m｢wds｣[39m: 404s will fallback to /
+Starting the development server...
+
+Compiled with warnings.
+
+src/App.js
+  Line 20:10:  'calTotal' is defined but never used                  no-unused-vars
+  Line 58:7:   Duplicate key 'secondary'                             no-dupe-keys
+  Line 80:10:  'accountType' is assigned a value but never used      no-unused-vars
+  Line 81:10:  'isUserLoaded' is assigned a value but never used     no-unused-vars
+  Line 81:24:  'setIsUserLoaded' is assigned a value but never used  no-unused-vars
+
+src/auth/AuthAdminRoute.js
+  Line 7:11:  'isAuth' is assigned a value but never used  no-unused-vars
+
+src/auth/AuthContext.js
+  Line 1:8:  'React' is defined but never used  no-unused-vars
+
+src/components/Admin/Admin.js
+  Line 2:10:  'Redirect' is defined but never used                                                                               no-unused-vars
+  Line 93:6:  React Hook useEffect has a missing dependency: 'Auth.authLevel'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Admin/AdminFarmContext.js
+  Line 1:8:  'React' is defined but never used  no-unused-vars
+
+src/components/Admin/AdminNavBar.js
+  Line 3:8:    'axios' is defined but never used                     no-unused-vars
+  Line 9:8:    'Typography' is defined but never used                no-unused-vars
+  Line 12:8:   'IconButton' is defined but never used                no-unused-vars
+  Line 13:8:   'MenuIcon' is defined but never used                  no-unused-vars
+  Line 19:27:  'Router' is defined but never used                    no-unused-vars
+  Line 19:35:  'Switch' is defined but never used                    no-unused-vars
+  Line 19:43:  'Route' is defined but never used                     no-unused-vars
+  Line 19:50:  'Link' is defined but never used                      no-unused-vars
+  Line 58:29:  'setFarmList' is assigned a value but never used      no-unused-vars
+  Line 61:10:  'defaultFarm' is assigned a value but never used      no-unused-vars
+  Line 104:9:  'handleLogoClick' is assigned a value but never used  no-unused-vars
+
+src/components/Admin/AdminSignup.js
+  Line 1:17:    'Component' is defined but never used              no-unused-vars
+  Line 1:38:    'useEffect' is defined but never used              no-unused-vars
+  Line 107:21:  'customerInfo' is assigned a value but never used  no-unused-vars
+
+src/components/Admin/AdminSocialSignup.js
+  Line 3:8:  'TextField' is defined but never used  no-unused-vars
+
+src/components/Admin/Analytics.js
+  Line 6:3:     'DateRangePicker' is defined but never used                                                                                           no-unused-vars
+  Line 7:3:     'DateRange' is defined but never used                                                                                                 no-unused-vars
+  Line 8:3:     'DateRangeDelimiter' is defined but never used                                                                                        no-unused-vars
+  Line 47:10:   'startDate' is assigned a value but never used                                                                                        no-unused-vars
+  Line 47:21:   'setStartDate' is assigned a value but never used                                                                                     no-unused-vars
+  Line 48:10:   'endDate' is assigned a value but never used                                                                                          no-unused-vars
+  Line 48:19:   'setEndDate' is assigned a value but never used                                                                                       no-unused-vars
+  Line 50:10:   'chartData' is assigned a value but never used                                                                                        no-unused-vars
+  Line 51:10:   'dataError' is assigned a value but never used                                                                                        no-unused-vars
+  Line 99:6:    React Hook useEffect has missing dependencies: 'businessID' and 'loadSeriesData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 112:28:  Array.prototype.map() expects a return value from arrow function                                                                      array-callback-return
+  Line 154:9:   'total' is assigned a value but never used                                                                                            no-unused-vars
+
+src/components/Admin/HighchartTemplate.js
+  Line 4:10:    'DateRangePicker' is defined but never used                                                                                           no-unused-vars
+  Line 37:10:   'startDate' is assigned a value but never used                                                                                        no-unused-vars
+  Line 37:21:   'setStartDate' is assigned a value but never used                                                                                     no-unused-vars
+  Line 38:10:   'endDate' is assigned a value but never used                                                                                          no-unused-vars
+  Line 38:19:   'setEndDate' is assigned a value but never used                                                                                       no-unused-vars
+  Line 40:10:   'chartData' is assigned a value but never used                                                                                        no-unused-vars
+  Line 41:10:   'dataError' is assigned a value but never used                                                                                        no-unused-vars
+  Line 75:9:    'onReportClick' is assigned a value but never used                                                                                    no-unused-vars
+  Line 78:7:    Anchors must have content and the content must be accessible by a screen reader                                                       jsx-a11y/anchor-has-content
+  Line 112:6:   React Hook useEffect has missing dependencies: 'businessID' and 'loadSeriesData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 122:24:  Array.prototype.map() expects a return value from arrow function                                                                      array-callback-return
+  Line 184:40:  Expected '===' and instead saw '=='                                                                                                   eqeqeq
+  Line 389:9:   'onChange' is assigned a value but never used                                                                                         no-unused-vars
+
+src/components/Admin/Price_Compare/CompareGraph.js
+  Line 24:28:  Expected '===' and instead saw '=='  eqeqeq
+
+src/components/Admin/Price_Compare/CompareTable.js
+  Line 65:20:  Expected '===' and instead saw '=='  eqeqeq
+
+src/components/Admin/ReplaceProduce.jsx
+  Line 2:10:   'render' is defined but never used                                                                          no-unused-vars
+  Line 10:10:  'selectedProduce_uid' is assigned a value but never used                                                    no-unused-vars
+  Line 11:10:  'selectedProduce_bs_uid' is assigned a value but never used                                                 no-unused-vars
+  Line 53:6:   React Hook useEffect has a missing dependency: 'produce'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Admin/Zones.jsx
+  Line 11:7:  'API_URL' is assigned a value but never used  no-unused-vars
+
+src/components/Admin/utils/ZoneModal.jsx
+  Line 21:7:  'API_URL' is assigned a value but never used  no-unused-vars
+
+src/components/CheckoutItems/Coupons.jsx
+  Line 1:39:    'useEffect' is defined but never used                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  Line 111:6:   React Hook useMemo has missing dependencies: 'ApplySaving', 'avaiCouponData', 'calculateAmountSaved', 'checkout', 'props', and 'unavaiCouponData'. Either include them or remove the dependency array. However, 'props' will change when *any* prop changes, so the preferred fix is to destructure the 'props' object outside of the useMemo call and refer to those specific props inside useMemo  react-hooks/exhaustive-deps
+  Line 194:6:   React Hook useMemo has a missing dependency: 'loadCoupons'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+  Line 260:38:  Expected '!==' and instead saw '!='                                                                                                                                                                                                                                                                                                                                                                  eqeqeq
+
+src/components/CheckoutItems/HistoryCard.jsx
+  Line 1:17:   'useState' is defined but never used          no-unused-vars
+  Line 1:27:   'useEffect' is defined but never used         no-unused-vars
+  Line 2:8:    'axios' is defined but never used             no-unused-vars
+  Line 62:11:  'profile' is assigned a value but never used  no-unused-vars
+
+src/components/CheckoutItems/cartItem.jsx
+  Line 3:15:   'IconButton' is defined but never used                                                                                                                              no-unused-vars
+  Line 20:23:  Expected '===' and instead saw '=='                                                                                                                                 eqeqeq
+  Line 66:51:  Expected '!==' and instead saw '!='                                                                                                                                 eqeqeq
+  Line 75:6:   React Hook useEffect has missing dependencies: 'props.business_uid', 'props.name', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/CheckoutPage/CheckoutStorePage.jsx
+  Line 1:17:  'useContext' is defined but never used   no-unused-vars
+  Line 4:10:  'Box' is defined but never used          no-unused-vars
+  Line 7:20:  'CardElement' is defined but never used  no-unused-vars
+  Line 7:33:  'useStripe' is defined but never used    no-unused-vars
+
+src/components/CheckoutPage/CheckoutStoreRight.jsx
+  Line 73:10:  'windowHeight' is assigned a value but never used  no-unused-vars
+
+src/components/CheckoutPage/PlaceOrder.js
+  Line 19:5:  Duplicate key 'delivery_unit'  no-dupe-keys
+
+src/components/DeliverySearch/DeliveryLocationSearch.jsx
+  Line 155:28:  Expected '===' and instead saw '=='  eqeqeq
+
+src/components/Farm/AddBusinessToProduct.js
+  Line 4:8:     'StarRateIcon' is defined but never used                no-unused-vars
+  Line 5:8:     'RefreshIcon' is defined but never used                 no-unused-vars
+  Line 6:8:     'DeleteIcon' is defined but never used                  no-unused-vars
+  Line 7:8:     'EditIcon' is defined but never used                    no-unused-vars
+  Line 9:8:     'IconButton' is defined but never used                  no-unused-vars
+  Line 19:3:    'Card' is defined but never used                        no-unused-vars
+  Line 20:3:    'CardActions' is defined but never used                 no-unused-vars
+  Line 21:3:    'CardContent' is defined but never used                 no-unused-vars
+  Line 22:3:    'CardMedia' is defined but never used                   no-unused-vars
+  Line 24:3:    'Modal' is defined but never used                       no-unused-vars
+  Line 45:10:   'open' is assigned a value but never used               no-unused-vars
+  Line 50:10:   'itemImage' is assigned a value but never used          no-unused-vars
+  Line 107:11:  'created_at' is assigned a value but never used         no-unused-vars
+  Line 132:33:  Expected '===' and instead saw '=='                     eqeqeq
+  Line 232:27:  Expected '===' and instead saw '=='                     eqeqeq
+  Line 436:10:  'NumberFormatCustomQuantity' is defined but never used  no-unused-vars
+  Line 500:3:   Duplicate key 'card'                                    no-dupe-keys
+
+src/components/Farm/AddItemModel.js
+  Line 2:3:     'Component' is defined but never used            no-unused-vars
+  Line 5:3:     'useEffect' is defined but never used            no-unused-vars
+  Line 12:8:    'FormControlLabel' is defined but never used     no-unused-vars
+  Line 16:8:    'Switch' is defined but never used               no-unused-vars
+  Line 19:10:   'AdminFarmContext' is defined but never used     no-unused-vars
+  Line 23:3:    'Paper' is defined but never used                no-unused-vars
+  Line 25:3:    'Typography' is defined but never used           no-unused-vars
+  Line 26:3:    'Card' is defined but never used                 no-unused-vars
+  Line 27:3:    'CardActions' is defined but never used          no-unused-vars
+  Line 28:3:    'CardMedia' is defined but never used            no-unused-vars
+  Line 29:3:    'CardContent' is defined but never used          no-unused-vars
+  Line 30:3:    'Modal' is defined but never used                no-unused-vars
+  Line 32:3:    'CircularProgress' is defined but never used     no-unused-vars
+  Line 35:8:    'AuthUtils' is defined but never used            no-unused-vars
+  Line 98:24:   Expected '===' and instead saw '=='              eqeqeq
+  Line 205:27:  Expected '===' and instead saw '=='              eqeqeq
+  Line 404:7:   'paperStyle' is assigned a value but never used  no-unused-vars
+  Line 414:7:   'labelStyle' is assigned a value but never used  no-unused-vars
+
+src/components/Farm/CheckItem.js
+  Line 2:3:     'Component' is defined but never used                                                                       no-unused-vars
+  Line 11:8:    'Select' is defined but never used                                                                          no-unused-vars
+  Line 12:8:    'MenuItem' is defined but never used                                                                        no-unused-vars
+  Line 13:8:    'InputLabel' is defined but never used                                                                      no-unused-vars
+  Line 14:8:    'FormControlLabel' is defined but never used                                                                no-unused-vars
+  Line 15:8:    'FormControl' is defined but never used                                                                     no-unused-vars
+  Line 17:8:    'Checkbox' is defined but never used                                                                        no-unused-vars
+  Line 18:8:    'Switch' is defined but never used                                                                          no-unused-vars
+  Line 19:8:    'appColors' is defined but never used                                                                       no-unused-vars
+  Line 21:10:   'AdminFarmContext' is defined but never used                                                                no-unused-vars
+  Line 25:3:    'Paper' is defined but never used                                                                           no-unused-vars
+  Line 27:3:    'Typography' is defined but never used                                                                      no-unused-vars
+  Line 28:3:    'Card' is defined but never used                                                                            no-unused-vars
+  Line 29:3:    'CardActions' is defined but never used                                                                     no-unused-vars
+  Line 30:3:    'CardMedia' is defined but never used                                                                       no-unused-vars
+  Line 31:3:    'CardContent' is defined but never used                                                                     no-unused-vars
+  Line 33:3:    'TextField' is defined but never used                                                                       no-unused-vars
+  Line 34:3:    'CircularProgress' is defined but never used                                                                no-unused-vars
+  Line 37:8:    'AuthUtils' is defined but never used                                                                       no-unused-vars
+  Line 66:9:    'handleChange' is assigned a value but never used                                                           no-unused-vars
+  Line 76:9:    'onFileChange' is assigned a value but never used                                                           no-unused-vars
+  Line 89:9:    'addItem' is assigned a value but never used                                                                no-unused-vars
+  Line 99:24:   Expected '===' and instead saw '=='                                                                         eqeqeq
+  Line 182:6:   React Hook useEffect has a missing dependency: 'produce'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 201:6:   React Hook useEffect has a missing dependency: 'farmID'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+  Line 293:7:   'paperStyle' is assigned a value but never used                                                             no-unused-vars
+  Line 303:7:   'labelStyle' is assigned a value but never used                                                             no-unused-vars
+  Line 338:10:  'NumberFormatCustomPrice' is defined but never used                                                         no-unused-vars
+
+src/components/Farm/Farmer.js
+  Line 1:17:   'Component' is defined but never used         no-unused-vars
+  Line 1:40:   'useState' is defined but never used          no-unused-vars
+  Line 1:50:   'useEffect' is defined but never used         no-unused-vars
+  Line 5:3:    'Grid' is defined but never used              no-unused-vars
+  Line 7:3:    'Button' is defined but never used            no-unused-vars
+  Line 8:3:    'Typography' is defined but never used        no-unused-vars
+  Line 9:3:    'Card' is defined but never used              no-unused-vars
+  Line 10:3:   'CardMedia' is defined but never used         no-unused-vars
+  Line 11:3:   'CardContent' is defined but never used       no-unused-vars
+  Line 12:3:   'Modal' is defined but never used             no-unused-vars
+  Line 13:3:   'TextField' is defined but never used         no-unused-vars
+  Line 14:3:   'CircularProgress' is defined but never used  no-unused-vars
+  Line 16:10:  'makeStyles' is defined but never used        no-unused-vars
+  Line 23:8:   'Chart' is defined but never used             no-unused-vars
+  Line 24:8:   'Revenue' is defined but never used           no-unused-vars
+
+src/components/Farm/FarmerHome.js
+  Line 3:8:     'AddItemModel' is defined but never used                                                                     no-unused-vars
+  Line 37:10:   'file' is assigned a value but never used                                                                    no-unused-vars
+  Line 37:16:   'setFile' is assigned a value but never used                                                                 no-unused-vars
+  Line 38:10:   'mealName' is assigned a value but never used                                                                no-unused-vars
+  Line 38:20:   'setMealName' is assigned a value but never used                                                             no-unused-vars
+  Line 39:10:   'item' is assigned a value but never used                                                                    no-unused-vars
+  Line 39:16:   'setItem' is assigned a value but never used                                                                 no-unused-vars
+  Line 51:6:    React Hook useEffect has a missing dependency: 'farmData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 212:7:   'paperStyle' is assigned a value but never used                                                              no-unused-vars
+  Line 267:10:  'NumberFormatCustomPrice' is defined but never used                                                          no-unused-vars
+
+src/components/Farm/FarmerReport.js
+  Line 367:9:   'string' is assigned a value but never used                                                              no-unused-vars
+  Line 453:38:  Expected '===' and instead saw '=='                                                                      eqeqeq
+  Line 772:6:   React Hook useMemo has a missing dependency: 'farmID'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 784:9:   'hasPaid' is assigned a value but never used                                                             no-unused-vars
+  Line 870:49:  Array.prototype.map() expects a value to be returned at the end of arrow function                        array-callback-return
+
+src/components/Farm/FarmerSettings.js
+  Line 3:8:     'Grid' is defined but never used                                                                                    no-unused-vars
+  Line 19:8:    'ImageUploading' is defined but never used                                                                          no-unused-vars
+  Line 127:10:  'passwordHere' is assigned a value but never used                                                                   no-unused-vars
+  Line 129:10:  'confirmPass' is assigned a value but never used                                                                    no-unused-vars
+  Line 130:10:  'saltPack' is assigned a value but never used                                                                       no-unused-vars
+  Line 167:9:   'maxNumImg' is assigned a value but never used                                                                      no-unused-vars
+  Line 177:18:  'digestMessage' is defined but never used                                                                           no-unused-vars
+  Line 367:6:   React Hook useEffect has a missing dependency: 'getFarmSettings'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 923:10:  'DayHours' is defined but never used                                                                                no-unused-vars
+  Line 947:7:   'labelStyle' is assigned a value but never used                                                                     no-unused-vars
+
+src/components/Farm/Item.js
+  Line 20:3:    'CardActions' is defined but never used                 no-unused-vars
+  Line 137:11:  'created_at' is assigned a value but never used         no-unused-vars
+  Line 276:27:  Expected '===' and instead saw '=='                     eqeqeq
+  Line 563:10:  'NumberFormatCustomQuantity' is defined but never used  no-unused-vars
+  Line 627:3:   Duplicate key 'card'                                    no-dupe-keys
+
+src/components/Farm/chart.js
+  Line 4:3:     'TimePicker' is defined but never used                            no-unused-vars
+  Line 5:3:     'DateTimePicker' is defined but never used                        no-unused-vars
+  Line 31:10:   'data' is assigned a value but never used                         no-unused-vars
+  Line 37:10:   'domainName' is assigned a value but never used                   no-unused-vars
+  Line 77:25:   Array.prototype.map() expects a return value from arrow function  array-callback-return
+  Line 103:26:  'cusName' is assigned to itself                                   no-self-assign
+  Line 118:18:  'i' is already defined                                            no-redeclare
+
+src/components/Farm/components/WeeklyHourRange.jsx
+  Line 1:17:  'useContext' is defined but never used        no-unused-vars
+  Line 3:10:  'AdminFarmContext' is defined but never used  no-unused-vars
+
+src/components/Farm/revenue.js
+  Line 3:8:  'axios' is defined but never used  no-unused-vars
+
+src/components/Farmers/Farmers.jsx
+  Line 4:10:    'makeStyles' is defined but never used                                                                     no-unused-vars
+  Line 5:10:    'Button' is defined but never used                                                                         no-unused-vars
+  Line 6:8:     'Card' is defined but never used                                                                           no-unused-vars
+  Line 11:8:    'Slider' is defined but never used                                                                         no-unused-vars
+  Line 14:10:   'get' is defined but never used                                                                            no-unused-vars
+  Line 209:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 261:13:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 264:13:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+src/components/FilterProductSelection/Days.jsx
+  Line 1:29:  'useEffect' is defined but never used           no-unused-vars
+  Line 1:40:  'useState' is defined but never used            no-unused-vars
+  Line 3:8:   'ProdSelectContext' is defined but never used   no-unused-vars
+  Line 9:7:   'useStyles' is assigned a value but never used  no-unused-vars
+  Line 25:7:  'i' is assigned a value but never used          no-unused-vars
+  Line 26:7:  'tmp' is assigned a value but never used        no-unused-vars
+
+src/components/FilterProductSelection/Farm.jsx
+  Line 1:29:  'useState' is defined but never used          no-unused-vars
+  Line 5:10:  'Box' is defined but never used               no-unused-vars
+  Line 5:15:  'Grid' is defined but never used              no-unused-vars
+  Line 15:9:  'classes' is assigned a value but never used  no-unused-vars
+
+src/components/FilterProductSelection/ItemCategory.jsx
+  Line 27:9:  'classes' is assigned a value but never used  no-unused-vars
+
+src/components/FilterProductSelection/StoreFilter.jsx
+  Line 3:8:     'FarmCategory' is defined but never used                                                                              no-unused-vars
+  Line 46:3:    Duplicate key 'deliveryDates'                                                                                         no-dupe-keys
+  Line 55:3:    Duplicate key 'filterItemsGrid'                                                                                       no-dupe-keys
+  Line 78:9:    'productSelect' is assigned a value but never used                                                                    no-unused-vars
+  Line 177:6:   React Hook useEffect has a missing dependency: 'createDefault7Day'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 187:39:  Expected '===' and instead saw '=='                                                                                   eqeqeq
+  Line 209:66:  Expected '===' and instead saw '=='                                                                                   eqeqeq
+
+src/components/FilterProductSelection/cards/DateCard.jsx
+  Line 36:5:    Duplicate key 'fontWeight'                                                                                                                                                                          no-dupe-keys
+  Line 66:37:   Expected '===' and instead saw '=='                                                                                                                                                                 eqeqeq
+  Line 83:28:   Expected '!==' and instead saw '!='                                                                                                                                                                 eqeqeq
+  Line 92:12:   'displayDialog' is defined but never used                                                                                                                                                           no-unused-vars
+  Line 106:12:  'clearCartAndDay' is defined but never used                                                                                                                                                         no-unused-vars
+  Line 157:6:   React Hook useEffect has missing dependencies: 'props.day', 'props.id', 'props.month', 'props.time', 'props.weekDayFull', and 'store'. Either include them or remove the dependency array           react-hooks/exhaustive-deps
+  Line 160:19:  Expected '===' and instead saw '=='                                                                                                                                                                 eqeqeq
+  Line 164:6:   React Hook useEffect has missing dependencies: 'cardClicked' and 'props'. Either include them or remove the dependency array                                                                        react-hooks/exhaustive-deps
+  Line 168:53:  Expected '===' and instead saw '=='                                                                                                                                                                 eqeqeq
+  Line 185:6:   React Hook useEffect has missing dependencies: 'props.day', 'props.month', 'props.time', 'props.weekDayFullUpper', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/FilterProductSelection/cards/FarmCard.jsx
+  Line 8:10:  'StrikethroughS' is defined but never used                                                                                                                                                                                                                      no-unused-vars
+  Line 11:9:  'filter' is assigned a value but never used                                                                                                                                                                                                                     no-unused-vars
+  Line 35:6:  React Hook useEffect has a missing dependency: 'props.id'. Either include it or remove the dependency array. If 'setIsClicked' needs the current value of 'props.id', you can also switch to useReducer instead of useState and read 'props.id' in the reducer  react-hooks/exhaustive-deps
+  Line 55:6:  React Hook useEffect has missing dependencies: 'isClearFarmClicks', 'productSelect', and 'props.id'. Either include them or remove the dependency array                                                                                                         react-hooks/exhaustive-deps
+
+src/components/Footer/Footer.jsx
+  Line 2:10:   'Box' is defined but never used                   no-unused-vars
+  Line 2:35:   'Badge' is defined but never used                 no-unused-vars
+  Line 7:8:    'appColors' is defined but never used             no-unused-vars
+  Line 10:8:   'Modal' is defined but never used                 no-unused-vars
+  Line 14:8:   'storeContext' is defined but never used          no-unused-vars
+  Line 21:10:  'userInfo' is assigned a value but never used     no-unused-vars
+  Line 21:20:  'setUserInfo' is assigned a value but never used  no-unused-vars
+
+src/components/Home/Landing.jsx
+  Line 1:17:    'useContext' is defined but never used                                                                     no-unused-vars
+  Line 3:10:    'Visible' is defined but never used                                                                        no-unused-vars
+  Line 3:19:    'Hidden' is defined but never used                                                                         no-unused-vars
+  Line 5:10:    'useHistory' is defined but never used                                                                     no-unused-vars
+  Line 10:8:    'CheckoutStoreTab' is defined but never used                                                               no-unused-vars
+  Line 19:10:   'LeftEmptyCell' is defined but never used                                                                  no-unused-vars
+  Line 145:9:   'handleClose' is assigned a value but never used                                                           no-unused-vars
+  Line 435:13:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 442:17:  Duplicate key 'marginTop'                                                                                  no-dupe-keys
+
+src/components/LandingNavBar/LandingNavBar.js
+  Line 2:10:   'Link' is defined but never used                                                                           no-unused-vars
+  Line 5:8:    'ShoppingCartIcon' is defined but never used                                                               no-unused-vars
+  Line 6:8:    'StorefrontIcon' is defined but never used                                                                 no-unused-vars
+  Line 10:23:  'IconButton' is defined but never used                                                                     no-unused-vars
+  Line 10:35:  'Badge' is defined but never used                                                                          no-unused-vars
+  Line 36:11:  'profile' is assigned a value but never used                                                               no-unused-vars
+  Line 39:9:   'BusiMethods' is assigned a value but never used                                                           no-unused-vars
+  Line 59:12:  'handleStoreClick' is defined but never used                                                               no-unused-vars
+  Line 63:12:  'handleCartClick' is defined but never used                                                                no-unused-vars
+  Line 98:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+src/components/LogIn/AdminLogin.js
+  Line 1:17:   'Component' is defined but never used                                                                                                                    no-unused-vars
+  Line 2:8:    'FacebookLogin' is defined but never used                                                                                                                no-unused-vars
+  Line 3:8:    'FacebookIcon' is defined but never used                                                                                                                 no-unused-vars
+  Line 4:8:    'GoogleLogin' is defined but never used                                                                                                                  no-unused-vars
+  Line 8:8:    'TextField' is defined but never used                                                                                                                    no-unused-vars
+  Line 10:10:  'withStyles' is defined but never used                                                                                                                   no-unused-vars
+  Line 11:10:  'sizing' is defined but never used                                                                                                                       no-unused-vars
+  Line 14:8:   'RevenueHighchart' is defined but never used                                                                                                             no-unused-vars
+  Line 86:6:   React Hook useEffect has missing dependencies: 'Auth', 'props.history', and 'props.location.search'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 117:6:  React Hook useEffect has missing dependencies: 'Auth' and 'props'. Either include them or remove the dependency array                                    react-hooks/exhaustive-deps
+
+src/components/LogIn/SocialLogin.js
+  Line 180:13:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 199:15:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 210:9:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+src/components/MapComponent/MapComponent.jsx
+  Line 4:8:  'googleMapReact' is defined but never used   no-unused-vars
+  Line 6:7:  'google' is assigned a value but never used  no-unused-vars
+
+src/components/Modal/Modal.jsx
+  Line 1:8:    'Modal' is defined but never used                                                                          no-unused-vars
+  Line 3:17:   'useState' is defined but never used                                                                       no-unused-vars
+  Line 3:27:   'useContext' is defined but never used                                                                     no-unused-vars
+  Line 5:10:   'Button' is defined but never used                                                                         no-unused-vars
+  Line 23:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+src/components/Modal/SuccessModal.jsx
+  Line 1:8:    'Modal' is defined but never used                                                                          no-unused-vars
+  Line 5:10:   'Button' is defined but never used                                                                         no-unused-vars
+  Line 8:8:    'Signup' is defined but never used                                                                         no-unused-vars
+  Line 9:10:   'Paper' is defined but never used                                                                          no-unused-vars
+  Line 14:9:   'AuthMethods' is assigned a value but never used                                                           no-unused-vars
+  Line 17:9:   'modalSign' is assigned a value but never used                                                             no-unused-vars
+  Line 34:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+src/components/Modal/loginAmbasador.jsx
+  Line 1:8:    'Modal' is defined but never used                                                                          no-unused-vars
+  Line 3:27:   'useContext' is defined but never used                                                                     no-unused-vars
+  Line 5:10:   'Button' is defined but never used                                                                         no-unused-vars
+  Line 8:8:    'Signup' is defined but never used                                                                         no-unused-vars
+  Line 9:10:   'Paper' is defined but never used                                                                          no-unused-vars
+  Line 10:8:   'AdminLogin' is defined but never used                                                                     no-unused-vars
+  Line 15:8:   'modalLogin' is assigned a value but never used                                                            no-unused-vars
+  Line 16:9:   'modalSign' is assigned a value but never used                                                             no-unused-vars
+  Line 21:9:   'modalLgn' is assigned a value but never used                                                              no-unused-vars
+  Line 32:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+src/components/Order/Order.jsx
+  Line 1:39:    'useEffect' is defined but never used                no-unused-vars
+  Line 2:10:    'Container' is defined but never used                no-unused-vars
+  Line 2:21:    'Row' is defined but never used                      no-unused-vars
+  Line 2:26:    'Col' is defined but never used                      no-unused-vars
+  Line 4:10:    'Visible' is defined but never used                  no-unused-vars
+  Line 4:19:    'Hidden' is defined but never used                   no-unused-vars
+  Line 6:3:     'Box' is defined but never used                      no-unused-vars
+  Line 9:3:     'FormHelperText' is defined but never used           no-unused-vars
+  Line 10:3:    'Collapse' is defined but never used                 no-unused-vars
+  Line 16:8:    'FindLongLatWithAddr' is defined but never used      no-unused-vars
+  Line 18:10:   'TrendingUpRounded' is defined but never used        no-unused-vars
+  Line 25:8:    'ProductDisplay' is defined but never used           no-unused-vars
+  Line 50:10:   'coordinates' is assigned a value but never used     no-unused-vars
+  Line 50:23:   'setCoordinates' is assigned a value but never used  no-unused-vars
+  Line 63:10:   'errorValue' is assigned a value but never used      no-unused-vars
+  Line 64:10:   'errorMessage' is assigned a value but never used    no-unused-vars
+  Line 66:12:   'createError' is defined but never used              no-unused-vars
+  Line 143:28:  Expected '===' and instead saw '=='                  eqeqeq
+
+src/components/PaymentDetails/Paypal.jsx
+  Line 18:9:   'confirm' is assigned a value but never used                                                                                                               no-unused-vars
+  Line 21:10:  'loaded' is assigned a value but never used                                                                                                                no-unused-vars
+  Line 21:18:  'setLoaded' is assigned a value but never used                                                                                                             no-unused-vars
+  Line 24:7:   'paypalRef' is assigned a value but never used                                                                                                             no-unused-vars
+  Line 62:6:   React Hook useEffect has missing dependencies: 'CLIENT.production', 'CLIENT.sandbox', and 'CLIENT_ID'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/PaymentDetails/StripeCheckout.jsx
+  Line 1:48:    'useEffect' is defined but never used              no-unused-vars
+  Line 5:8:     'Stripe' is defined but never used                 no-unused-vars
+  Line 19:8:    'OrderConfirmation' is defined but never used      no-unused-vars
+  Line 20:8:    'HistoryTab' is defined but never used             no-unused-vars
+  Line 52:9:    'confirm' is assigned a value but never used       no-unused-vars
+  Line 53:9:    'location' is assigned a value but never used      no-unused-vars
+  Line 60:5:    'setProfile' is assigned a value but never used    no-unused-vars
+  Line 62:5:    'setCartItems' is assigned a value but never used  no-unused-vars
+  Line 64:5:    'setCartTotal' is assigned a value but never used  no-unused-vars
+  Line 201:11:  'res' is assigned a value but never used           no-unused-vars
+
+src/components/PaymentDetails/StripeElement.jsx
+  Line 1:17:  'useContext' is defined but never used   no-unused-vars
+  Line 1:29:  'useState' is defined but never used     no-unused-vars
+  Line 1:39:  'useEffect' is defined but never used    no-unused-vars
+  Line 2:10:  'Box' is defined but never used          no-unused-vars
+  Line 3:20:  'CardElement' is defined but never used  no-unused-vars
+  Line 3:33:  'useStripe' is defined but never used    no-unused-vars
+
+src/components/ProductDisplay/Product.jsx
+  Line 4:8:  'appColors' is defined but never used  no-unused-vars
+  Line 5:8:  'Card' is defined but never used       no-unused-vars
+  Line 6:9:  'Button' is defined but never used     no-unused-vars
+
+src/components/ProductDisplay/ProductDisplay.jsx
+  Line 2:10:  'Container' is defined but never used  no-unused-vars
+  Line 2:21:  'Row' is defined but never used        no-unused-vars
+  Line 2:26:  'Col' is defined but never used        no-unused-vars
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                                                                                                       no-unused-vars
+  Line 14:8:    'InfoIcon' is defined but never used                                                                                                                                                   no-unused-vars
+  Line 15:8:    'FavoriteIcon' is defined but never used                                                                                                                                               no-unused-vars
+  Line 16:8:    'FavoriteBorderIcon' is defined but never used                                                                                                                                         no-unused-vars
+  Line 17:8:    'axios' is defined but never used                                                                                                                                                      no-unused-vars
+  Line 114:38:  Expected '!==' and instead saw '!='                                                                                                                                                    eqeqeq
+  Line 156:22:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 163:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                                                                                                        no-loop-func
+  Line 171:44:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 176:6:   React Hook useEffect has missing dependencies: 'props.business_uids', 'props.favorite', 'props.type', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 189:23:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 225:38:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 227:26:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 268:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 283:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 307:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 321:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+
+src/components/ProductSelectionPage/ProduceProductSelection/displayProduct.jsx
+  Line 8:3:    'ButtonBase' is defined but never used                                                                                     no-unused-vars
+  Line 9:3:    'Grid' is defined but never used                                                                                           no-unused-vars
+  Line 14:10:  'set' is defined but never used                                                                                            no-unused-vars
+  Line 16:8:   'ItemCategory' is defined but never used                                                                                   no-unused-vars
+  Line 19:8:   'GridList' is defined but never used                                                                                       no-unused-vars
+  Line 189:6:  React Hook useEffect has a missing dependency: 'store.expectedDelivery'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/ProductSelectionPage/ProductSelectionPage.jsx
+  Line 10:3:   'Dialog' is defined but never used                                                                                                        no-unused-vars
+  Line 11:3:   'Button' is defined but never used                                                                                                        no-unused-vars
+  Line 17:8:   'axios' is defined but never used                                                                                                         no-unused-vars
+  Line 25:7:   'BASE_URL' is assigned a value but never used                                                                                             no-unused-vars
+  Line 28:10:  'calTotal' is defined but never used                                                                                                      no-unused-vars
+  Line 47:9:   'profile' is assigned a value but never used                                                                                              no-unused-vars
+  Line 51:21:  'setHasError' is assigned a value but never used                                                                                          no-unused-vars
+  Line 52:25:  'setIsLoading' is assigned a value but never used                                                                                         no-unused-vars
+  Line 59:21:  'setBusLoading' is assigned a value but never used                                                                                        no-unused-vars
+  Line 60:20:  'setBusError' is assigned a value but never used                                                                                          no-unused-vars
+  Line 69:7:   React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked  react-hooks/exhaustive-deps
+  Line 69:31:  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked  react-hooks/exhaustive-deps
+
+src/components/Profile-Info/ProfileInfo.js
+  Line 1:17:    'useContext' is defined but never used                                                                                                               no-unused-vars
+  Line 110:5:   Duplicate key 'color'                                                                                                                                no-dupe-keys
+  Line 165:9:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                            jsx-a11y/alt-text
+  Line 170:9:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                            jsx-a11y/alt-text
+  Line 175:9:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                            jsx-a11y/alt-text
+  Line 241:6:   React Hook React.useEffect has missing dependencies: 'Auth.isAuth', 'history', and 'setProfile'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 258:21:  Expected '!==' and instead saw '!='                                                                                                                  eqeqeq
+  Line 258:42:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 335:38:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 341:37:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 348:32:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 357:34:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 363:44:  Expected '!==' and instead saw '!='                                                                                                                  eqeqeq
+  Line 385:31:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 394:39:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 404:41:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 413:42:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+  Line 422:40:  Expected '===' and instead saw '=='                                                                                                                  eqeqeq
+
+src/components/PurchaseComplete/OrderConfirmation.jsx
+  Line 25:9:   'checkout' is assigned a value but never used                                                                                                                                                     no-unused-vars
+  Line 27:9:   'history' is assigned a value but never used                                                                                                                                                      no-unused-vars
+  Line 39:10:  'locError' is assigned a value but never used                                                                                                                                                     no-unused-vars
+  Line 40:10:  'locErrorMessage' is assigned a value but never used                                                                                                                                              no-unused-vars
+  Line 45:10:  'passwordErrorMessage' is assigned a value but never used                                                                                                                                         no-unused-vars
+  Line 205:6:  React Hook useEffect has missing dependencies: 'store.profile.address', 'store.profile.city', 'store.profile.state', and 'store.profile.zip'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/SignUp/Signup.jsx
+  Line 3:10:  'withStyles' is defined but never used  no-unused-vars
+  Line 4:8:   'TextField' is defined but never used   no-unused-vars
+  Line 11:8:  'cross' is defined but never used       no-unused-vars
+
+src/components/SignUp/SocialSignUp.jsx
+  Line 2:8:  'TextField' is defined but never used  no-unused-vars
+
+src/components/Store/Store.jsx
+  Line 4:8:     'axios' is defined but never used                                                                                                              no-unused-vars
+  Line 11:8:    'CheckoutPage' is defined but never used                                                                                                       no-unused-vars
+  Line 15:8:    'LandingNavBar' is defined but never used                                                                                                      no-unused-vars
+  Line 16:8:    'AdminLogin' is defined but never used                                                                                                         no-unused-vars
+  Line 17:8:    'Signup' is defined but never used                                                                                                             no-unused-vars
+  Line 20:10:   'set' is defined but never used                                                                                                                no-unused-vars
+  Line 22:7:    'BASE_URL' is assigned a value but never used                                                                                                  no-unused-vars
+  Line 139:9:   'classes' is assigned a value but never used                                                                                                   no-unused-vars
+  Line 175:10:  'isLoginShown' is assigned a value but never used                                                                                              no-unused-vars
+  Line 176:10:  'isSignUpShown' is assigned a value but never used                                                                                             no-unused-vars
+  Line 200:6:   React Hook useEffect has missing dependencies: 'getBusinesses' and 'profile'. Either include them or remove the dependency array               react-hooks/exhaustive-deps
+  Line 294:6:   React Hook useEffect has missing dependencies: 'Auth.isAuth', 'history', and 'setProfile'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 314:9:   'checkIfAccepting' is assigned a value but never used                                                                                          no-unused-vars
+  Line 316:11:  'dayString' is assigned a value but never used                                                                                                 no-unused-vars
+
+src/components/Store/StoreNavBar.jsx
+  Line 2:10:   'Link' is defined but never used                      no-unused-vars
+  Line 3:8:    'ShoppingCartIcon' is defined but never used          no-unused-vars
+  Line 12:8:   'MenuIcon' is defined but never used                  no-unused-vars
+  Line 14:10:  'createMuiTheme' is defined but never used            no-unused-vars
+  Line 14:26:  'ThemeProvider' is defined but never used             no-unused-vars
+  Line 20:10:  'Pointer' is defined but never used                   no-unused-vars
+  Line 21:8:   'appColor' is defined but never used                  no-unused-vars
+  Line 58:12:  'handleStoreClick' is defined but never used          no-unused-vars
+  Line 61:9:   'handleCartClick' is assigned a value but never used  no-unused-vars
+
+src/components/Tabs/CheckoutStoreTab.jsx
+  Line 1:59:     'useRef' is defined but never used                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  Line 3:10:     'useElements' is defined but never used                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  Line 3:23:     'CardElement' is defined but never used                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  Line 15:8:     'PlaceOrder' is defined but never used                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  Line 23:8:     'AdminLogin' is defined but never used                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  Line 24:8:     'Signup' is defined but never used                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  Line 36:8:     'TermsAndConditions' is defined but never used                                                                                                                                                                                                                                                                                                                           no-unused-vars
+  Line 40:8:     'DeliveryInfoTab' is defined but never used                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  Line 41:8:     'LocationSearchInput' is defined but never used                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  Line 42:10:    'MyLocation' is defined but never used                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  Line 42:22:    'SettingsOverscanOutlined' is defined but never used                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  Line 42:48:    'StreetviewTwoTone' is defined but never used                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  Line 181:9:    'productSelect' is assigned a value but never used                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  Line 186:10:   'isInDay' is assigned a value but never used                                                                                                                                                                                                                                                                                                                             no-unused-vars
+  Line 186:19:   'setIsInDay' is assigned a value but never used                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  Line 187:10:   'map' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+  Line 187:15:   'setMap' is assigned a value but never used                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  Line 195:10:   'paymentDisplayType' is assigned a value but never used                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  Line 195:30:   'setPaymentDisplayType' is assigned a value but never used                                                                                                                                                                                                                                                                                                               no-unused-vars
+  Line 198:10:   'isClickedLogin' is assigned a value but never used                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 198:26:   'setIsClickedLogin' is assigned a value but never used                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  Line 199:10:   'isClickedSignUp' is assigned a value but never used                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  Line 199:27:   'setIsClickedSignUp' is assigned a value but never used                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  Line 202:10:   'firstNameError' is assigned a value but never used                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 203:10:   'lastNameError' is assigned a value but never used                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  Line 204:10:   'phoneError' is assigned a value but never used                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  Line 206:10:   'emailErrorMessage' is assigned a value but never used                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  Line 208:10:   'locErrorMessage' is assigned a value but never used                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  Line 216:10:   'viewTermsAndConds' is assigned a value but never used                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  Line 216:29:   'setViewTermsAndConds' is assigned a value but never used                                                                                                                                                                                                                                                                                                                no-unused-vars
+  Line 220:5:    'setPaymentProcessing' is assigned a value but never used                                                                                                                                                                                                                                                                                                                no-unused-vars
+  Line 221:5:    'setLeftTabChosen' is assigned a value but never used                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  Line 230:52:   Expected '!==' and instead saw '!='                                                                                                                                                                                                                                                                                                                                      eqeqeq
+  Line 235:65:   'result' is assigned to itself                                                                                                                                                                                                                                                                                                                                           no-self-assign
+  Line 319:6:    React Hook useEffect has missing dependencies: 'store.profile.address', 'store.profile.city', 'store.profile.state', and 'store.profile.zip'. Either include them or remove the dependency array                                                                                                                                                                         react-hooks/exhaustive-deps
+  Line 330:9:    'onFieldGuestChange' is assigned a value but never used                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  Line 353:6:    React Hook useEffect has a missing dependency: 'getItemsCart'. Either include it or remove the dependency array                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  Line 356:7:    'days' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  Line 400:6:    React Hook useMemo has a missing dependency: 'loadFees'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  Line 457:6:    React Hook useEffect has missing dependencies: 'serviceFee', 'setPaymentDetails', and 'tax'. Either include them or remove the dependency array                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  Line 464:6:    React Hook useEffect has a missing dependency: 'setPaymentDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  Line 468:6:    React Hook useEffect has a missing dependency: 'calculateSubTotal'. Either include it or remove the dependency array                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  Line 477:6:    React Hook useEffect has missing dependencies: 'origServiceFee' and 'setPaymentDetails'. Either include them or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setServiceFee' needs the current value of 'origServiceFee'                                                                                             react-hooks/exhaustive-deps
+  Line 484:6:    React Hook useEffect has a missing dependency: 'setPaymentDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  Line 491:6:    React Hook useEffect has a missing dependency: 'setPaymentDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  Line 498:6:    React Hook useEffect has a missing dependency: 'setPaymentDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  Line 505:6:    React Hook useEffect has a missing dependency: 'setPaymentDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  Line 542:13:   'response' is assigned a value but never used                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  Line 631:3:    React Hook useMemo has missing dependencies: 'auth.isAuth', 'userInfo.address', 'userInfo.city', 'userInfo.email', 'userInfo.state', and 'userInfo.zip'. Either include them or remove the dependency array                                                                                                                                                              react-hooks/exhaustive-deps
+  Line 695:30:   Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                      eqeqeq
+  Line 696:27:   Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                      eqeqeq
+  Line 697:27:   Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                      eqeqeq
+  Line 698:28:   Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                      eqeqeq
+  Line 699:26:   Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                      eqeqeq
+  Line 952:15:   No duplicate props allowed                                                                                                                                                                                                                                                                                                                                               react/jsx-no-duplicate-props
+  Line 1064:19:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/components/Tabs/DeliveryInfoTab.jsx
+  Line 3:10:    'GoogleMap' is defined but never used                                                                                                                                                             no-unused-vars
+  Line 3:21:    'LoadScript' is defined but never used                                                                                                                                                            no-unused-vars
+  Line 4:22:    'withStyles' is defined but never used                                                                                                                                                            no-unused-vars
+  Line 6:3:     'Paper' is defined but never used                                                                                                                                                                 no-unused-vars
+  Line 8:3:     'TextField' is defined but never used                                                                                                                                                             no-unused-vars
+  Line 9:3:     'Switch' is defined but never used                                                                                                                                                                no-unused-vars
+  Line 10:3:    'Button' is defined but never used                                                                                                                                                                no-unused-vars
+  Line 19:8:    'Signup' is defined but never used                                                                                                                                                                no-unused-vars
+  Line 44:9:    'classes' is assigned a value but never used                                                                                                                                                      no-unused-vars
+  Line 47:9:    'history' is assigned a value but never used                                                                                                                                                      no-unused-vars
+  Line 59:10:   'signUpErrorMessage' is assigned a value but never used                                                                                                                                           no-unused-vars
+  Line 60:10:   'locError' is assigned a value but never used                                                                                                                                                     no-unused-vars
+  Line 61:10:   'locErrorMessage' is assigned a value but never used                                                                                                                                              no-unused-vars
+  Line 64:10:   'passwordError' is assigned a value but never used                                                                                                                                                no-unused-vars
+  Line 65:10:   'confirmPasswordError' is assigned a value but never used                                                                                                                                         no-unused-vars
+  Line 66:10:   'passwordErrorMessage' is assigned a value but never used                                                                                                                                         no-unused-vars
+  Line 81:11:   'paymentProcessing' is assigned a value but never used                                                                                                                                            no-unused-vars
+  Line 81:30:   'setLeftTabChosen' is assigned a value but never used                                                                                                                                             no-unused-vars
+  Line 89:10:   'map' is assigned a value but never used                                                                                                                                                          no-unused-vars
+  Line 205:9:   'onLoad' is assigned a value but never used                                                                                                                                                       no-unused-vars
+  Line 211:9:   'onUnmount' is assigned a value but never used                                                                                                                                                    no-unused-vars
+  Line 216:9:   'onCheckAddressClicked' is assigned a value but never used                                                                                                                                        no-unused-vars
+  Line 293:9:   'onPasswordChange' is assigned a value but never used                                                                                                                                             no-unused-vars
+  Line 305:9:   'onNotificationChange' is assigned a value but never used                                                                                                                                         no-unused-vars
+  Line 313:9:   'onPasswordClick' is assigned a value but never used                                                                                                                                              no-unused-vars
+  Line 314:13:  'name' is assigned a value but never used                                                                                                                                                         no-unused-vars
+  Line 314:19:  'value' is assigned a value but never used                                                                                                                                                        no-unused-vars
+  Line 356:6:   React Hook useEffect has missing dependencies: 'store.profile.address', 'store.profile.city', 'store.profile.state', and 'store.profile.zip'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Tabs/HistoryTab.jsx
+  Line 79:6:  React Hook useEffect has a missing dependency: 'isAuth'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Tabs/PaymentTab.jsx
+  Line 1:17:    'useMemo' is defined but never used                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  Line 2:8:     'axios' is defined but never used                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  Line 3:10:    'loadStripe' is defined but never used                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  Line 7:8:     'clsx' is defined but never used                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+  Line 11:8:    'AuthUtils' is defined but never used                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+  Line 13:8:    'FindLongLatWithAddr' is defined but never used                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  Line 19:8:    'DeliveryInfoTab' is defined but never used                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  Line 26:8:    'TermsAndConditions' is defined but never used                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  Line 103:20:  'cartItems' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  Line 103:31:  'setCartItems' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  Line 103:45:  'startDeliveryDate' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  Line 103:64:  'setCartTotal' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  Line 109:5:   'setPaymentProcessing' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  Line 110:5:   'setLeftTabChosen' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+  Line 116:10:  'isAddressConfirmed' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 117:10:  'ishidden' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  Line 117:20:  'setIsHidden' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+  Line 156:6:   React Hook useEffect has missing dependencies: 'store.profile.address', 'store.profile.city', 'store.profile.state', 'store.profile.zip', 'userInfo.city', 'userInfo.state', and 'userInfo.zip'. Either include them or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setIsAddressConfirmed' needs the current value of 'userInfo.city'  react-hooks/exhaustive-deps
+  Line 227:9:   'SectionContent' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  Line 325:34:  Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                                          eqeqeq
+  Line 326:31:  Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                                          eqeqeq
+  Line 327:31:  Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                                          eqeqeq
+  Line 328:32:  Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                                          eqeqeq
+  Line 329:30:  Expected '===' and instead saw '=='                                                                                                                                                                                                                                                                                                                                                          eqeqeq
+  Line 367:21:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/anchor-is-valid.md                      jsx-a11y/anchor-is-valid
+
+src/components/Tabs/RefundTab.jsx
+  Line 3:8:    'Paper' is defined but never used                     no-unused-vars
+  Line 69:10:  'windowHeight' is assigned a value but never used     no-unused-vars
+  Line 69:24:  'setWindowHeight' is assigned a value but never used  no-unused-vars
+
+src/components/TermsAndConditions/TermsAndConditions.jsx
+  Line 7:8:  'Background' is defined but never used  no-unused-vars
+
+src/components/Testimonial/Testimonial.jsx
+  Line 8:8:  'Slider' is defined but never used  no-unused-vars
+  Line 9:8:  'Card' is defined but never used    no-unused-vars
+
+src/mobile/MobilePaypalCheckout.jsx
+  Line 1:46:  'useContext' is defined but never used          no-unused-vars
+  Line 6:9:   'confirm' is assigned a value but never used    no-unused-vars
+  Line 34:9:  'CLIENT_ID' is assigned a value but never used  no-unused-vars
+
+src/services/ConfirmationService.jsx
+  Line 2:30:  'ConfirmationOptions' is defined but never used  no-unused-vars
+
+src/utils/BusiApiReqs.js
+  Line 2:10:  'get' is defined but never used  no-unused-vars
+
+src/utils/MenuNavButton.jsx
+  Line 110:7:  Expected a 'break' statement before 'case'  no-fallthrough
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled with warnings.
+
+src/components/Modal/SuccessModal.jsx
+  Line 5:8:    'AuthUtils' is defined but never used                                                                      no-unused-vars
+  Line 10:8:   'modalSignup' is assigned a value but never used                                                           no-unused-vars
+  Line 10:21:  'modalSignupMessage' is assigned a value but never used                                                    no-unused-vars
+  Line 24:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/Modal/SuccessModal.jsx
+  Line 1:17:   'useState' is defined but never used                                                                       no-unused-vars
+  Line 5:8:    'AuthUtils' is defined but never used                                                                      no-unused-vars
+  Line 23:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/Modal/SuccessModal.jsx
+  Line 22:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled with warnings.
+
+src/components/Modal/loginAmbasador.jsx
+  Line 15:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled with warnings.
+
+src/components/PaymentDetails/Paypal.jsx
+  Line 58:6:  React Hook useEffect has missing dependencies: 'CLIENT.production', 'CLIENT.sandbox', and 'CLIENT_ID'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled with warnings.
+
+src/components/PaymentDetails/StripeCheckout.jsx
+  Line 6:10:   'useLocation' is defined but never used      no-unused-vars
+  Line 13:10:  'useConfirmation' is defined but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled successfully!
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                                                                                                       no-unused-vars
+  Line 110:38:  Expected '!==' and instead saw '!='                                                                                                                                                    eqeqeq
+  Line 152:22:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                                                                                                        no-loop-func
+  Line 167:44:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 172:6:   React Hook useEffect has missing dependencies: 'props.business_uids', 'props.favorite', 'props.type', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 185:23:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 221:38:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 223:26:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 264:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 279:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 303:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 317:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                                                                                                       no-unused-vars
+  Line 110:38:  Expected '!==' and instead saw '!='                                                                                                                                                    eqeqeq
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                                                                                                        no-loop-func
+  Line 167:44:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 172:6:   React Hook useEffect has missing dependencies: 'props.business_uids', 'props.favorite', 'props.type', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 185:23:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 221:38:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 223:26:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 264:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 279:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 303:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 317:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                                                                                                       no-unused-vars
+  Line 110:38:  Expected '!==' and instead saw '!='                                                                                                                                                    eqeqeq
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                                                                                                        no-loop-func
+  Line 172:6:   React Hook useEffect has missing dependencies: 'props.business_uids', 'props.favorite', 'props.type', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 185:23:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 221:38:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 223:26:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 264:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 279:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 303:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 317:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                                                                                                       no-unused-vars
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                                                                                                        no-loop-func
+  Line 172:6:   React Hook useEffect has missing dependencies: 'props.business_uids', 'props.favorite', 'props.type', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 185:23:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 221:38:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 223:26:  Expected '===' and instead saw '=='                                                                                                                                                    eqeqeq
+  Line 264:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 279:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 303:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 317:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                                                                                                       no-unused-vars
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                                                                                                        no-loop-func
+  Line 172:6:   React Hook useEffect has missing dependencies: 'props.business_uids', 'props.favorite', 'props.type', and 'store.farmDaytimeDict'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 264:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 279:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 303:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+  Line 317:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                              jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                           no-unused-vars
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                            no-loop-func
+  Line 268:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 283:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 307:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 321:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                                           no-unused-vars
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'                            no-loop-func
+  Line 307:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+  Line 321:17:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+Compiling...
+Compiled with warnings.
+
+src/components/ProductSelectionPage/ProduceProductSelection/Entry.jsx
+  Line 8:3:     'Icon' is defined but never used                                                 no-unused-vars
+  Line 159:43:  Function declared in a loop contains unsafe references to variable(s) 'isInDay'  no-loop-func
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
