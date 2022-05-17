@@ -19,8 +19,8 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-var key_url = '/etc/letsencrypt/live/manifestmy.space/privkey.pem';
-var cert_url = '/etc/letsencrypt/live/manifestmy.space/fullchain.pem';
+var key_url = '/etc/letsencrypt/live/skedul.online/privkey.pem';
+var cert_url = '/etc/letsencrypt/live/skedul.online/fullchain.pem';
 
 var options = {};
 
