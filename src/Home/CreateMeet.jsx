@@ -517,12 +517,19 @@ export default function CreateMeet() {
 
               // If the appt start time or appt end time falls on a current appt, slot is taken.
 
+              // if (
+              //   appt_start_time == this_start ||
+              //   appt_end_time == this_end ||
+              //   (appt_start_time < this_start && appt_end_time > this_end) ||
+              //   (appt_start_time < this_start && appt_end_time < this_end) ||
+              //   (appt_start_time > this_start && appt_end_time > this_end)
+              // ) {
+              //   slot_available = false;
+              //   return; // No need to continue if it's taken.
+              // }
               if (
-                appt_start_time == this_start ||
-                appt_end_time == this_end ||
-                (appt_start_time < this_start && appt_end_time > this_end) ||
-                (appt_start_time < this_start && appt_end_time < this_end) ||
-                (appt_start_time > this_start && appt_end_time > this_end)
+                (appt_start_time >= this_start && appt_start_time < this_end) ||
+                (appt_end_time > this_start && appt_end_time <= this_end)
               ) {
                 slot_available = false;
                 return; // No need to continue if it's taken.
