@@ -450,7 +450,7 @@ export default function CreateMeet() {
             'AvailableAppointments/' +
             dateString +
             '/' +
-            duration +
+            duration.substring(1) +
             '/' +
             startTime +
             ',' +
