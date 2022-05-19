@@ -468,22 +468,29 @@ export default function CreateMeet() {
   });
   useEffect(() => {
     if (timeSelected) {
+      let timeMini = dateString + 'T' + startTime + ':00';
+      let timeMaxi = dateString + 'T' + endTime + ':00';
+
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: 'Bearer ' + accessToken,
       };
       const data = {
-        timeMin: dateString + 'T' + startTime + ':00-0800',
-        timeMax: dateString + 'T' + endTime + ':00-0800',
+        // timeMin: dateString + 'T' + startTime + ':00',
+        // timeMax: dateString + 'T' + endTime + ':00',
+        timeMin: moment(timeMini).format('YYYY-MM-DDTHH:mm:ssZZ'),
+        timeMax: moment(timeMaxi).format('YYYY-MM-DDTHH:mm:ssZZ'),
         items: [
           {
             id: 'primary',
           },
         ],
       };
-      const timeMin = dateString + 'T' + startTime + ':00-0800';
-      const timeMax = dateString + 'T' + endTime + ':00-0800';
+
+      console.log('freebusy data', data);
+      const timeMin = dateString + 'T' + startTime + ':00';
+      const timeMax = dateString + 'T' + endTime + ':00';
 
       axios
         .post(
@@ -503,33 +510,84 @@ export default function CreateMeet() {
           let seconds = convert(duration);
           // Loop through each appt slot in the search range.
           while (appt_start_time < end_time) {
-            //console.log('in while');
             // Add appt duration to the appt start time so we know where the appt will end.
             let appt_end_time = appt_start_time + seconds;
 
             // For each appt slot, loop through the current appts to see if it falls
             // in a slot that is already taken.
+
             let slot_available = true;
-            //console.log(busy);
             busy.forEach((times) => {
               let this_start = Date.parse(times['start']) / 1000;
               let this_end = Date.parse(times['end']) / 1000;
 
+              let endTimes = Date.parse(endTime + ':00') / 1000;
               // If the appt start time or appt end time falls on a current appt, slot is taken.
+              console.log(
+                'freebusy start=',
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
+                moment(new Date(this_start * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss') ==
+                  moment(new Date(this_start * 1000)).format('HH:mm:ss')
+              );
+              console.log(
+                'freebusy end=',
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss'),
+                moment(new Date(this_end * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss') ==
+                  moment(new Date(this_end * 1000)).format('HH:mm:ss')
+              );
+
+              console.log(
+                'freebusy start<>',
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss'),
+                moment(new Date(this_start * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss') <
+                  moment(new Date(this_start * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss') >
+                  moment(new Date(this_end * 1000)).format('HH:mm:ss')
+              );
+              console.log(
+                'freebusy end<<',
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss'),
+                moment(new Date(this_end * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss') <
+                  moment(new Date(this_start * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss') <
+                  moment(new Date(this_end * 1000)).format('HH:mm:ss')
+              );
+              console.log(
+                'freebusy end>>',
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss'),
+                moment(new Date(this_end * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss') >
+                  moment(new Date(this_start * 1000)).format('HH:mm:ss'),
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss') >
+                  moment(new Date(this_end * 1000)).format('HH:mm:ss')
+              );
+
+              console.log(
+                'freebusy end>>',
+
+                moment(new Date(appt_end_time * 1000)).format('HH:mm:ss') >
+                  moment(new Date(end_time * 1000)).format('HH:mm:ss')
+              );
 
               // if (
-              //   appt_start_time == this_start ||
-              //   appt_end_time == this_end ||
-              //   (appt_start_time < this_start && appt_end_time > this_end) ||
-              //   (appt_start_time < this_start && appt_end_time < this_end) ||
-              //   (appt_start_time > this_start && appt_end_time > this_end)
+              //   appt_start_time == this_start &&
+              //   appt_end_time == this_end &&
+              //   (appt_start_time < this_start || appt_end_time > this_end) &&
+              //   (appt_start_time < this_start || appt_end_time < this_end) &&
+              //   (appt_start_time > this_start || appt_end_time > this_end)
               // ) {
               //   slot_available = false;
               //   return; // No need to continue if it's taken.
               // }
               if (
                 (appt_start_time >= this_start && appt_start_time < this_end) ||
-                (appt_end_time > this_start && appt_end_time <= this_end)
+                (appt_end_time > this_start && appt_end_time <= this_end) ||
+                (appt_start_time < this_start && appt_end_time > this_end) ||
+                appt_end_time > end_time
               ) {
                 slot_available = false;
                 return; // No need to continue if it's taken.
@@ -538,6 +596,10 @@ export default function CreateMeet() {
 
             // If we made it through all appts and the slot is still available, it's an open slot.
             if (slot_available) {
+              console.log(
+                'freebusy here if',
+                moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
+              );
               free.push(
                 moment(new Date(appt_start_time * 1000)).format('HH:mm:ss')
               );
@@ -545,6 +607,7 @@ export default function CreateMeet() {
             // + duration minutes
             appt_start_time += 60 * 30;
           }
+          console.log('freebusy', free);
           setTimeSlots(free);
         })
         .catch((error) => {
@@ -633,13 +696,13 @@ export default function CreateMeet() {
     setAttendees([{ email: '' }]);
   }
   function createMeet() {
-    //console.log(meetDate, meetTime, duration);
-    let start_time = meetDate + 'T' + meetTime + '-0800';
-    //console.log(start_time);
+    console.log(meetDate, meetTime, duration);
+    let start_time = meetDate + 'T' + meetTime;
+    console.log(start_time);
     let d = convert(duration);
     let et = Date.parse(start_time) / 1000 + d;
     //console.log(d);
-    //console.log(et);
+    console.log(et);
     let end_time = moment(new Date(et * 1000)).format();
     attendees.push({ email: userEmail });
     console.log(attendees);
@@ -656,10 +719,10 @@ export default function CreateMeet() {
         self: true,
       },
       start: {
-        dateTime: start_time,
+        dateTime: moment(start_time).format(),
       },
       end: {
-        dateTime: end_time,
+        dateTime: moment(end_time).format(),
       },
       attendees: attendees,
     };
