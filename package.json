@@ -20,6 +20,7 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "chart.js": "^2.9.4",
+    "chokidar": "^3.5.3",
     "clsx": "^1.1.1",
     "firebase": "^8.6.8",
     "google-map-react": "^2.1.9",

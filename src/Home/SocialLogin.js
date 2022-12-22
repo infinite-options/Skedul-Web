@@ -60,8 +60,8 @@ function SocialLogin(props) {
       code: auth_code,
       client_id: client_id,
       client_secret: client_secret,
-      //redirect_uri: 'http://localhost:3000',
-      redirectUri: 'https://skedul.online',
+      redirect_uri: 'http://localhost:3000',
+      //redirectUri: 'https://skedul.online',
       grant_type: 'authorization_code',
     };
 

@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "app_function": "skedul_api.app",
+        "aws_region": "us-west-1",
+        "profile_name": "default",
+        "project_name": "skedul-backend",
+        "runtime": "python3.7",
+        "s3_bucket": "zappa-skedul",
+	"environment_variables": {
+            "RDS_PW": "prashant",
+	    "SUPPORT_EMAIL": "support@nityaayurveda.com",
+            "SUPPORT_PASSWORD": "SupportNitya1"
+        }
+    }
+}

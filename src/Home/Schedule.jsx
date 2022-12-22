@@ -14,6 +14,7 @@ const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 const useStyles = makeStyles({
   container: {
+    minWidth: '1200px',
     backgroundColor: '#F3F3F8',
     padding: '20px',
   },
@@ -268,7 +269,9 @@ export default function Schedule(props) {
       .then((response) => response.json())
       .then((json) => {
         //console.log(json);
-        setAllSchedule(json.result);
+        if (json.result !== undefined && json.result !== null) {
+          setAllSchedule(json.result);
+        }
       })
       .catch((error) => console.log(error));
   }, [refreshKey]);
@@ -964,7 +967,7 @@ export default function Schedule(props) {
         let tempStart = day[j].schedule.start_time;
         let tempEnd = day[j].schedule.end_time;
         //console.log(day[j], day.length);
-        let key = 6 + i + '_' + tempStart.substring(0, 2);
+        let key = 7 + i + '_' + tempStart.substring(0, 2);
         //console.log(key);
         if (dic[key] == null) {
           dic[key] = [];
