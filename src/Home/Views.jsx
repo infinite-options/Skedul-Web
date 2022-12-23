@@ -68,13 +68,16 @@ const useStyles = makeStyles({
     padding: '14px 0px',
   },
   inactiveBtn: {
-    color: 'lightgray',
+    width: '40px',
+    height: '40px',
+    borderRadius: '3px',
+    border: '1px solid black',
   },
   activeButton: {
     width: '40px',
     height: '40px',
     borderRadius: '3px',
-    border: '1px solid black',
+    border: '2px solid black',
   },
   colorButton: {
     width: '40px',
@@ -86,6 +89,7 @@ const useStyles = makeStyles({
 
 function Views() {
   const classes = useStyles();
+  const [newSelectedView, setNewSelectedView] = useState(false);
   const [showCreateNewViewModal, setShowCreateNewViewModal] = useState(false);
   const [allViews, setAllViews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +125,7 @@ function Views() {
     { start_time: '', end_time: '' },
   ]);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [border, setBorder] = useState(false);
+  const [border, setBorder] = useState([false, false, false, false, false]);
   var selectedUser = '';
   if (
     document.cookie
@@ -496,6 +500,7 @@ function Views() {
 
   const saveViewOptions = () => {
     setShowCreateNewViewModal(false);
+    setNewSelectedView(true);
     setShowTimeInput(true);
     setIsLoading(false);
     setBusy(false);
@@ -869,6 +874,14 @@ function Views() {
       })
       .catch((error) => {
         console.log('error', error);
+      })
+      .then(() => {
+        const url = BASE_URL + `GetAllViews/${selectedUser}`;
+        fetch(url)
+          .then((response) => response.json())
+          .then((json) => {
+            setSelectedView(json.result.result[json.result.result.length - 1]);
+          });
       });
   }
 
@@ -964,23 +977,30 @@ function Views() {
           <Row>
             <Col>
               <button
-                className={border === false ? '' : classes.activeButton}
+                className={
+                  border[0] === false
+                    ? classes.inactiveBtn
+                    : classes.activeButton
+                }
                 style={{
                   width: '40px',
                   height: '40px',
                   borderRadius: '3px',
-
                   background: '#F5B51D 0% 0% no-repeat padding-box',
                 }}
                 onClick={() => {
                   setViewColor('#F5B51D');
-                  setBorder(!border);
+                  setBorder([true, false, false, false, false]);
                 }}
               ></button>
             </Col>
             <Col>
               <button
-                className={border === false ? '' : classes.activeButton}
+                className={
+                  border[1] === false
+                    ? classes.inactiveBtn
+                    : classes.activeButton
+                }
                 style={{
                   width: '40px',
                   height: '40px',
@@ -990,13 +1010,17 @@ function Views() {
                 }}
                 onClick={() => {
                   setViewColor('#F1E3C8');
-                  setBorder(!border);
+                  setBorder([false, true, false, false, false]);
                 }}
               ></button>
             </Col>
             <Col>
               <button
-                className={border === false ? '' : classes.activeButton}
+                className={
+                  border[2] === false
+                    ? classes.inactiveBtn
+                    : classes.activeButton
+                }
                 style={{
                   width: '40px',
                   height: '40px',
@@ -1006,13 +1030,17 @@ function Views() {
                 }}
                 onClick={() => {
                   setViewColor('#DCEDC8');
-                  setBorder(!border);
+                  setBorder([false, false, true, false, false]);
                 }}
               ></button>
             </Col>
             <Col>
               <button
-                className={border === false ? '' : classes.activeButton}
+                className={
+                  border[3] === false
+                    ? classes.inactiveBtn
+                    : classes.activeButton
+                }
                 style={{
                   width: '40px',
                   height: '40px',
@@ -1022,13 +1050,17 @@ function Views() {
                 }}
                 onClick={() => {
                   setViewColor('#F3A3BB');
-                  setBorder(!border);
+                  setBorder([false, false, false, true, false]);
                 }}
               ></button>
             </Col>
             <Col>
               <button
-                className={border === false ? '' : classes.activeButton}
+                className={
+                  border[4] === false
+                    ? classes.inactiveBtn
+                    : classes.activeButton
+                }
                 style={{
                   width: '40px',
                   height: '40px',
@@ -1038,7 +1070,7 @@ function Views() {
                 }}
                 onClick={() => {
                   setViewColor('#FF867C');
-                  setBorder(!border);
+                  setBorder([false, false, false, false, true]);
                 }}
               ></button>
             </Col>
@@ -1069,7 +1101,7 @@ function Views() {
                     borderRadius: '3px',
                     color: '#F3F3F8',
                   }}
-                  onClick={(e) => saveViewOptions()}
+                  onClick={() => saveViewOptions()}
                 >
                   Create
                 </button>
@@ -1117,7 +1149,7 @@ function Views() {
       </div>
       <div className={classes.title}>VIEWS</div>
       <div>
-        {allViews.length === 0 || noViews ? (
+        {(allViews.length === 0 || noViews) && !newSelectedView ? (
           <div>
             <Button
               className={classes.button}
@@ -1134,7 +1166,9 @@ function Views() {
               <Col xs={2}>
                 <div
                   style={{
-                    backgroundColor: `${selectedView.color}`,
+                    backgroundColor: `${
+                      newSelectedView ? viewColor : selectedView.color
+                    }`,
                     color: '#2C2C2E',
                     fontSize: '16px',
                     padding: '5px',
@@ -1149,7 +1183,9 @@ function Views() {
                     handleClick(e);
                   }}
                 >
-                  <Col>{selectedView.view_name}</Col>
+                  <Col>
+                    {newSelectedView ? viewName : selectedView.view_name}
+                  </Col>
                   <Col xs={2}>
                     <IconButton
                       aria-describedby={id}
@@ -2522,6 +2558,7 @@ function Views() {
               <Button
                 className={classes.button}
                 onClick={() => {
+                  setNewSelectedView(false);
                   createNewView();
                 }}
               >
@@ -2537,15 +2574,16 @@ function Views() {
         <div className={classes.subTitle}>No Views added</div>
       ) : (
         <div>
-          <Row>
+          <Col>
             {allViews.map((view) => {
               return (
                 <div
                   style={{
+                    margin: '5px',
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'flex-start',
-                    padding: '0px 20px',
+                    padding: '0px 0px',
                   }}
                 >
                   <div
@@ -2579,7 +2617,7 @@ function Views() {
                 </div>
               );
             })}
-          </Row>
+          </Col>
           <div className={classes.weekDiv}>
             <Row className={classes.colHeader}>
               <Col>
