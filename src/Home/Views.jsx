@@ -77,7 +77,7 @@ const useStyles = makeStyles({
     width: '40px',
     height: '40px',
     borderRadius: '3px',
-    border: '2px solid black',
+    border: '3px solid black',
   },
   colorButton: {
     width: '40px',
@@ -415,17 +415,188 @@ function Views() {
       );
     }
 
+    let schedule = JSON.parse(allViews[0].schedule);
+    for (let i = 1; i < allViews.length; i++) {
+      let temp = JSON.parse(allViews[i].schedule);
+      for (const day in schedule) {
+        if (schedule[day] !== temp[day])
+          schedule[day] = [...schedule[day], ...temp[day]];
+      }
+    }
+    console.log(schedule);
+
+    console.log(allViews);
+
     return (
-      <table>
-        <thead>
-          <tr>
-            {arr.map((item) => (
-              <td style={{ padding: '5px', width: '5rem' }}>{item}</td>
-            ))}
-          </tr>
-        </thead>
-        <tbody style={{ borderLeft: '1px solid #636366' }}></tbody>
-      </table>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    font: 'normal normal normal 12px/14px SF Pro Display',
+                  }}
+                >
+                  {item}
+                </td>
+              ))}
+            </tr>
+          </thead>
+          <tbody style={{ borderLeft: '1px solid #636366' }}>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {' '}
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    borderLeft: '1px solid #636366',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Sunday)
+                    ),
+                  }}
+                ></td>
+              ))}
+            </tr>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Monday)
+                    ),
+                    borderLeft: '1px solid #636366',
+                  }}
+                ></td>
+              ))}
+            </tr>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Tuesday)
+                    ),
+                    borderLeft: '1px solid #636366',
+                  }}
+                ></td>
+              ))}
+            </tr>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Wednesday)
+                    ),
+                    borderLeft: '1px solid #636366',
+                  }}
+                ></td>
+              ))}
+            </tr>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Thursday)
+                    ),
+                    borderLeft: '1px solid #636366',
+                  }}
+                ></td>
+              ))}
+            </tr>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Friday)
+                    ),
+                    borderLeft: '1px solid #636366',
+                  }}
+                ></td>
+              ))}
+            </tr>
+            <tr
+              style={{
+                borderLeft: '1px solid #636366',
+                height: '2.9rem',
+                marginTop: '5px',
+              }}
+            >
+              {arr.map((item) => (
+                <td
+                  style={{
+                    padding: '5px',
+                    width: '5rem',
+                    backgroundColor: getBackgroundColor(
+                      item,
+                      Object.values(schedule.Saturday)
+                    ),
+                    borderLeft: '1px solid #636366',
+                  }}
+                ></td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
     );
   };
 
