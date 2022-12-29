@@ -1,94 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import useStyles from 'styles/ViewsStyles';
 import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import Popover from '@material-ui/core/Popover';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Typography, Button } from '@material-ui/core';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
 import DropDown from '../images/dropDown.svg';
 import Trash from '../images/Trash.svg';
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
-const useStyles = makeStyles({
-  container: {
-    backgroundColor: '#F3F3F8',
-    padding: '0px 20px',
-  },
-  openmodal: {
-    backgroundColor: '#F3F3F8',
-    padding: '0px 20px',
-    filter: 'blur(11px)',
-  },
-  subTitle: {
-    fontSize: '18px',
-    color: '#636366',
-    padding: '20px 0px',
-    font: 'normal normal normal 18px/21px SF Pro Display',
-  },
-  title: {
-    color: '#2C2C2E',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    padding: '10px 0px',
-    font: 'normal normal normal 18px/21px SF Pro Display',
-  },
-  button: {
-    border: '2px solid #2C2C2E',
-    borderRadius: '3px',
-    textTransform: 'none',
-    color: ' #2C2C2E',
-    fontSize: '18px',
-    padding: '2px',
-    font: 'normal normal normal 18px/21px SF Pro Display;',
-  },
-  colHeader: {
-    fontSize: '14px',
-    color: '#2C2C2E',
-    padding: '10px 0px',
-    font: 'normal normal normal 14px/16px SF Pro Display',
-  },
-  colData: {
-    fontSize: '12px',
-    color: '#636366',
-    padding: '10px 0px',
-  },
-  weekDiv: {
-    margin: '20px 10px',
-    padding: '10px 5px',
-    borderTop: '1px solid #AFAFB3',
-    borderBottom: '1px solid #AFAFB3',
-  },
-  colDataTime: {
-    border: '1px solid #2C2C2E',
-    borderRadius: '2px',
-  },
-  colDataUnavail: {
-    fontSize: '12px',
-    color: '#636366',
-    padding: '14px 0px',
-  },
-  inactiveBtn: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '3px',
-    border: '1px solid black',
-  },
-  activeButton: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '3px',
-    border: '3px solid black',
-  },
-  colorButton: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '3px',
-    border: 'none',
-  },
-});
-
 function Views() {
   const classes = useStyles();
+
   const [newSelectedView, setNewSelectedView] = useState(false);
   const [showCreateNewViewModal, setShowCreateNewViewModal] = useState(false);
   const [allViews, setAllViews] = useState([]);
@@ -137,7 +60,7 @@ function Views() {
       .find((row) => row.startsWith('user_uid='))
       .split('=')[1];
   }
-  console.log('selecteduser', selectedUser);
+  console.log(document.cookie);
 
   useEffect(() => {
     const url = BASE_URL + `GetAllViews/${selectedUser}`;
@@ -228,7 +151,11 @@ function Views() {
     }
     return (
       <div>
-        <table>
+        <table
+          style={{
+            height: '100%',
+          }}
+        >
           <thead>
             <tr>
               {arr.map((item) => (
@@ -245,28 +172,33 @@ function Views() {
             </tr>
           </thead>
           <tbody style={{ borderLeft: '1px solid #636366' }}>
-            <tr
-              style={{
-                borderLeft: '1px solid #636366',
-                height: '2.9rem',
-                marginTop: '5px',
-              }}
-            >
-              {' '}
-              {arr.map((item) => (
-                <td
+            {sundayFields.map((field, idx) => {
+              console.log(sundayFields);
+              return (
+                <tr
                   style={{
-                    padding: '5px',
-                    width: '5rem',
                     borderLeft: '1px solid #636366',
-                    backgroundColor: getBackgroundColor(
-                      item,
-                      Object.values(selectedSchedule.Sunday)
-                    ),
+                    height: '2.9rem',
+                    marginTop: '5px',
                   }}
-                ></td>
-              ))}
-            </tr>
+                >
+                  {' '}
+                  {arr.map((item) => (
+                    <td
+                      style={{
+                        padding: '5px',
+                        width: '5rem',
+                        borderLeft: '1px solid #636366',
+                        backgroundColor: getBackgroundColor(
+                          item,
+                          Object.values(selectedSchedule.Sunday)
+                        ),
+                      }}
+                    ></td>
+                  ))}
+                </tr>
+              );
+            })}
             <tr
               style={{
                 borderLeft: '1px solid #636366',
@@ -416,14 +348,17 @@ function Views() {
     }
 
     let schedule = JSON.parse(allViews[0].schedule);
+    let colors = [allViews[0].color];
     for (let i = 1; i < allViews.length; i++) {
-      let temp = JSON.parse(allViews[i].schedule);
+      let tempSched = JSON.parse(allViews[i].schedule);
+      let tempCol = allViews[i].color;
+      colors.push(tempCol);
       for (const day in schedule) {
-        if (schedule[day] !== temp[day])
-          schedule[day] = [...schedule[day], ...temp[day]];
+        if (schedule[day] !== tempSched[day])
+          schedule[day] = [...schedule[day], ...tempSched[day]];
       }
     }
-    console.log(schedule);
+    console.log(colors);
 
     console.log(allViews);
 
@@ -460,9 +395,10 @@ function Views() {
                     padding: '5px',
                     width: '5rem',
                     borderLeft: '1px solid #636366',
-                    backgroundColor: getBackgroundColor(
+                    backgroundColor: getAllBgColors(
                       item,
-                      Object.values(schedule.Sunday)
+                      Object.values(schedule.Sunday),
+                      colors
                     ),
                   }}
                 ></td>
@@ -621,10 +557,54 @@ function Views() {
       .map((_, idx) => start + idx);
   }
 
+  function getAllBgColors(i, day, colors) {
+    let color = [];
+    let result = [];
+    console.log(day);
+    day.map((item, index) => {
+      item.start_time.slice(0, -3) === '' || item.end_time.slice(0, -3) === ''
+        ? (color = '')
+        : Number(item.start_time.slice(0, -3)) <=
+            Number(convertTime12to24(i).slice(0, -3)) &&
+          Number(convertTime12to24(i).slice(0, -3)) <=
+            Number(item.end_time.slice(0, -3))
+        ? //(color = `${selectedView.color}`),
+          result.push([
+            range(
+              Number(item.start_time.slice(0, -3)),
+              Number(item.end_time.slice(0, -3))
+            ),
+          ])
+        : (color = '');
+    });
+    console.log(result);
+    for (var j = 0; j < result.length; j++) {
+      for (var l = 0; l < result[j][0].length; l++) {
+        console.log(
+          result[j][0][l] === Number(convertTime12to24(i).slice(0, -3))
+        );
+        if (
+          result[j][0][l] === Number(convertTime12to24(i).slice(0, -3)) &&
+          colors !== undefined
+        ) {
+          color = [...color, colors[j]];
+          console.log(color);
+          console.log(colors + ' ' + j);
+        } else if (
+          result[j][0][l] === Number(convertTime12to24(i).slice(0, -3))
+        ) {
+          console.log(selectedView);
+        }
+      }
+    }
+
+    return color[color.length - 1];
+  }
+
   function getBackgroundColor(i, day) {
     let color;
     let result = [];
-    //console.log(day);
+    console.log(day);
     day.map((item) => {
       item.start_time.slice(0, -3) === '' || item.end_time.slice(0, -3) === ''
         ? (color = '')
@@ -1037,6 +1017,7 @@ function Views() {
     axios
       .post(BASE_URL + 'AddView', event)
       .then((response) => {
+        console.log(response);
         setRefreshKey((oldKey) => oldKey + 1);
         setBusy(true);
         setViewName('');
@@ -1332,45 +1313,49 @@ function Views() {
             </Button>
           </div>
         ) : (
-          <div>
+          <div
+            style={{
+              margin: '0 15px',
+              display: 'flex',
+              justifyContent: 'left',
+              alignItems: 'center',
+            }}
+          >
             <Row>
-              <Col xs={2}>
-                <div
-                  style={{
-                    backgroundColor: `${
-                      newSelectedView ? viewColor : selectedView.color
-                    }`,
-                    color: '#2C2C2E',
-                    fontSize: '16px',
-                    padding: '5px',
-                    height: '40px',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    cursor: 'pointer',
-                    paddingTop: '10px',
-                    font: 'normal normal bold 20px/24px SF Pro Display',
-                  }}
-                  onClick={(e) => {
-                    handleClick(e);
-                  }}
-                >
-                  <Col>
-                    {newSelectedView ? viewName : selectedView.view_name}
-                  </Col>
-                  <Col xs={2}>
-                    <IconButton
-                      aria-describedby={id}
-                      variant="contained"
-                      color="primary"
-                      style={{
-                        padding: '0',
-                      }}
-                    >
-                      <img src={DropDown} alt="user pic" />
-                    </IconButton>
-                  </Col>
-                </div>
-              </Col>
+              <div
+                style={{
+                  backgroundColor: `${
+                    newSelectedView ? viewColor : selectedView.color
+                  }`,
+                  color: '#2C2C2E',
+                  fontSize: '16px',
+                  padding: '5px',
+                  minWidth: '120px',
+                  height: 'fit-content',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  cursor: 'pointer',
+                  padding: '10px',
+                  font: 'normal normal bold 20px/24px SF Pro Display',
+                }}
+                onClick={(e) => {
+                  handleClick(e);
+                }}
+              >
+                <Col>{newSelectedView ? viewName : selectedView.view_name}</Col>
+                <Col xs={2}>
+                  <IconButton
+                    aria-describedby={id}
+                    variant="contained"
+                    color="primary"
+                    style={{
+                      padding: '0',
+                    }}
+                  >
+                    <img src={DropDown} alt="user pic" />
+                  </IconButton>
+                </Col>
+              </div>
 
               <Popover
                 id={id}
@@ -1394,18 +1379,17 @@ function Views() {
               >
                 {viewlist()}
               </Popover>
-              <Col>
-                <Button
-                  className={classes.button}
-                  onClick={(e) => {
-                    openCreateNewViewModal();
-                    setShowUpdateButton(false);
-                  }}
-                >
-                  + New View
-                </Button>
-              </Col>
             </Row>
+
+            <Button
+              className={classes.button}
+              onClick={(e) => {
+                openCreateNewViewModal();
+                setShowUpdateButton(false);
+              }}
+            >
+              + New View
+            </Button>
           </div>
         )}
       </div>
@@ -1423,7 +1407,7 @@ function Views() {
           <Row className={classes.colHeader}>
             <Col>
               <Row>
-                <Col>Days of the Week</Col>
+                <Col>Weekdays</Col>
                 <Col>Hours of the day</Col>
               </Row>
               <Row>
@@ -1565,7 +1549,7 @@ function Views() {
             {isBusy ? (
               <Col>
                 <Row>
-                  <Col>Days of the Week</Col>
+                  <Col>Weekdays</Col>
                   <Col>Hours of the day</Col>
                 </Row>
                 <Row>
@@ -1677,7 +1661,7 @@ function Views() {
             ) : (
               <Col>
                 <Row>
-                  <Col>Days of the Week</Col>
+                  <Col>Weekdays</Col>
                   <Col> Hours of the day</Col>
                 </Row>
                 {showUpdateButton === true ? (
@@ -2684,6 +2668,8 @@ function Views() {
               </Col>
             )}
 
+            {/* VIEW TABLE */}
+
             {isLoading || isBusy ? (
               <Col
                 xs={7}
@@ -2710,6 +2696,9 @@ function Views() {
               </Col>
             )}
           </Row>
+
+          {/* UPDATE/ CREATE VIEW BUTTON */}
+
           {showUpdateButton === true ? (
             <Row>
               <Button
@@ -2740,19 +2729,22 @@ function Views() {
         </div>
       )}
 
+      {/* ALL VIEWS */}
+
       <div className={classes.title}>ALL VIEWS</div>
       {allViews.length === 0 || noViews ? (
         <div className={classes.subTitle}>No Views added</div>
       ) : (
-        <div>
-          <Col>
+        <div style={{ margin: '0 10px' }}>
+          <Row>
             {allViews.map((view) => {
               return (
                 <div
                   style={{
-                    margin: '5px',
+                    margin: '0 20px',
                     display: 'flex',
                     flexDirection: 'row',
+                    flexGrow: '1',
                     alignItems: 'flex-start',
                     padding: '0px 0px',
                   }}
@@ -2761,6 +2753,8 @@ function Views() {
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
+                      flexGrow: '1',
+                      justifyContent: 'space-between',
                       alignItems: 'flex-start',
                       color: '2C2C2E',
                       fontWeight: 'bold',
@@ -2788,12 +2782,15 @@ function Views() {
                 </div>
               );
             })}
-          </Col>
+          </Row>
+
+          {/* ALL VIEWS TABLE */}
+
           <div className={classes.weekDiv}>
             <Row className={classes.colHeader}>
               <Col>
                 <Row>
-                  <Col>Days of the Week</Col>
+                  <Col>Weekdays</Col>
                 </Row>
                 <Row>
                   <Col>

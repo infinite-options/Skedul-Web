@@ -63,7 +63,8 @@
     "rsuite": "^4.8.9",
     "slick-carousel": "^1.8.1",
     "stripe": "^8.170.0",
-    "universal-cookie": "^4.0.4"
+    "universal-cookie": "^4.0.4",
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "react-scripts --max_old_space_size=4096 start",

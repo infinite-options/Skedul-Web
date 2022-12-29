@@ -8,6 +8,7 @@ import Event from '../src/Home/Event';
 import Integration from '../src/Home/Integration';
 import Help from '../src/Home/Help';
 import Account from './Home/Account';
+import Viewss from 'Home/view-components/Views';
 
 // Nav here will take all the adress from children page to this and give
 // it to the switch route
@@ -19,6 +20,7 @@ function Nav(authLevel, isAuth) {
       <Route exact path="/schedule" component={Schedule} />
       <Route exact path="/event" component={Event} />
       <Route exact path="/views" component={Views} />
+      <Route exact path="/viewss" component={Viewss} />
       <Route exact path="/integration" component={Integration} />
       <Route exact path="/help" component={Help} />
       <Route exact path="/account" component={Account} />
