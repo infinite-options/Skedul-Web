@@ -3,7 +3,10 @@ import { Box } from '@material-ui/core';
 import { userID, getAllViews } from './endpoints';
 import useStyles from 'styles/ViewsStyles';
 import SelectView from './SelectView';
-import NewView from './NewView';
+import AddView from './AddView';
+import CreateViewDialog from './CreateViewDialog';
+import Calendar from './Calendar';
+import UpdateView from './UpdateView';
 
 export const PageContext = createContext();
 
@@ -11,6 +14,7 @@ function Viewss() {
   const classes = useStyles();
   const [allViews, setAllViews] = useState([]);
   const [pageStatus, setPageStatus] = useState(); // Create, Update, Loading, Null
+  const [showCreateViewDialog, setShowCreateViewDialog] = useState(false);
 
   useEffect(() => {
     getAllViews(setAllViews, userID);
@@ -30,16 +34,23 @@ function Viewss() {
         <Box>
           <p className={classes.subTitle}>SELECT A VIEW</p>
           <p className={classes.title}>VIEWS</p>
-          <Box>
+          <Box display="flex" flexWrap="wrap">
             <SelectView />
-            <NewView />
+            <AddView setShowCreateViewDialog={setShowCreateViewDialog} />
+            <CreateViewDialog
+              showCreateViewDialog={showCreateViewDialog}
+              setShowCreateViewDialog={setShowCreateViewDialog}
+            />
           </Box>
           <p className={classes.subTitle}>Time zone:</p>
           <p className={classes.subTitle}>Pacific Time - US Canada</p>
         </Box>
 
         {/* SET VIEW */}
-        <Box></Box>
+        <Box height="300px">
+          <Calendar />
+          <UpdateView />
+        </Box>
 
         {/* ALL VIEWS */}
         <Box></Box>

@@ -78,6 +78,19 @@ const useStyles = makeStyles({
     borderRadius: '3px',
     border: 'none',
   },
+  timeSlot: {
+    width: '100%',
+    height: '100%',
+    borderRadius: '2px',
+    backgroundColor: 'rgb(0,0,0,0)',
+    opacity: '50%',
+    boxShadow: '0',
+    transition: 'background-color 0.025s ease, box-shadow 0.05s ease',
+    '&:hover': {
+      backgroundColor: 'rgb(0,0,0, 0.1)',
+      boxShadow: '0.5px 0.5px 0.5px black',
+    },
+  },
 });
 
 export default useStyles;

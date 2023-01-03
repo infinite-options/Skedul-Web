@@ -1,21 +1,8 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { Box, Popover, Button } from '@material-ui/core';
-import { v4 } from 'uuid';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PageContext } from './Views';
-import {
-  userID,
-  addView,
-  updateView,
-  deleteView,
-  getAllViews,
-} from './endpoints';
-import useStyles from 'styles/ViewsStyles';
-
-// REQUEST API:
-// addView({view})
-// updateView({newView}, oldViewID)
-// deleteView(viewID)
-// getAllViews(setAllViews, userID);
+import { v4 } from 'uuid';
 
 const SelectView = () => {
   const { allViews, setAllViews } = useContext(PageContext);
@@ -36,7 +23,7 @@ const SelectView = () => {
         {allViews.map((view) => {
           if (!view.view_unique_id.includes('Selected')) {
             return (
-              <li>
+              <li key={v4()}>
                 <Button
                   onClick={(e) => {
                     setSelected(view.view_unique_id);
@@ -77,11 +64,9 @@ const SelectView = () => {
     });
   };
 
-  console.log(allViews);
-
   return (
-    <Box m="20px 0">
-      {allViews.length > 0 && (
+    <Box m="20px 10px">
+      {allViews.length > 0 ? (
         <Button
           variant="contained"
           onClick={(e) => {
@@ -98,6 +83,17 @@ const SelectView = () => {
             allViews.find((view) => view.view_unique_id.includes('Selected'))
               .view_name
           }
+          <ArrowDropDownIcon sx={{ m: '0 2px' }} />
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          disabled
+          style={{
+            padding: '10px 30px 8px 30px',
+          }}
+        >
+          No Views
         </Button>
       )}
       <Popover

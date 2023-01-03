@@ -16,16 +16,26 @@ export const API = axios.create({
 });
 
 // POST VIEWS
-export const addView = (view) => {
+export const addView = (setAllViews, user, view) => {
   if (view === null || view === undefined) {
     return;
   }
 
-  API.post('/AddView', view).catch((error) => {
-    console.log('AXIOS POST ERROR:', error);
-  });
+  API.post('/AddView', view)
+    .then(() => {
+      API.get(`/GetAllViews/${user}`).then((res) => {
+        // SETS THE FIRST VIEW AS SELECTED
+        let result = res.data.result.result;
+        result[result.length - 1].view_unique_id =
+          result[result.length - 1].view_unique_id.concat('Selected');
+        setAllViews(result);
+      });
+    })
+    .catch((error) => {
+      console.log('AXIOS POST ERROR:', error);
+    });
 };
-export const updateView = (newView, oldViewID) => {
+export const updateView = (setAllViews, user, newView, oldViewID) => {
   if (
     oldViewID === null ||
     oldViewID === undefined ||
@@ -35,18 +45,38 @@ export const updateView = (newView, oldViewID) => {
     return;
   }
 
-  API.post(`/UpdateView/${oldViewID}`, newView).catch((error) => {
-    console.log('AXIOS POST ERROR:', error);
-  });
+  API.post(`/UpdateView/${oldViewID}`, newView)
+    .then(() => {
+      API.get(`/GetAllViews/${user}`).then((res) => {
+        // SETS THE FIRST VIEW AS SELECTED
+        let result = res.data.result.result;
+        result[result.length - 1].view_unique_id =
+          result[result.length - 1].view_unique_id.concat('Selected');
+        setAllViews(result);
+      });
+    })
+    .catch((error) => {
+      console.log('AXIOS POST ERROR:', error);
+    });
 };
-export const deleteView = (viewID) => {
+export const deleteView = (setAllViews, user, viewID) => {
   if (viewID === null || viewID === undefined) {
     return;
   }
 
-  API.post(`/DeleteView`, { view_id: viewID }).catch((error) => {
-    console.log('AXIOS POST ERROR:', error);
-  });
+  API.post(`/DeleteView`, { view_id: viewID })
+    .then(() => {
+      API.get(`/GetAllViews/${user}`).then((res) => {
+        // SETS THE FIRST VIEW AS SELECTED
+        let result = res.data.result.result;
+        result[result.length - 1].view_unique_id =
+          result[result.length - 1].view_unique_id.concat('Selected');
+        setAllViews(result);
+      });
+    })
+    .catch((error) => {
+      console.log('AXIOS POST ERROR:', error);
+    });
 };
 
 // GET VIEWS (THIS SHOULD ALWAYS FOLLOW ANY POST REQUEST IN ORDER TO UPDATE THE STATE)
@@ -55,11 +85,11 @@ export const getAllViews = (setAllViews, user) => {
     return;
   }
 
-  return API.get(`/GetAllViews/${user}`).then((res) => {
+  API.get(`/GetAllViews/${user}`).then((res) => {
     // SETS THE FIRST VIEW AS SELECTED
     let result = res.data.result.result;
-    result[0].view_unique_id = result[0].view_unique_id.concat('Selected');
+    result[result.length - 1].view_unique_id =
+      result[result.length - 1].view_unique_id.concat('Selected');
     setAllViews(result);
-    return result;
   });
 };
