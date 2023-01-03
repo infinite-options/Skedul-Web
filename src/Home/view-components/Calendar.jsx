@@ -21,7 +21,7 @@ import TimeLine from './TimeLine';
 // getAllViews(setAllViews, userID);
 
 const Calendar = (props) => {
-  const { direction = 'horizontal' } = props;
+  const { direction = 'vertical' } = props;
   //dont forget to set default props for calendar view/s as an array, enable/disable fields, setStart&endtime, enable/disable Drag
   //timeline component props = name, start&endtime,numOfLines, direction, color, setStart&endtime
   //timefield component props = setStart&endtime, setNumOfLines

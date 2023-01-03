@@ -16,6 +16,7 @@ import { v4 } from 'uuid';
 
 const TimeLine = (props) => {
   const classes = useStyles();
+
   // DEFAULT PROPS
   const {
     direction = props.direction,
@@ -31,9 +32,52 @@ const TimeLine = (props) => {
     },
   } = props;
 
-  const cellDistanceFromBoundingClient = useRef();
-  const positionOnMouseDown = useRef();
-  const cell = useRef();
+  class TimeSlotData {
+    constructor(direction, name, color, position, size) {
+      this.key = v4();
+      this.direction = direction;
+      this.name = name;
+      this.color = color;
+      this.position = position;
+      this.size = size;
+    }
+    getStyle() {
+      return {
+        position: 'absolute',
+        left: this.direction === 'horizontal' ? this.position + 'px' : '0px',
+        top: this.direction === 'vertical' ? this.position + 'px' : '0px',
+        width: this.direction === 'horizontal' ? this.size + 'px' : '100%',
+        height: this.direction === 'vertical' ? this.size + 'px' : '100%',
+        borderRadius: '2px',
+        backgroundColor: this.color,
+        WebkitUserSelect: 'none',
+        KhtmlUserSelect: 'none',
+        MozUserSelect: 'none',
+        MsUserSelect: 'none',
+        userSelect: 'none',
+        transition: 'height 0.05s ease,width 0.05s ease',
+      };
+    }
+    setDirection(direction) {
+      this.direction = direction;
+    }
+    setName(name) {
+      this.name = name;
+    }
+    setColor(color) {
+      this.color = color;
+    }
+    setPosition(position) {
+      this.position = position;
+    }
+    setSize(size) {
+      this.size = size;
+    }
+  }
+
+  const cellDistanceFromBoundingClient = useRef(); // Helps calculate position relative to window bounds
+  const positionOnMouseDown = useRef(); // Reference used in two handlers
+  const cell = useRef(); // TimeSlots parent cell reference
   const timeSlotData = useRef([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const [cursor, setCursor] = useState('copy'); // Cursor Style
@@ -57,38 +101,21 @@ const TimeLine = (props) => {
     positionOnMouseDown.current = pos - (pos % timeLineThirtyMinSize);
 
     // Set the starting position of the new timeslot
-    timeSlotData.current.push({
-      key: v4(),
-      name: name,
-      style: {
-        position: 'absolute',
-        left:
-          direction === 'horizontal'
-            ? pos - (pos % timeLineThirtyMinSize) + 'px'
-            : '0px',
-        top:
-          direction === 'vertical'
-            ? pos - (pos % timeLineThirtyMinSize) + 'px'
-            : '0px',
-        width: direction === 'horizontal' ? 0 + 'px' : '100%',
-        height: direction === 'vertical' ? 0 + 'px' : '100%',
-        borderRadius: '2px',
-        backgroundColor: color,
-        WebkitUserSelect: 'none',
-        KhtmlUserSelect: 'none',
-        MozUserSelect: 'none',
-        MsUserSelect: 'none',
-        userSelect: 'none',
-        transition: 'height 0.05s ease,width 0.05s ease',
-      },
-      position: pos - (pos % timeLineThirtyMinSize),
-      size: 0,
-    });
+
+    timeSlotData.current.push(
+      new TimeSlotData(
+        direction,
+        name,
+        color,
+        pos - (pos % timeLineThirtyMinSize),
+        0
+      )
+    );
     setTimeSlots((prevState) => [
       ...prevState,
       <div
         key={timeSlotData.current[timeSlotData.current.length - 1].key}
-        style={timeSlotData.current[timeSlotData.current.length - 1].style}
+        style={timeSlotData.current[timeSlotData.current.length - 1].getStyle()}
       >
         <div className={classes.timeSlot}></div>
       </div>,
@@ -142,51 +169,21 @@ const TimeLine = (props) => {
       }
 
       // Set size of timeslot
-      timeSlotData.current[timeSlotData.current.length - 1] = {
-        ...timeSlotData.current[timeSlotData.current.length - 1],
-        size: pos - positionOnMouseDown.current - (pos % timeLineThirtyMinSize),
-        style: {
-          position: 'absolute',
-          left:
-            direction === 'horizontal'
-              ? timeSlotData.current[timeSlotData.current.length - 1].position +
-                'px'
-              : '0px',
-          top:
-            direction === 'vertical'
-              ? timeSlotData.current[timeSlotData.current.length - 1].position +
-                'px'
-              : '0px',
-          width:
-            direction === 'horizontal'
-              ? pos -
-                positionOnMouseDown.current -
-                (pos % timeLineThirtyMinSize) +
-                'px'
-              : '100%',
-          height:
-            direction === 'vertical'
-              ? pos -
-                positionOnMouseDown.current -
-                (pos % timeLineThirtyMinSize) +
-                'px'
-              : '100%',
-          borderRadius: '2px',
-          backgroundColor: color,
-          WebkitUserSelect: 'none',
-          KhtmlUserSelect: 'none',
-          MozUserSelect: 'none',
-          MsUserSelect: 'none',
-          userSelect: 'none',
-          transition: 'height 0.05s ease,width 0.05s ease',
-        },
-      };
+      timeSlotData.current[timeSlotData.current.length - 1].setSize(
+        pos - positionOnMouseDown.current - (pos % timeLineThirtyMinSize)
+      );
+      console.log(timeSlotData.current[timeSlotData.current.length - 1].size);
+      console.log(
+        timeSlotData.current[timeSlotData.current.length - 1].getStyle()
+      );
       setTimeSlots((prevState) => {
         let newState = [...prevState];
         newState[newState.length - 1] = (
           <div
             key={timeSlotData.current[timeSlotData.current.length - 1].key}
-            style={timeSlotData.current[timeSlotData.current.length - 1].style}
+            style={timeSlotData.current[
+              timeSlotData.current.length - 1
+            ].getStyle()}
           >
             <div className={classes.timeSlot}></div>
           </div>
@@ -255,28 +252,15 @@ const TimeLine = (props) => {
   // Update props
   useEffect(() => {
     timeSlotData.current.forEach((timeSlot) => {
-      timeSlot.name = name;
-      timeSlot.style = {
-        position: 'absolute',
-        left: direction === 'horizontal' ? timeSlot.position + 'px' : '0px',
-        top: direction === 'vertical' ? timeSlot.position + 'px' : '0px',
-        width: direction === 'horizontal' ? timeSlot.size + 'px' : '100%',
-        height: direction === 'vertical' ? timeSlot.size + 'px' : '100%',
-        borderRadius: '2px',
-        backgroundColor: color,
-        WebkitUserSelect: 'none',
-        KhtmlUserSelect: 'none',
-        MozUserSelect: 'none',
-        MsUserSelect: 'none',
-        userSelect: 'none',
-        transition: 'height 0.05s ease,width 0.05s ease',
-      };
+      timeSlot.setDirection(direction);
+      timeSlot.setColor(color);
+      timeSlot.setName(name);
     });
     setTimeSlots((prevState) => {
       let newState = prevState.map((timeSlot, idx) => (
         <div
           key={timeSlotData.current[idx].key}
-          style={timeSlotData.current[idx].style}
+          style={timeSlotData.current[idx].getStyle()}
         >
           <div className={classes.timeSlot}></div>
         </div>
@@ -286,7 +270,7 @@ const TimeLine = (props) => {
   }, [direction, color, name]);
 
   console.log(timeSlots);
-  console.log(timeSlotData);
+  console.log(timeSlotData.current);
 
   return (
     <div
