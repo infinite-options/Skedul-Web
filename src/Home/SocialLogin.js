@@ -72,6 +72,7 @@ function SocialLogin(props) {
       formBody.push(encodedKey + '=' + encodedValue);
     }
     formBody = formBody.join('&');
+    console.log(formBody);
 
     fetch(authorization_url, {
       method: 'POST',

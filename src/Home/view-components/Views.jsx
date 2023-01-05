@@ -48,7 +48,8 @@ function Viewss() {
 
         {/* SET VIEW */}
         <Box height="300px">
-          <Calendar />
+          <Calendar type="selected" />
+          <Calendar type="all" />
           <UpdateView />
         </Box>
 

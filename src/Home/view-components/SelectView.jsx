@@ -60,7 +60,7 @@ const SelectView = () => {
           view.view_unique_id = view.view_unique_id.concat('Selected');
         }
       });
-      return allViews;
+      return [...allViews];
     });
   };
 

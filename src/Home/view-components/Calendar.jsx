@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogContentText,
 } from '@material-ui/core';
+
 import { ClickAwayListener } from '@mui/material';
 import { PageContext } from './Views';
 import { userID, addView } from './endpoints';
@@ -21,16 +22,18 @@ import TimeLine from './TimeLine';
 // getAllViews(setAllViews, userID);
 
 const Calendar = (props) => {
-  const { direction = 'vertical' } = props;
-  //dont forget to set default props for calendar view/s as an array, enable/disable fields, setStart&endtime, enable/disable Drag
-  //timeline component props = name, start&endtime,numOfLines, direction, color, setStart&endtime
-  //timefield component props = setStart&endtime, setNumOfLines
+  const { allViews, setAllViews } = useContext(PageContext);
+  const {
+    direction = 'horizontal',
+    type = 'selected',
+    pixelSize = 750,
+  } = props;
+  const [value, setValue] = useState();
 
   // set start&endtime to view.schedule.parsejson
   // then edit the schedule
   // then on update, stringify it, replace the previous schedule, and send the view to updateView
 
-  const { allViews } = useContext(PageContext);
   console.log(allViews);
 
   const dividers = [];
@@ -64,18 +67,25 @@ const Calendar = (props) => {
     <div
       style={{
         position: 'relative',
-        width: direction === 'horizontal' ? '750px' : '100%',
-        height: direction === 'vertical' ? '750px' : '100%',
+        width:
+          direction === 'horizontal'
+            ? parseInt(pixelSize) + 100 + 'px'
+            : '100%',
+        height:
+          direction === 'vertical' ? parseInt(pixelSize) + 100 + 'px' : '100%',
+        pointerEvent: 'none',
       }}
     >
       <div
         style={{
           position: 'absolute',
+          bottom: direction === 'vertical' ? '40px' : '0',
+          right: direction === 'horizontal' ? '40px' : '0',
           display: 'flex',
           flexDirection: direction === 'vertical' ? 'column' : 'row',
           flexWrap: 'nowrap',
-          width: '100%',
-          height: '100%',
+          width: direction === 'horizontal' ? pixelSize + 'px' : '100%',
+          height: direction === 'vertical' ? pixelSize + 'px' : '100%',
         }}
       >
         {dividers}
@@ -93,13 +103,48 @@ const Calendar = (props) => {
           height: direction === 'horizontal' ? '85%' : '100%',
         }}
       >
-        <TimeLine direction={direction} />
-        <TimeLine direction={direction} />
-        <TimeLine direction={direction} />
-        <TimeLine direction={direction} />
-        <TimeLine direction={direction} />
-        <TimeLine direction={direction} />
-        <TimeLine direction={direction} />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Sunday"
+        />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Monday"
+        />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Tuesday"
+        />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Wednesday"
+        />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Thursday"
+        />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Friday"
+        />
+        <TimeLine
+          direction={direction}
+          type={type}
+          pixelSize={pixelSize + 'px'}
+          label="Saturday"
+        />
       </div>
     </div>
   );
