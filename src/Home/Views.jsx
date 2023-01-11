@@ -1050,6 +1050,8 @@ function Views() {
       },
     };
 
+    console.log(event);
+
     axios
       .post(BASE_URL + `UpdateView/${view.view_unique_id}`, event)
       .then((response) => {
@@ -1814,12 +1816,13 @@ function Views() {
                         <input
                           type="checkbox"
                           id="monday"
-                          checked={
-                            Object.values(selectedSchedule.Monday)[0]
+                          checked={() => {
+                            console.log(Object.values(selectedSchedule.Monday));
+                            return Object.values(selectedSchedule.Monday)[0]
                               .start_time === ''
                               ? ''
-                              : 'checked'
-                          }
+                              : 'checked';
+                          }}
                         />
                         &nbsp;&nbsp;
                         <label htmlFor="monday">Monday</label>

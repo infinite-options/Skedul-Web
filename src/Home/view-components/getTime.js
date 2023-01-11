@@ -12,8 +12,10 @@ export const getTime = (cur, thirtyMinSize) => {
 
 export const getPosAndSize = (cur, thirtyMinSize) => {
   const { start_time, end_time } = cur;
-  const start = String(start_time).match(/^(\d+):(\d+)$/);
-  const end = String(end_time).match(/^(\d+):(\d+)$/);
+  let start = String(start_time).match(/^(\d+):(\d+)$/);
+  let end = String(end_time).match(/^(\d+):(\d+)$/);
+  start = start === null ? ['00:00', '00', '00'] : start;
+  end = end === null ? ['00:00', '00', '00'] : end;
   const startHours = parseInt(start[1], 10);
   const startMinutes = parseInt(start[2], 10);
   const endHours = parseInt(end[1], 10);
@@ -34,6 +36,10 @@ export const getPosAndSize = (cur, thirtyMinSize) => {
     } else {
       size = thirtyMinSize * (2 * endHours + 1) - pos;
     }
+  }
+
+  if (size <= 0) {
+    size = 0;
   }
 
   return { pos: pos, size: size };

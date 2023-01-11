@@ -1,8 +1,7 @@
 import { useState, useContext, useEffect, useRef, useCallback } from 'react';
-import { IconButton, Popover } from '@mui/material';
+import { IconButton, Popover, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
-import { LocalizationProvider, StaticTimePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import TimeField from 'react-simple-timefield';
 import { PageContext } from './Views';
 import useStyles from 'styles/ViewsStyles';
 import { getTime, getPosAndSize } from './getTime';
@@ -10,10 +9,6 @@ import { v4 } from 'uuid';
 
 const TimeLine = (props) => {
   const classes = useStyles();
-  const [value, setValue] = useState();
-
-  // TimeFields go in here
-  // if allviews, consider overlap
 
   // DEFAULT PROPS
   const { allViews, setAllViews } = useContext(PageContext);
@@ -22,12 +17,12 @@ const TimeLine = (props) => {
     type = 'all',
     pixelSize = 750,
     label = 'Sunday',
+    setSlotsData,
   } = props;
 
   class TimeSlotData {
     constructor(direction, label, color, time) {
       this.key = v4();
-      this.border = '';
       this.direction = direction;
       this.label = label;
       this.color = color;
@@ -36,13 +31,15 @@ const TimeLine = (props) => {
     getStyle() {
       return {
         position: 'absolute',
+        cursor: type === 'all' ? '' : 'no-drop',
         left: this.direction === 'horizontal' ? this.position + 'px' : '0px',
         top: this.direction === 'vertical' ? this.position + 'px' : '0px',
         width: this.direction === 'horizontal' ? this.size + 'px' : '100%',
         height: this.direction === 'vertical' ? this.size + 'px' : '100%',
+        // flexGrow: '1',
         borderRadius: '2px',
-        border: this.border,
-        opacity: this.opacity,
+        border: this.size > 0 ? '1px inset rgba(0,0,0,0.25)' : '',
+        // opacity: this.opacity,
         background: this.color,
         WebkitUserSelect: 'none',
         KhtmlUserSelect: 'none',
@@ -62,9 +59,6 @@ const TimeLine = (props) => {
     setColor(color) {
       this.color = color;
     }
-    setBorder(border) {
-      this.border = border ? '1px inset rgba(0,0,0,0.25)' : '';
-    }
     setCellDistFromBoundingClient(etarget) {
       this.cellDistFromBoundingClient =
         this.direction === 'vertical'
@@ -83,7 +77,7 @@ const TimeLine = (props) => {
           ? (etarget.parentElement.parentElement.clientHeight - 100) / 48
           : (etarget.parentElement.parentElement.clientWidth - 100) / 48;
     }
-    setTime(e, isFor = 'pos') {
+    setTime(isFor = 'pos', time) {
       if (isFor === 'pos') {
         this.time = {
           start_time: `${getTime(
@@ -91,15 +85,11 @@ const TimeLine = (props) => {
             this.thirtyMinSize
           )}`,
           end_time: `${getTime(
-            isFor === 'pos'
-              ? this.rawPosition - (this.rawPosition % this.thirtyMinSize)
-              : this.rawPosition -
-                  (this.rawPosition % this.thirtyMinSize) +
-                  this.thirtyMinSize,
+            this.rawPosition - (this.rawPosition % this.thirtyMinSize),
             this.thirtyMinSize
           )}`,
         };
-      } else {
+      } else if (isFor === 'size') {
         this.time.end_time = `${getTime(
           this.rawPosition +
             this.thirtyMinSize / 5 -
@@ -113,6 +103,8 @@ const TimeLine = (props) => {
             : 0,
           this.thirtyMinSize
         )}`;
+      } else if (isFor === 'time') {
+        this.time = time;
       }
       // {start_time: "00:00", end_time: "00:00"}
     }
@@ -121,63 +113,265 @@ const TimeLine = (props) => {
     }
     setSize() {
       this.size = getPosAndSize(this.time, this.thirtyMinSize).size;
-      if (this.size > 0) {
-        timeSlotData.current[timeSlotData.current.length - 1].setBorder(true);
-      } else {
-        timeSlotData.current[timeSlotData.current.length - 1].setBorder(false);
-      }
     }
-    correctOverlapsForSelected(timeSlotData) {
-      timeSlotData.forEach((timeSlot, idx) => {
+    correctOverlapsForSelected(timeSlotsData) {
+      let data = [...timeSlotsData];
+      data.forEach((timeSlot, idx) => {
         if (this.key === timeSlot.key) {
           // console.log('same slot');
           return;
         }
+        let checks = {
+          thisEndIsBetweenTimeSlot:
+            this.position + this.size > timeSlot.position &&
+            this.position + this.size <= timeSlot.position + timeSlot.size,
+          thisStartIsBetweenTimeSlot:
+            this.position >= timeSlot.position &&
+            this.position < timeSlot.position + timeSlot.size,
+          timeSlotIsInsideThis:
+            timeSlot.position >= this.position &&
+            timeSlot.position < this.position + this.size &&
+            timeSlot.position + timeSlot.size > this.position &&
+            timeSlot.position + timeSlot.size <= this.position + this.size,
+        };
         if (
-          this.position + this.size > timeSlot.position &&
-          this.position + this.size <= timeSlot.position + timeSlot.size
+          checks.thisEndIsBetweenTimeSlot &&
+          checks.thisStartIsBetweenTimeSlot
         ) {
-          // console.log('overlapping slot');
+          // console.log('inside slot');
+          let time = timeSlot.time;
+          timeSlot.size = this.position - timeSlot.position;
+          timeSlot.time = {
+            start_time: `${getTime(timeSlot.position, this.thirtyMinSize)}`,
+            end_time: `${getTime(
+              timeSlot.position + timeSlot.size,
+              this.thirtyMinSize
+            )}`,
+          };
+          data = [
+            ...data.flatMap((t, i) => {
+              if (idx === i) {
+                let splitSlot = new TimeSlotData(
+                  timeSlot.direction,
+                  timeSlot.label,
+                  timeSlot.color,
+                  time
+                );
+                splitSlot.cellDistFromBoundingClient =
+                  timeSlot.cellDistFromBoundingClient;
+                splitSlot.thirtyMinSize = timeSlot.thirtyMinSize;
+                splitSlot.setPosition();
+                splitSlot.setSize();
+                return [t, splitSlot];
+              }
+              return t;
+            }),
+          ];
+          data[idx + 1].size =
+            data[idx + 1].position +
+            data[idx + 1].size -
+            (this.position + this.size);
+          data[idx + 1].position = this.position + this.size;
+          data[idx + 1].time = {
+            start_time: `${getTime(
+              data[idx + 1].position,
+              this.thirtyMinSize
+            )}`,
+            end_time: `${getTime(
+              data[idx + 1].position + data[idx + 1].size,
+              this.thirtyMinSize
+            )}`,
+          };
+          return;
+        }
+        if (checks.thisStartIsBetweenTimeSlot) {
+          // console.log('start overlaps slot');
+          timeSlot.size = this.position - timeSlot.position;
+          timeSlot.time = {
+            start_time: `${getTime(timeSlot.position, this.thirtyMinSize)}`,
+            end_time: `${getTime(
+              timeSlot.position + timeSlot.size,
+              this.thirtyMinSize
+            )}`,
+          };
+          return;
+        }
+        if (checks.thisEndIsBetweenTimeSlot) {
+          // console.log('end overlaps slot');
           timeSlot.size =
             timeSlot.position + timeSlot.size - (this.position + this.size);
           timeSlot.position = this.position + this.size;
+          timeSlot.time = {
+            start_time: `${getTime(timeSlot.position, this.thirtyMinSize)}`,
+            end_time: `${getTime(
+              timeSlot.position + timeSlot.size,
+              this.thirtyMinSize
+            )}`,
+          };
           return;
         }
-        if (
-          timeSlot.position > this.position &&
-          timeSlot.position <= this.position + this.size &&
-          timeSlot.position + timeSlot.size > this.position &&
-          timeSlot.position + timeSlot.size <= this.position + this.size
-        ) {
-          // console.log('overtaking slot');
-          timeSlotData.splice(idx, 1);
-          return true;
+        if (checks.timeSlotIsInsideThis) {
+          // console.log('overtakes slot');
+          data.splice(idx, 1);
+          data = this.correctOverlapsForSelected(data);
         }
-        return false;
+        return;
       });
+      return data;
     }
-    correctOverlapsForAll(timeSlotData) {
-      timeSlotData.forEach((timeSlot, idx) => {
+    hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+            result[3],
+            16
+          )}`
+        : null;
+    }
+    sortOpaqueParts(opaqueParts) {
+      // [12 < 20] <
+      // [30 < 40] <
+      // [50 < 80] <
+      // [90 < 95] <
+
+      let parts = opaqueParts;
+      let ptr = parts.length - 1;
+
+      if (ptr <= 0 || parts === null || parts === undefined) {
+        return parts;
+      }
+
+      function move(input, from, to) {
+        let numberOfDeletedElm = 1;
+
+        const elm = input.splice(from, numberOfDeletedElm)[0];
+
+        numberOfDeletedElm = 0;
+
+        input.splice(to, numberOfDeletedElm, elm);
+      }
+
+      for (let i = parts.length - 2; i >= 0; i--) {
+        if (parts[i].percentages[1] < parts[ptr].percentages[0]) {
+          return parts;
+        }
+        move(parts, ptr, i);
+        ptr = i;
+      }
+
+      return parts;
+    }
+    correctOverlapsForAll(timeSlotsData) {
+      let data = [...timeSlotsData];
+      const color = `rgba(${this.hexToRgb(this.color)}, 1)`;
+      const opaqueColor = ` rgba(${this.hexToRgb(this.color)}, 0.5)`;
+      let opaqueParts = [];
+      let linearGradient = `linear-gradient(90deg, ${color} 0%, ${color} 100%)`;
+      // let opaqueParts = [`, ${color} 32%, ${opaqueColor} 32%, ${opaqueColor} 60%, ${color} 60%`]
+      // let opaqueParts = [`, ${color} 32%, ${opaqueColor} 32%, ${opaqueColor} 60%, ${color} 60%`, `,  ${color} 80%, ${opaqueColor} 80%, ${opaqueColor} 90%, ${color} 90%`]
+      // let linearGradient = `linear-gradient(90deg, ${color} 0%${opaqueParts.join("")}, ${color} 100%)`
+      data.forEach((timeSlot, idx) => {
         if (this.key === timeSlot.key) {
           // console.log('same slot');
           return;
         }
-        if (
-          (this.position + this.size > timeSlot.position &&
-            this.position + this.size <= timeSlot.position + timeSlot.size) ||
-          (timeSlot.position > this.position &&
-            timeSlot.position <= this.position + this.size &&
+        let checks = {
+          thisEndIsBetweenTimeSlot:
+            this.position + this.size > timeSlot.position &&
+            this.position + this.size <= timeSlot.position + timeSlot.size,
+          thisStartIsBetweenTimeSlot:
+            this.position >= timeSlot.position &&
+            this.position < timeSlot.position + timeSlot.size,
+          timeSlotIsInsideThis:
+            timeSlot.position >= this.position &&
+            timeSlot.position < this.position + this.size &&
             timeSlot.position + timeSlot.size > this.position &&
-            timeSlot.position + timeSlot.size <= this.position + this.size)
+            timeSlot.position + timeSlot.size <= this.position + this.size,
+        };
+        if (
+          checks.thisEndIsBetweenTimeSlot &&
+          checks.thisStartIsBetweenTimeSlot
         ) {
-          // console.log('overlapping slot');
-          this.opacity = '50%';
-          return;
-        } else {
-          this.opacity = '100%';
+          console.log('inside slot');
+          // this.position --- 0%
+          // this.position + this.size --- 100%
+          let opaqueStart = 0;
+          let opaqueEnd = 100;
+          opaqueParts.push({
+            percentages: [opaqueStart, opaqueEnd],
+            str: `, ${color} ${opaqueStart}%, ${opaqueColor} ${opaqueStart}%, ${opaqueColor} ${opaqueEnd}%, ${color} ${opaqueEnd}%`,
+          });
+          opaqueParts = this.sortOpaqueParts(opaqueParts);
+          linearGradient = `linear-gradient(90deg, ${color} 0%${opaqueParts
+            .map((part) => {
+              return part.str;
+            })
+            .join('')}, ${color} 100%)`;
+          this.color = linearGradient;
         }
-        return false;
+        if (checks.thisStartIsBetweenTimeSlot) {
+          console.log('start overlaps slot');
+          // this.position --- 0%
+          // timeSlot.position + timeSlot.size - this.position --- ((timeSlot.position + timeSlot.size - this.position)/(this.size))%
+          let opaqueStart = 0;
+          let opaqueEnd =
+            ((timeSlot.position + timeSlot.size - this.position) / this.size) *
+            100;
+          opaqueParts.push({
+            percentages: [opaqueStart, opaqueEnd],
+            str: `, ${color} ${opaqueStart}%, ${opaqueColor} ${opaqueStart}%, ${opaqueColor} ${opaqueEnd}%, ${color} ${opaqueEnd}%`,
+          });
+          opaqueParts = this.sortOpaqueParts(opaqueParts);
+          linearGradient = `linear-gradient(90deg, ${color} 0%${opaqueParts
+            .map((part) => {
+              return part.str;
+            })
+            .join('')}, ${color} 100%)`;
+          this.color = linearGradient;
+        }
+        if (checks.thisEndIsBetweenTimeSlot) {
+          console.log('end overlaps slot');
+          // timeSlot.position - this.position --- ((timeSlot.position - this.position)/(this.size))%
+          // this.position + this.size --- 100%
+          let opaqueStart =
+            ((timeSlot.position - this.position) / this.size) * 100;
+          let opaqueEnd = 100;
+          opaqueParts.push({
+            percentages: [opaqueStart, opaqueEnd],
+            str: `, ${color} ${opaqueStart}%, ${opaqueColor} ${opaqueStart}%, ${opaqueColor} ${opaqueEnd}%, ${color} ${opaqueEnd}%`,
+          });
+          opaqueParts = this.sortOpaqueParts(opaqueParts);
+          linearGradient = `linear-gradient(90deg, ${color} 0%${opaqueParts
+            .map((part) => {
+              return part.str;
+            })
+            .join('')}, ${color} 100%)`;
+          this.color = linearGradient;
+        }
+        if (checks.timeSlotIsInsideThis) {
+          console.log('overtakes slot');
+          // timeSlot.position
+          // thimeSlot.position + timeSlot.size
+          let opaqueStart =
+            ((timeSlot.position - this.position) / this.size) * 100;
+          let opaqueEnd =
+            ((timeSlot.position + timeSlot.size - this.position) / this.size) *
+            100;
+          opaqueParts.push({
+            percentages: [opaqueStart, opaqueEnd],
+            str: `, ${color} ${opaqueStart}%, ${opaqueColor} ${opaqueStart}%, ${opaqueColor} ${opaqueEnd}%, ${color} ${opaqueEnd}%`,
+          });
+          opaqueParts = this.sortOpaqueParts(opaqueParts);
+          linearGradient = `linear-gradient(90deg, ${color} 0%${opaqueParts
+            .map((part) => {
+              return part.str;
+            })
+            .join('')}, ${color} 100%)`;
+          this.color = linearGradient;
+        }
       });
+      console.log(opaqueParts.map((part) => part.percentages));
+      return data;
     }
     IsNearThirtyMinMark() {
       return this.rawPosition % this.thirtyMinSize < this.thirtyMinSize / 5 ||
@@ -189,170 +383,314 @@ const TimeLine = (props) => {
   }
 
   const cell = useRef(); // TimeSlots parent cell reference
-  const timeSlotData = useRef([]);
+  const timeSlotsData = useRef([]);
   const [timeSlots, setTimeSlots] = useState([]);
-  // const [cursor, setCursor] = useState('copy'); // Cursor Style
+  const [cursor, setCursor] = useState('copy'); // Cursor Style
 
-  // HANDLERS
-  const handleOnMouseDown = (e) => {
+  // NEW TIMESLOT HANDLERS
+  const handleOnMouseDown = (
+    e,
+    timeSlotsData,
+    allViews,
+    cell,
+    direction,
+    label
+  ) => {
     // Set new timeSlot
     let color = null;
+    let data = timeSlotsData.current;
+
     allViews.forEach((view) => {
       if (view.view_unique_id.includes('Selected')) {
-        color = view.color;
+        color = view.color ? view.color : '#FFFFFF';
       }
     });
-    timeSlotData.current.push(new TimeSlotData(direction, label, color));
-    timeSlotData.current[
-      timeSlotData.current.length - 1
-    ].setCellDistFromBoundingClient(e.target);
-    timeSlotData.current[timeSlotData.current.length - 1].setRawPosition(e);
-    timeSlotData.current[timeSlotData.current.length - 1].setThirtyMinSize(
-      e.target
-    );
-    timeSlotData.current[timeSlotData.current.length - 1].setTime(e, 'pos');
-    timeSlotData.current[timeSlotData.current.length - 1].setPosition();
-    timeSlotData.current[timeSlotData.current.length - 1].setSize();
-    setTimeSlots([
-      ...timeSlotData.current.map((timeSlot) => (
-        <div key={timeSlot.key} style={timeSlot.getStyle()}>
-          <div className={classes.timeSlot}></div>
-        </div>
-      )),
-    ]);
+    data.push(new TimeSlotData(direction, label, color));
+    data[data.length - 1].setCellDistFromBoundingClient(e.target);
+    data[data.length - 1].setRawPosition(e);
+    data[data.length - 1].setThirtyMinSize(e.target);
+    data[data.length - 1].setTime('pos');
+    data[data.length - 1].setPosition();
+    data[data.length - 1].setSize();
 
     // Checks if you've clicked on another timeslot
     if (e.target.parentElement.parentElement === cell.current) {
-      handleOnMouseUpAndOnMouseLeave();
-      return;
+      data = handleOnMouseUpOnMouseLeaveOnPopoverClose(
+        timeSlotsData,
+        setAllViews
+      );
+      return data;
     }
 
     // Adds a listener for dragging out a new timeslot
-    cell.current.addEventListener('mousemove', handleOnMouseMove, true);
-  };
-  const handleOnMouseMove = useCallback((e) => {
-    // setCursor('grabbing');
-    timeSlotData.current[timeSlotData.current.length - 1].setRawPosition(e);
-    timeSlotData.current[timeSlotData.current.length - 1].setThirtyMinSize(
-      e.target
-    );
+    cell.current.addEventListener('mousemove', getMouseMoveEvent, true);
 
-    // Set current timeSlot
-    if (
-      timeSlotData.current[
-        timeSlotData.current.length - 1
-      ].IsNearThirtyMinMark()
-    ) {
-      timeSlotData.current[timeSlotData.current.length - 1].setTime(e, 'size');
-      timeSlotData.current[timeSlotData.current.length - 1].setSize();
-      timeSlotData.current[
-        timeSlotData.current.length - 1
-      ].correctOverlapsForSelected(timeSlotData.current);
-      setTimeSlots([
-        ...timeSlotData.current.map((timeSlot) => (
-          <div key={timeSlot.key} style={timeSlot.getStyle()}>
-            <div classlabel={classes.timeSlot}></div>
-          </div>
-        )),
-      ]);
-    }
-  }, []);
-  const handleOnMouseUpAndOnMouseLeave = () => {
-    if (
-      timeSlotData.current.length > 0 &&
-      timeSlotData.current[timeSlotData.current.length - 1].size <= 0
-    ) {
-      timeSlotData.current.pop();
-      setTimeSlots([
-        ...timeSlotData.current.map((timeSlot) => (
-          <div key={timeSlot.key} style={timeSlot.getStyle()}>
-            <div className={classes.timeSlot}></div>
-          </div>
-        )),
-      ]);
-    } else {
-      setTimeSlots([
-        ...timeSlotData.current.map((timeSlot) => (
-          <div key={timeSlot.key} style={timeSlot.getStyle()}>
-            <div className={classes.timeSlot}></div>
-          </div>
-        )),
-      ]);
-    }
-    // setCursor('copy');
-    cell.current.removeEventListener('mousemove', handleOnMouseMove, true);
+    return data;
   };
-
-  // Update props
-  useEffect(() => {
-    if (type === 'selected' && allViews.length > 0) {
-      timeSlotData.current = [];
-      let selectedView = null;
-      allViews.forEach((view) => {
-        if (view.view_unique_id.includes('Selected')) {
-          selectedView = view;
-        }
-      });
-      let schedule = JSON.parse(selectedView.schedule)[label];
-      schedule.forEach((slot) => {
-        timeSlotData.current.push(
-          new TimeSlotData(direction, label, selectedView.color, slot)
-        );
-        timeSlotData.current[
-          timeSlotData.current.length - 1
-        ].setCellDistFromBoundingClient(cell.current);
-        timeSlotData.current[timeSlotData.current.length - 1].setThirtyMinSize(
-          cell.current
-        );
-        timeSlotData.current[timeSlotData.current.length - 1].setPosition();
-        timeSlotData.current[timeSlotData.current.length - 1].setSize();
-        timeSlotData.current[
-          timeSlotData.current.length - 1
-        ].correctOverlapsForAll(timeSlotData.current);
-      });
-    } else if (type === 'all' && allViews.length > 0) {
-      timeSlotData.current = [];
-      allViews.forEach((view) => {
-        let schedule = JSON.parse(view.schedule)[label];
-        schedule.forEach((slot) => {
-          timeSlotData.current.push(
-            new TimeSlotData(direction, label, view.color, slot)
-          );
-          timeSlotData.current[
-            timeSlotData.current.length - 1
-          ].setCellDistFromBoundingClient(cell.current);
-          timeSlotData.current[
-            timeSlotData.current.length - 1
-          ].setThirtyMinSize(cell.current);
-          timeSlotData.current[timeSlotData.current.length - 1].setPosition();
-          timeSlotData.current[timeSlotData.current.length - 1].setSize();
-          timeSlotData.current[
-            timeSlotData.current.length - 1
-          ].correctOverlapsForAll(timeSlotData.current);
-        });
-      });
-    }
-    timeSlotData.current.forEach((timeSlot) => {
-      timeSlot.setDirection(direction);
-      timeSlot.setLabel(label);
-    });
+  const getMouseMoveEvent = useCallback((e) => {
+    timeSlotsData.current = handleOnMouseMove(e, timeSlotsData);
     setTimeSlots([
-      ...timeSlotData.current.map((timeSlot) => (
-        <div key={timeSlot.key} style={timeSlot.getStyle()}>
+      ...timeSlotsData.current.map((timeSlot, idx) => (
+        <div
+          key={timeSlot.key}
+          style={timeSlot.getStyle()}
+          onClick={() => {
+            handleOnTimeSlotClick(timeSlotsData, idx);
+          }}
+        >
           <div className={classes.timeSlot}></div>
         </div>
       )),
     ]);
-  }, [direction, type, label, allViews]);
+  }, []);
+  const handleOnMouseMove = (e, timeSlotsData) => {
+    let data = timeSlotsData.current;
 
-  console.log(timeSlotData.current);
+    setCursor('grabbing');
+    data[data.length - 1].setRawPosition(e);
+
+    // Set current timeSlot
+    if (data[data.length - 1].IsNearThirtyMinMark()) {
+      data[data.length - 1].setTime('size');
+      data[data.length - 1].setSize();
+      data = data[data.length - 1].correctOverlapsForSelected(data);
+    }
+
+    return data;
+  };
+  const handleOnTimeSlotClick = (timeSlotsData, idx) => {
+    if (type !== 'all') {
+      timeSlotsData.current.splice(idx, 1);
+      setTimeSlots([
+        ...timeSlotsData.current.map((timeSlot, idx) => (
+          <div
+            key={timeSlot.key}
+            style={timeSlot.getStyle()}
+            onClick={() => {
+              handleOnTimeSlotClick(timeSlotsData, idx);
+            }}
+          >
+            <div className={classes.timeSlot}></div>
+          </div>
+        )),
+      ]);
+    }
+  };
+  const handleOnMouseUpOnMouseLeaveOnPopoverClose = (timeSlotsData) => {
+    let data = timeSlotsData.current;
+
+    if (data.length > 0) {
+      data.forEach((timeSlot, idx) => {
+        if (timeSlot.size <= 0) {
+          data.splice(idx, 1);
+        }
+      });
+    }
+
+    if (type === 'selected') {
+      setSlotsData(
+        allViews.map((view) => {
+          if (view.view_unique_id.includes('Selected')) {
+            let schedule = JSON.parse(view.schedule);
+            schedule[label] = data.map((timeSlot) => {
+              return timeSlot.time;
+            });
+            view.schedule = JSON.stringify(schedule);
+          }
+          return view;
+        })
+      );
+    }
+
+    setCursor('copy');
+    cell.current.removeEventListener('mousemove', getMouseMoveEvent, true);
+
+    return data;
+  };
+  const setSelectedViewTimeSlots = (
+    timeSlotsData,
+    allViews,
+    label,
+    direction,
+    cell
+  ) => {
+    let data = timeSlotsData.current;
+    let selectedView = null;
+
+    data = [];
+
+    // Find selected view
+    allViews.forEach((view) => {
+      if (view.view_unique_id.includes('Selected')) {
+        selectedView = view;
+      }
+    });
+
+    // Create timeslots based on schedule
+    let schedule = JSON.parse(selectedView.schedule)[label];
+    if (schedule.length > 0) {
+      schedule.forEach((slot) => {
+        data.push(
+          new TimeSlotData(
+            direction,
+            label,
+            selectedView.color ? selectedView.color : '#FFFFFF',
+            slot
+          )
+        );
+        data[data.length - 1].setCellDistFromBoundingClient(cell.current);
+        data[data.length - 1].setThirtyMinSize(cell.current);
+        data[data.length - 1].setPosition();
+        data[data.length - 1].setSize();
+        data = data[data.length - 1].correctOverlapsForSelected(data);
+      });
+    }
+
+    return data;
+  };
+  const setAllViewsTimeSlots = (
+    timeSlotsData,
+    allViews,
+    label,
+    direction,
+    cell
+  ) => {
+    let data = timeSlotsData.current;
+
+    // Create time slots for each views schedule
+    data = [];
+    allViews.forEach((view) => {
+      let schedule = JSON.parse(view.schedule);
+      if (schedule[label].length > 0) {
+        schedule[label].forEach((slot) => {
+          data.push(
+            new TimeSlotData(
+              direction,
+              label,
+              view.color ? view.color : '#FFFFFF',
+              slot
+            )
+          );
+          data[data.length - 1].setCellDistFromBoundingClient(cell.current);
+          data[data.length - 1].setThirtyMinSize(cell.current);
+          data[data.length - 1].setPosition();
+          data[data.length - 1].setSize();
+          data = data[data.length - 1].correctOverlapsForAll(data);
+        });
+      }
+    });
+
+    return data;
+  };
+
+  // UPDATE PROPS
+  useEffect(() => {
+    // Set time slots based on type
+    if (type === 'selected' && allViews.length > 0) {
+      timeSlotsData.current = setSelectedViewTimeSlots(
+        timeSlotsData,
+        allViews,
+        label,
+        direction,
+        cell
+      );
+    } else if (type === 'all' && allViews.length > 0) {
+      timeSlotsData.current = setAllViewsTimeSlots(
+        timeSlotsData,
+        allViews,
+        label,
+        direction,
+        cell
+      );
+    }
+    timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
+      timeSlotsData,
+      setAllViews
+    );
+
+    // Update direction and label
+    timeSlotsData.current.forEach((timeSlot) => {
+      timeSlot.setDirection(direction);
+      timeSlot.setLabel(label);
+    });
+
+    setTimeSlots([
+      ...timeSlotsData.current.map((timeSlot, idx) => (
+        <div
+          key={timeSlot.key}
+          style={timeSlot.getStyle()}
+          onClick={() => {
+            handleOnTimeSlotClick(timeSlotsData, idx);
+          }}
+        >
+          <div className={classes.timeSlot}></div>
+        </div>
+      )),
+    ]);
+  }, [direction, type, label, pixelSize, allViews]);
+
+  // allViews.map((view) => {
+  //   if (view.view_unique_id.includes('Selected')) {
+  //     return JSON.parse(view.schedule)[label];
+  //   }
+  // })[2]
+  // console.log(JSON.parse(JSON.stringify(timeSlotsData.current)));
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const input = useRef({
+    start_time: '10:00',
+    end_time: '12:00',
+  });
+  const handleAddClick = (
+    e,
+    timeSlotsData,
+    allViews,
+    label,
+    direction,
+    cell,
+    input,
+    setAnchorEl
+  ) => {
+    setAnchorEl(e.currentTarget);
+
+    let color = null;
+    let data = timeSlotsData.current;
+
+    allViews.forEach((view) => {
+      if (view.view_unique_id.includes('Selected')) {
+        color = view.color ? view.color : '#FFFFFF';
+      }
+    });
+
+    data.push(new TimeSlotData(direction, label, color, input.current));
+    data[data.length - 1].setCellDistFromBoundingClient(cell.current);
+    data[data.length - 1].setThirtyMinSize(cell.current);
+    data[data.length - 1].setPosition();
+    data[data.length - 1].setSize();
+    data = data[data.length - 1].correctOverlapsForSelected(data);
+
+    return data;
+  };
+  const handleTimeChange = (input, timeSlotsData) => {
+    let data = timeSlotsData.current;
+
+    setCursor('grabbing');
+    data[data.length - 1].setCellDistFromBoundingClient(cell.current);
+    // data[data.length - 1].setThirtyMinSize(cell.current);
+    data[data.length - 1].setTime('time', input.current);
+    data[data.length - 1].setPosition();
+    data[data.length - 1].setSize();
+    data = data[data.length - 1].correctOverlapsForSelected(data);
+
+    return data;
   };
   const handleClose = () => {
     setAnchorEl(null);
+    let defaultInput = {
+      start_time: '10:00',
+      end_time: '12:00',
+    };
+    return defaultInput;
   };
 
   return (
@@ -361,16 +699,19 @@ const TimeLine = (props) => {
         position: 'relative',
         display: 'grid',
         alignContent: 'center',
-        gridTemplateColumns: '60px auto 40px',
-        // cursor: cursor,
+        gridTemplateColumns:
+          direction === 'horizontal' ? `60px ${pixelSize} 40px` : '',
+        gridTemplateRows:
+          direction === 'vertical' ? `60px ${pixelSize} 40px` : '',
         flexGrow: '1',
         width: direction === 'horizontal' ? '100%' : '',
         height: direction === 'vertical' ? '100%' : '',
       }}
     >
+      {/* LABEL */}
       <h6
         style={{
-          justifySelf: 'right',
+          justifySelf: direction === 'vertical' ? 'center' : 'right',
           alignSelf: 'center',
           padding: '7.5px 15px',
           fontSize: '0.5em',
@@ -380,75 +721,250 @@ const TimeLine = (props) => {
         {label}
       </h6>
 
+      {/* SCHEDULE */}
       <div
         style={{
           position: 'relative',
-          // cursor: cursor,
+          display: 'flex',
+          cursor: type === 'all' ? '' : cursor,
+          flexDirection: direction === 'vertical' ? 'row' : 'column',
+          flexWrap: 'nowrap',
           borderLeft: direction === 'vertical' ? '0.5px solid #bbb' : '',
           borderTop: direction === 'horizontal' ? '0.5px solid #bbb' : '',
-          width: direction === 'horizontal' ? pixelSize + 'px' : '',
-          height: direction === 'vertical' ? pixelSize + 'px' : '',
+          width: '100%',
+          height: '100%',
         }}
         ref={cell}
         onMouseDownCapture={(e) => {
-          if (type === 'selected') {
+          if (type === 'selected' && allViews.length > 0) {
             e.persist();
-            handleOnMouseDown(e);
+            timeSlotsData.current = handleOnMouseDown(
+              e,
+              timeSlotsData,
+              allViews,
+              cell,
+              direction,
+              label
+            );
           }
+          setTimeSlots([
+            ...timeSlotsData.current.map((timeSlot, idx) => (
+              <div
+                key={timeSlot.key}
+                style={timeSlot.getStyle()}
+                onClick={() => {
+                  handleOnTimeSlotClick(timeSlotsData, idx);
+                }}
+              >
+                <div className={classes.timeSlot}></div>
+              </div>
+            )),
+          ]);
         }}
         onMouseUpCapture={() => {
-          if (type === 'selected') {
-            handleOnMouseUpAndOnMouseLeave();
+          if (type === 'selected' && allViews.length > 0) {
+            timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
+              timeSlotsData,
+              setAllViews
+            );
           }
+          setTimeSlots([
+            ...timeSlotsData.current.map((timeSlot, idx) => (
+              <div
+                key={timeSlot.key}
+                style={timeSlot.getStyle()}
+                onClick={() => {
+                  handleOnTimeSlotClick(timeSlotsData, idx);
+                }}
+              >
+                <div className={classes.timeSlot}></div>
+              </div>
+            )),
+          ]);
         }}
         onMouseLeave={() => {
-          if (type === 'selected') {
-            handleOnMouseUpAndOnMouseLeave();
+          if (type === 'selected' && allViews.length > 0) {
+            timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
+              timeSlotsData,
+              setAllViews
+            );
           }
+          setTimeSlots([
+            ...timeSlotsData.current.map((timeSlot, idx) => (
+              <div
+                key={timeSlot.key}
+                style={timeSlot.getStyle()}
+                onClick={() => {
+                  handleOnTimeSlotClick(timeSlotsData, idx);
+                }}
+              >
+                <div className={classes.timeSlot}></div>
+              </div>
+            )),
+          ]);
         }}
       >
         {timeSlots}
       </div>
 
-      <div style={{ width: '34px', height: '34px' }}>
-        <IconButton
-          color="primary"
-          size="small"
-          aria-label="add to shopping cart"
-          onClick={(e) => {
-            handleClick(e);
+      {/* ADD TIMESLOT */}
+      {type === 'selected' && (
+        <div
+          style={{
+            justifySelf: 'center',
+            alignSelf: 'center',
+            width: '34px',
+            height: '34px',
           }}
         >
-          <Add sx={{ width: '20px', height: '20px' }} />
-        </IconButton>
-        <Popover
-          open={Boolean(anchorEl)}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          onClose={() => {
-            handleClose();
-          }}
-          PaperProps={{
-            style: {
-              marginTop: '10px',
-            },
-          }}
-        >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StaticTimePicker
-              displayStaticWrapperAs="mobile"
-              value={value}
-              onChange={(newValue) => {
-                setValue(newValue);
+          <IconButton
+            color="primary"
+            size="small"
+            aria-label="add to shopping cart"
+            onClick={(e) => {
+              if (type === 'selected' && allViews.length > 0) {
+                timeSlotsData.current = handleAddClick(
+                  e,
+                  timeSlotsData,
+                  allViews,
+                  label,
+                  direction,
+                  cell,
+                  input,
+                  setAnchorEl
+                );
+                timeSlotsData.current =
+                  handleOnMouseUpOnMouseLeaveOnPopoverClose(
+                    timeSlotsData,
+                    setAllViews
+                  );
+              }
+              setTimeSlots([
+                ...timeSlotsData.current.map((timeSlot, idx) => (
+                  <div
+                    key={timeSlot.key}
+                    style={timeSlot.getStyle()}
+                    onClick={() => {
+                      handleOnTimeSlotClick(timeSlotsData, idx);
+                    }}
+                  >
+                    <div className={classes.timeSlot}></div>
+                  </div>
+                )),
+              ]);
+            }}
+          >
+            <Add sx={{ width: '20px', height: '20px' }} />
+          </IconButton>
+          <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            onClose={() => {
+              input.current = handleClose();
+              timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
+                timeSlotsData,
+                setAllViews
+              );
+            }}
+            PaperProps={{
+              style: {
+                display: 'flex',
+                padding: '20px 0',
+                flexDirection: 'column',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1em',
+                color: '#bbb',
+              },
+            }}
+          >
+            <h6 style={{ padding: '0 0 10px 0' }}>Select Time Range</h6>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
-        </Popover>
-      </div>
+            >
+              <input
+                type="time"
+                defaultValue={Boolean(anchorEl) ? input.current.start_time : ''}
+                name="start_time"
+                style={{ margin: '0 20px', padding: '5px' }}
+                onChange={(e) => {
+                  e.persist();
+                  input.current.start_time = e.target.value;
+                  if (
+                    type === 'selected' &&
+                    allViews.length > 0 &&
+                    e.target.value !== ''
+                  ) {
+                    timeSlotsData.current = handleTimeChange(
+                      input,
+                      timeSlotsData
+                    );
+
+                    setTimeSlots([
+                      ...timeSlotsData.current.map((timeSlot, idx) => (
+                        <div
+                          key={timeSlot.key}
+                          style={timeSlot.getStyle()}
+                          onClick={() => {
+                            handleOnTimeSlotClick(timeSlotsData, idx);
+                          }}
+                        >
+                          <div className={classes.timeSlot}></div>
+                        </div>
+                      )),
+                    ]);
+                  }
+                }}
+              />
+              -
+              <input
+                type="time"
+                defaultValue={Boolean(anchorEl) ? input.current.end_time : ''}
+                name="end_time"
+                style={{ margin: '0 20px', padding: '5px' }}
+                onChange={(e) => {
+                  e.persist();
+                  input.current.end_time = e.target.value;
+                  if (
+                    type === 'selected' &&
+                    allViews.length > 0 &&
+                    e.target.value !== ''
+                  ) {
+                    timeSlotsData.current = handleTimeChange(
+                      input,
+                      timeSlotsData
+                    );
+
+                    setTimeSlots([
+                      ...timeSlotsData.current.map((timeSlot, idx) => (
+                        <div
+                          key={timeSlot.key}
+                          style={timeSlot.getStyle()}
+                          onClick={() => {
+                            handleOnTimeSlotClick(timeSlotsData, idx);
+                          }}
+                        >
+                          <div className={classes.timeSlot}></div>
+                        </div>
+                      )),
+                    ]);
+                  }
+                }}
+              />
+            </div>
+          </Popover>
+        </div>
+      )}
     </div>
   );
 };

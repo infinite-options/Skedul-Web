@@ -65,7 +65,7 @@ const SelectView = () => {
   };
 
   return (
-    <Box m="20px 10px">
+    <Box m="0 0 20px 10px">
       {allViews.length > 0 ? (
         <Button
           variant="contained"

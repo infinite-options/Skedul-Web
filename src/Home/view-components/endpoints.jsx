@@ -45,7 +45,16 @@ export const updateView = (setAllViews, user, newView, oldViewID) => {
     return;
   }
 
-  API.post(`/UpdateView/${oldViewID}`, newView)
+  // CORRECTIONS
+  let newSched = { schedule: JSON.parse(newView.schedule) };
+  // Object.keys(newSched.schedule).forEach((key) => {
+  //   if (newSched.schedule[key].length <= 0) {
+  //     newSched.schedule[key].push({ start_time: '00:00', end_time: '00:00' });
+  //   }
+  // });
+  const ID = oldViewID.replace('Selected', '');
+
+  API.post(`/UpdateView/${ID}`, newSched)
     .then(() => {
       API.get(`/GetAllViews/${user}`).then((res) => {
         // SETS THE FIRST VIEW AS SELECTED

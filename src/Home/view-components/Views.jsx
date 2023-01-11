@@ -1,24 +1,29 @@
+import ResizeObserver, { useResizeDetector } from 'react-resize-detector';
 import { useEffect, useState, createContext } from 'react';
 import { Box } from '@material-ui/core';
-import { userID, getAllViews } from './endpoints';
+import { userID, getAllViews, updateView } from './endpoints';
 import useStyles from 'styles/ViewsStyles';
 import SelectView from './SelectView';
 import AddView from './AddView';
 import CreateViewDialog from './CreateViewDialog';
 import Calendar from './Calendar';
 import UpdateView from './UpdateView';
+import { Button } from '@mui/material';
 
 export const PageContext = createContext();
 
-function Viewss() {
+function Views() {
   const classes = useStyles();
   const [allViews, setAllViews] = useState([]);
   const [pageStatus, setPageStatus] = useState(); // Create, Update, Loading, Null
   const [showCreateViewDialog, setShowCreateViewDialog] = useState(false);
+  const [data, setData] = useState();
+  const { width, height, ref } = useResizeDetector();
 
   useEffect(() => {
     getAllViews(setAllViews, userID);
   }, []);
+  console.log(data);
 
   return (
     <PageContext.Provider
@@ -29,8 +34,7 @@ function Viewss() {
         setPageStatus,
       }}
     >
-      <Box p="20px">
-        {/* SELECT VIEW */}
+      <Box minHeight="fit-content" minWidth="fit-content" p="20px">
         <Box>
           <p className={classes.subTitle}>SELECT A VIEW</p>
           <p className={classes.title}>VIEWS</p>
@@ -45,18 +49,29 @@ function Viewss() {
           <p className={classes.subTitle}>Time zone:</p>
           <p className={classes.subTitle}>Pacific Time - US Canada</p>
         </Box>
-
-        {/* SET VIEW */}
-        <Box height="300px">
-          <Calendar type="selected" />
-          <Calendar type="all" />
-          <UpdateView />
+        <hr />
+        <Box ref={ref} height="300px">
+          <Calendar type="selected" setSlotsData={setData} />
         </Box>
-
-        {/* ALL VIEWS */}
-        <Box></Box>
+        <Box m="20px 10px">
+          <Button
+            variant="contained"
+            onClick={() => {
+              setAllViews(data);
+              data.forEach((view) => {
+                updateView(setAllViews, userID, view, view.view_unique_id);
+              });
+            }}
+          >
+            Update
+          </Button>
+        </Box>
+        <hr />
+        <Box height="300px">
+          <Calendar type="all" />
+        </Box>{' '}
       </Box>
     </PageContext.Provider>
   );
 }
-export default Viewss;
+export default Views;

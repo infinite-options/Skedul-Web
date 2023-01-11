@@ -22,19 +22,18 @@ import TimeLine from './TimeLine';
 // getAllViews(setAllViews, userID);
 
 const Calendar = (props) => {
-  const { allViews, setAllViews } = useContext(PageContext);
   const {
     direction = 'horizontal',
-    type = 'selected',
+    type = 'all',
     pixelSize = 750,
+    setSlotsData,
   } = props;
-  const [value, setValue] = useState();
-
-  // set start&endtime to view.schedule.parsejson
-  // then edit the schedule
-  // then on update, stringify it, replace the previous schedule, and send the view to updateView
-
-  console.log(allViews);
+  const [data, setData] = useState();
+  useEffect(() => {
+    if (type === 'selected') {
+      setSlotsData(data);
+    }
+  }, [data]);
 
   const dividers = [];
   for (let i = 0; i < 24; i++) {
@@ -108,42 +107,49 @@ const Calendar = (props) => {
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Sunday"
+          setSlotsData={setData}
         />
         <TimeLine
           direction={direction}
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Monday"
+          setSlotsData={setData}
         />
         <TimeLine
           direction={direction}
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Tuesday"
+          setSlotsData={setData}
         />
         <TimeLine
           direction={direction}
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Wednesday"
+          setSlotsData={setData}
         />
         <TimeLine
           direction={direction}
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Thursday"
+          setSlotsData={setData}
         />
         <TimeLine
           direction={direction}
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Friday"
+          setSlotsData={setData}
         />
         <TimeLine
           direction={direction}
           type={type}
           pixelSize={pixelSize + 'px'}
           label="Saturday"
+          setSlotsData={setData}
         />
       </div>
     </div>
