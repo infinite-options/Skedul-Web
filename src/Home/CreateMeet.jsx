@@ -786,7 +786,7 @@ export default function CreateMeet() {
 
     return (
       <Col>
-        {selectedSchedule.Sunday[0].start_time === '' ? (
+        {selectedSchedule.Sunday.length <= 0 ? (
           ''
         ) : (
           <div>
@@ -817,7 +817,7 @@ export default function CreateMeet() {
             )}
           </div>
         )}
-        {selectedSchedule.Monday[0].start_time === '' ? (
+        {selectedSchedule.Monday.length <= 0 ? (
           ''
         ) : (
           <div>
@@ -850,7 +850,7 @@ export default function CreateMeet() {
           </div>
         )}
 
-        {selectedSchedule.Tuesday[0].start_time === '' ? (
+        {selectedSchedule.Tuesday.length <= 0 ? (
           ''
         ) : (
           <div>
@@ -881,7 +881,7 @@ export default function CreateMeet() {
             )}
           </div>
         )}
-        {selectedSchedule.Wednesday[0].start_time === '' ? (
+        {selectedSchedule.Wednesday.length <= 0 ? (
           ''
         ) : (
           <div>
@@ -912,7 +912,7 @@ export default function CreateMeet() {
             )}
           </div>
         )}
-        {selectedSchedule.Thursday[0].start_time === '' ? (
+        {selectedSchedule.Thursday.length <= 0 ? (
           ''
         ) : (
           <div>
@@ -943,7 +943,7 @@ export default function CreateMeet() {
             )}
           </div>
         )}
-        {selectedSchedule.Friday[0].start_time === '' ? (
+        {selectedSchedule.Friday.length <= 0 ? (
           ''
         ) : (
           <div>
@@ -974,7 +974,7 @@ export default function CreateMeet() {
             )}
           </div>
         )}
-        {selectedSchedule.Saturday[0].start_time === '' ? (
+        {selectedSchedule.Saturday.length <= 0 ? (
           ''
         ) : (
           <div>
