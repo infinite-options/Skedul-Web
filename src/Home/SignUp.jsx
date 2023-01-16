@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Box, Button } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box, Button } from '@mui/material';
 
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import axios from 'axios';

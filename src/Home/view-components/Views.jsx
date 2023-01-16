@@ -1,6 +1,6 @@
 import ResizeObserver, { useResizeDetector } from 'react-resize-detector';
 import { useEffect, useState, createContext } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { userID, getAllViews, updateView } from './endpoints';
 import useStyles from 'styles/ViewsStyles';
 import SelectView from './SelectView';

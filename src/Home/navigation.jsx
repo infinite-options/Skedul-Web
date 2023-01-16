@@ -1,12 +1,9 @@
 import React, { useContext, useState } from 'react';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { Toolbar, Button, AppBar, Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { ThemeProvider } from '@mui/material';
+import { createTheme } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Logo from '../images/Logo.svg';
 import LoginContext from '../LoginContext';
@@ -16,13 +13,13 @@ const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 
-const headingFont = createMuiTheme({
+const headingFont = createTheme({
   typography: {
     fontFamily: ['Prohibition', 'sans-serif'].join(','),
   },
 });
 
-const buttonFont = createMuiTheme({
+const buttonFont = createTheme({
   typography: {
     fontFamily: ['Helvetica Neue', 'sans-serif'].join(','),
   },
@@ -104,7 +101,10 @@ export function Navigation() {
 
   return (
     <>
-      <AppBar className={classes.navigationBar} style={{ position: 'static' }}>
+      <AppBar
+        className={classes.navigationBar}
+        style={{ backgroundColor: 'white', position: 'static' }}
+      >
         <Toolbar>
           <div className={classes.displayNav}>
             <div style={{ width: '20%', textAlign: 'left' }}>

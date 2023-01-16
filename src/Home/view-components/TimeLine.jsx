@@ -11,7 +11,7 @@ const TimeLine = (props) => {
   const classes = useStyles();
 
   // DEFAULT PROPS
-  const { allViews, setAllViews } = useContext(PageContext);
+  const { allViews } = useContext(PageContext);
   const {
     direction = 'horizontal',
     type = 'all',
@@ -415,10 +415,7 @@ const TimeLine = (props) => {
 
     // Checks if you've clicked on another timeslot
     if (e.target.parentElement.parentElement === cell.current) {
-      data = handleOnMouseUpOnMouseLeaveOnPopoverClose(
-        timeSlotsData,
-        setAllViews
-      );
+      data = handleOnMouseUpOnMouseLeaveOnPopoverClose(timeSlotsData);
       return data;
     }
 
@@ -603,10 +600,8 @@ const TimeLine = (props) => {
         cell
       );
     }
-    timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
-      timeSlotsData,
-      setAllViews
-    );
+    timeSlotsData.current =
+      handleOnMouseUpOnMouseLeaveOnPopoverClose(timeSlotsData);
 
     // Update direction and label
     timeSlotsData.current.forEach((timeSlot) => {
@@ -763,10 +758,8 @@ const TimeLine = (props) => {
         }}
         onMouseUpCapture={() => {
           if (type === 'selected' && allViews.length > 0) {
-            timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
-              timeSlotsData,
-              setAllViews
-            );
+            timeSlotsData.current =
+              handleOnMouseUpOnMouseLeaveOnPopoverClose(timeSlotsData);
           }
           setTimeSlots([
             ...timeSlotsData.current.map((timeSlot, idx) => (
@@ -784,10 +777,8 @@ const TimeLine = (props) => {
         }}
         onMouseLeave={() => {
           if (type === 'selected' && allViews.length > 0) {
-            timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
-              timeSlotsData,
-              setAllViews
-            );
+            timeSlotsData.current =
+              handleOnMouseUpOnMouseLeaveOnPopoverClose(timeSlotsData);
           }
           setTimeSlots([
             ...timeSlotsData.current.map((timeSlot, idx) => (
@@ -834,10 +825,7 @@ const TimeLine = (props) => {
                   setAnchorEl
                 );
                 timeSlotsData.current =
-                  handleOnMouseUpOnMouseLeaveOnPopoverClose(
-                    timeSlotsData,
-                    setAllViews
-                  );
+                  handleOnMouseUpOnMouseLeaveOnPopoverClose(timeSlotsData);
               }
               setTimeSlots([
                 ...timeSlotsData.current.map((timeSlot, idx) => (
@@ -865,10 +853,8 @@ const TimeLine = (props) => {
             }}
             onClose={() => {
               input.current = handleClose();
-              timeSlotsData.current = handleOnMouseUpOnMouseLeaveOnPopoverClose(
-                timeSlotsData,
-                setAllViews
-              );
+              timeSlotsData.current =
+                handleOnMouseUpOnMouseLeaveOnPopoverClose(timeSlotsData);
             }}
             PaperProps={{
               style: {
@@ -897,6 +883,7 @@ const TimeLine = (props) => {
                 defaultValue={Boolean(anchorEl) ? input.current.start_time : ''}
                 name="start_time"
                 style={{ margin: '0 20px', padding: '5px' }}
+                step="1800"
                 onChange={(e) => {
                   e.persist();
                   input.current.start_time = e.target.value;

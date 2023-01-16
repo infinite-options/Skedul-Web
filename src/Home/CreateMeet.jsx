@@ -4,10 +4,9 @@ import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
 import { Row, Col, Container, Form, Modal } from 'react-bootstrap';
-import { Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Item from '@material-ui/core/Grid';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Box, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import {
   signInToGoogle,
   initClient,
@@ -754,8 +753,8 @@ export default function CreateMeet() {
           >
             {result.map(function (element) {
               return (
-                <Item
-                  style={{
+                <Box
+                  sx={{
                     cursor: 'pointer',
                   }}
                   className={
@@ -770,7 +769,7 @@ export default function CreateMeet() {
                   }}
                 >
                   {formatTime(dateString, element)}
-                </Item>
+                </Box>
               );
             })}
           </Grid>

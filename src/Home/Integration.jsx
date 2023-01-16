@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@mui/styles';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 

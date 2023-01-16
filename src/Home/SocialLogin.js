@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@mui/styles';
 import GoogleLogin from 'react-google-login';
 import axios from 'axios';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { Col, Container, Form, Modal, Row } from 'react-bootstrap';
 //import { AuthContext } from '../auth/AuthContext';

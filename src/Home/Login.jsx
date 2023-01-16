@@ -1,8 +1,8 @@
 import React from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Box, TextField, Button, Grid } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box, TextField, Button, Grid } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@mui/material';
 import Google from '../images/Google1.svg';
 import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';

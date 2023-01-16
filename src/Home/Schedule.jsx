@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@mui/styles';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import moment from 'moment';
 import LoginContext from '../LoginContext';
 import Bookmark from '../images/bookmark.svg';

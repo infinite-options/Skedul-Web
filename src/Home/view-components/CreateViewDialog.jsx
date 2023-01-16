@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogContentText,
-} from '@material-ui/core';
+} from '@mui/material';
 import { ClickAwayListener } from '@mui/material';
 import { PageContext } from './Views';
 import { userID, addView } from './endpoints';

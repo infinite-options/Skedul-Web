@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogContentText,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { ClickAwayListener } from '@mui/material';
 import { PageContext } from './Views';
@@ -56,7 +56,7 @@ const Calendar = (props) => {
         <h6 style={{ padding: '5px', fontSize: '0.5em', color: '#bbb' }}>
           {i === 0 ? '12' : i > 12 ? `${i - 12}` : `${i}`}
           <br />
-          {i === 0 ? 'AM' : i > 12 ? `PM` : `AM`}
+          {i === 0 ? 'AM' : i >= 12 ? `PM` : `AM`}
         </h6>
       </div>
     );
