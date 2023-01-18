@@ -1,63 +1,63 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import { makeStyles } from '@mui/styles';
-import { Container, Row, Col, Modal } from 'react-bootstrap';
-import { Typography } from '@mui/material';
-import moment from 'moment';
-import LoginContext from '../LoginContext';
-import Bookmark from '../images/bookmark.svg';
-import Edit from '../images/edit.svg';
-import Link from '../images/link.svg';
-import { updateTheCalenderEvent } from './GoogleApiService';
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { makeStyles } from "@mui/styles";
+import { Container, Row, Col, Modal } from "react-bootstrap";
+import { Typography } from "@mui/material";
+import moment from "moment";
+import LoginContext from "../LoginContext";
+import Bookmark from "../images/bookmark.svg";
+import Edit from "../images/edit.svg";
+import Link from "../images/link.svg";
+import { updateTheCalenderEvent } from "./GoogleApiService";
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 const useStyles = makeStyles({
   container: {
-    minWidth: '1200px',
-    backgroundColor: '#F3F3F8',
-    padding: '20px',
+    minWidth: "1200px",
+    backgroundColor: "#F3F3F8",
+    padding: "20px",
   },
   timeslotButton: {
-    width: '8rem',
-    height: '2rem',
-    maxWidth: '80%',
-    color: 'white',
-    textAlign: 'center',
-    textDecoration: 'none',
-    fontSize: '20px',
-    borderRadius: '50px',
-    display: 'block',
-    margin: '6px 6px',
+    width: "8rem",
+    height: "2rem",
+    maxWidth: "80%",
+    color: "white",
+    textAlign: "center",
+    textDecoration: "none",
+    fontSize: "20px",
+    borderRadius: "50px",
+    display: "block",
+    margin: "6px 6px",
 
-    '&:hover': {
-      background: '#D3A625',
-      color: 'white',
+    "&:hover": {
+      background: "#D3A625",
+      color: "white",
     },
-    '&:focus': {
-      background: '#D3A625',
-      color: 'white',
-      outline: 'none',
-      boxShadow: 'none',
+    "&:focus": {
+      background: "#D3A625",
+      color: "white",
+      outline: "none",
+      boxShadow: "none",
     },
-    '&:active': {
-      background: '#D3A625',
-      color: 'white',
-      outline: 'none',
-      boxShadow: 'none',
+    "&:active": {
+      background: "#D3A625",
+      color: "white",
+      outline: "none",
+      boxShadow: "none",
     },
   },
   colHeader: {
-    fontSize: '14px',
-    color: '#2C2C2E',
-    padding: '10px 0px',
-    font: 'normal normal bold 14px/16px SF Pro Display',
+    fontSize: "14px",
+    color: "#2C2C2E",
+    padding: "10px 0px",
+    font: "normal normal bold 14px/16px SF Pro Display",
   },
   colBody: {
-    textAlign: ' left',
-    font: 'normal normal normal 14px/16px SF Pro Display',
-    letterSpacing: '0px',
-    color: '#636366',
+    textAlign: " left",
+    font: "normal normal normal 14px/16px SF Pro Display",
+    letterSpacing: "0px",
+    color: "#636366",
   },
 });
 export default function Schedule(props) {
@@ -78,32 +78,28 @@ export default function Schedule(props) {
 
   const [showUpdateMeetModal, setShowUpdateMeetModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const [selectedMeeting, setSelectedMeeting] = useState('');
-  const [selectedMeetingDate, setSelectedMeetingDate] = useState('');
-  const [selectedMeetingTime, setSelectedMeetingTime] = useState('');
-  const [selectedMeetingDuration, setSelectedMeetingDuration] = useState('');
-  const [responseStatus, setResponseStatus] = useState('');
+  const [selectedMeeting, setSelectedMeeting] = useState("");
+  const [selectedMeetingDate, setSelectedMeetingDate] = useState("");
+  const [selectedMeetingTime, setSelectedMeetingTime] = useState("");
+  const [selectedMeetingDuration, setSelectedMeetingDuration] = useState("");
+  const [responseStatus, setResponseStatus] = useState("");
   console.log(
-    'selecteduser',
+    "selecteduser",
 
     loginContext,
     document.cookie
   );
 
-  var selectedUser = '';
-  if (
-    document.cookie
-      .split(';')
-      .some((item) => item.trim().startsWith('user_uid='))
-  ) {
+  var selectedUser = "";
+  if (document.cookie.split(";").some((item) => item.trim().startsWith("user_uid="))) {
     selectedUser = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('user_uid='))
-      .split('=')[1];
+      .split("; ")
+      .find((row) => row.startsWith("user_uid="))
+      .split("=")[1];
   }
-  var at = '';
+  var at = "";
 
-  var userEmail = '';
+  var userEmail = "";
   // if (
   //   document.cookie
   //     .split(';')
@@ -128,10 +124,10 @@ export default function Schedule(props) {
   useEffect(() => {
     let today = new Date();
     let dateNew = moment(today);
-    let startDate = dateNew.startOf('week').format('YYYY-MM-DD');
-    let start = startDate + 'T00:00:00-07:00';
-    let endDate = moment(startDate).add(12, 'days').format('YYYY-MM-DD');
-    let end = endDate + 'T23:59:59-07:00';
+    let startDate = dateNew.startOf("week").format("YYYY-MM-DD");
+    let start = startDate + "T00:00:00-07:00";
+    let endDate = moment(startDate).add(12, "days").format("YYYY-MM-DD");
+    let end = endDate + "T23:59:59-07:00";
 
     const url = BASE_URL + `GetAllViews/${selectedUser}`;
     fetch(url)
@@ -151,13 +147,13 @@ export default function Schedule(props) {
         var refresh_token = response.data.google_refresh_token;
         //console.log(refresh_token);
         setAccessToken(old_at);
-        console.log('in events', old_at);
+        console.log("in events", old_at);
         const headers = {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + old_at,
+          Accept: "application/json",
+          Authorization: "Bearer " + old_at,
         };
         setAccessToken(at);
-        console.log('in events', at);
+        console.log("in events", at);
         const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
         axios
           .get(url, {
@@ -167,38 +163,33 @@ export default function Schedule(props) {
             setAllGoogleMeetings(response.data.items);
           })
           .catch((error) => console.log(error));
-        fetch(
-          `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
-          {
-            method: 'GET',
-          }
-        ).then((response) => {
+        fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`, {
+          method: "GET",
+        }).then((response) => {
           //console.log('in events', response);
-          if (response['status'] === 400) {
+          if (response["status"] === 400) {
             //console.log('in events if');
-            let authorization_url =
-              'https://accounts.google.com/o/oauth2/token';
+            let authorization_url = "https://accounts.google.com/o/oauth2/token";
 
             var details = {
               refresh_token: refresh_token,
               client_id: CLIENT_ID,
               client_secret: CLIENT_SECRET,
-              grant_type: 'refresh_token',
+              grant_type: "refresh_token",
             };
             //console.log(details);
             var formBody = [];
             for (var property in details) {
               var encodedKey = encodeURIComponent(property);
               var encodedValue = encodeURIComponent(details[property]);
-              formBody.push(encodedKey + '=' + encodedValue);
+              formBody.push(encodedKey + "=" + encodedValue);
             }
-            formBody = formBody.join('&');
+            formBody = formBody.join("&");
 
             fetch(authorization_url, {
-              method: 'POST',
+              method: "POST",
               headers: {
-                'Content-Type':
-                  'application/x-www-form-urlencoded;charset=UTF-8',
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
               },
               body: formBody,
             })
@@ -211,13 +202,13 @@ export default function Schedule(props) {
               })
               .then((data) => {
                 //console.log(data);
-                let at = data['access_token'];
+                let at = data["access_token"];
                 const headers = {
-                  Accept: 'application/json',
-                  Authorization: 'Bearer ' + at,
+                  Accept: "application/json",
+                  Authorization: "Bearer " + at,
                 };
                 setAccessToken(at);
-                console.log('in events', at);
+                console.log("in events", at);
                 const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&timeMax=${end}&timeMin=${start}&key=${API_KEY}`;
                 axios
                   .get(url, {
@@ -311,12 +302,7 @@ export default function Schedule(props) {
   // }, [refreshKey]);
   useEffect(() => {
     if (allSchedule != undefined && allGoogleMeetings != undefined) {
-      if (
-        allEvents.length !== 0 ||
-        allSchedule.length !== 0 ||
-        allViews.length !== 0 ||
-        allGoogleMeetings != undefined
-      ) {
+      if (allEvents.length !== 0 || allSchedule.length !== 0 || allViews.length !== 0 || allGoogleMeetings != undefined) {
         setIsLoading(false);
       }
     }
@@ -340,25 +326,22 @@ export default function Schedule(props) {
     setShowUpdateMeetModal(false);
   };
   function updateMeet() {
-    let startTime =
-      selectedMeetingDate + 'T' + selectedMeetingTime + ':00-08:00';
+    let startTime = selectedMeetingDate + "T" + selectedMeetingTime + ":00-08:00";
 
-    let duration = moment.utc(selectedMeetingDuration).format('HH:mm:ss');
+    let duration = moment.utc(selectedMeetingDuration).format("HH:mm:ss");
 
-    let etime = moment(selectedMeetingTime, 'HH:mm:ss')
-      .add(duration, 'milliseconds')
-      .format('HH:mm');
+    let etime = moment(selectedMeetingTime, "HH:mm:ss").add(duration, "milliseconds").format("HH:mm");
 
-    let endTime = selectedMeetingDate + 'T' + etime + ':00-08:00';
+    let endTime = selectedMeetingDate + "T" + etime + ":00-08:00";
     console.log(selectedMeetingDuration, duration);
     console.log(selectedMeetingTime, etime);
     console.log(startTime, endTime);
     var event = {
-      id: selectedMeeting['id'],
-      summary: selectedMeeting['summary'],
-      location: selectedMeeting['location'],
-      creator: selectedMeeting['creator'],
-      organizer: selectedMeeting['organizer'],
+      id: selectedMeeting["id"],
+      summary: selectedMeeting["summary"],
+      location: selectedMeeting["location"],
+      creator: selectedMeeting["creator"],
+      organizer: selectedMeeting["organizer"],
       start: {
         dateTime: startTime,
       },
@@ -366,14 +349,14 @@ export default function Schedule(props) {
         dateTime: endTime,
       },
 
-      attendees: selectedMeeting['attendees'],
+      attendees: selectedMeeting["attendees"],
     };
     console.log(event);
     const headers = {
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + accessToken,
+      Accept: "application/json",
+      Authorization: "Bearer " + accessToken,
     };
-    let meetID = selectedMeeting['id'];
+    let meetID = selectedMeeting["id"];
 
     // updateTheCalenderEvent(event);
     // closeAcceptModal();
@@ -394,7 +377,7 @@ export default function Schedule(props) {
       .catch((error) => console.log(error));
   }
   function handleUpdate(i, event) {
-    const fields = [...selectedMeeting['attendees']];
+    const fields = [...selectedMeeting["attendees"]];
     //console.log(i);
     fields[i][event.target.name] = event.target.value;
     setSelectedMeeting({
@@ -404,9 +387,9 @@ export default function Schedule(props) {
   }
 
   function handleAdd() {
-    const fields = [...selectedMeeting['attendees']];
+    const fields = [...selectedMeeting["attendees"]];
     //console.log(fields);
-    fields.push({ email: '' });
+    fields.push({ email: "" });
     //console.log(fields);
     setSelectedMeeting({
       ...selectedMeeting,
@@ -415,7 +398,7 @@ export default function Schedule(props) {
   }
 
   function handleRemove(i) {
-    const emails = [...selectedMeeting['attendees']];
+    const emails = [...selectedMeeting["attendees"]];
     emails.splice(i, 1);
     setSelectedMeeting({
       ...selectedMeeting,
@@ -425,39 +408,35 @@ export default function Schedule(props) {
 
   const updateModal = () => {
     const modalStyle = {
-      position: 'absolute',
-      top: '10%',
-      left: '38%',
-      width: '400px',
+      position: "absolute",
+      top: "10%",
+      left: "38%",
+      width: "400px",
     };
     const headerStyle = {
-      border: 'none',
+      border: "none",
       //textAlign: 'center',
-      display: 'flex',
-      alignItems: 'center',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: '#2C2C2E',
-      textTransform: 'uppercase',
-      backgroundColor: ' #F3F3F8',
+      display: "flex",
+      alignItems: "center",
+      fontSize: "24px",
+      fontWeight: "bold",
+      color: "#2C2C2E",
+      textTransform: "uppercase",
+      backgroundColor: " #F3F3F8",
     };
     const footerStyle = {
-      border: 'none',
-      backgroundColor: ' #F3F3F8',
+      border: "none",
+      backgroundColor: " #F3F3F8",
     };
     const bodyStyle = {
-      backgroundColor: ' #F3F3F8',
+      backgroundColor: " #F3F3F8",
     };
     const colHeader = {
-      margin: '5px',
+      margin: "5px",
     };
 
     return (
-      <Modal
-        show={showUpdateMeetModal}
-        onHide={closeUpdateMeetModal}
-        style={modalStyle}
-      >
+      <Modal show={showUpdateMeetModal} onHide={closeUpdateMeetModal} style={modalStyle}>
         <Modal.Header style={headerStyle} closeButton>
           <Modal.Title></Modal.Title>
         </Modal.Header>
@@ -466,12 +445,12 @@ export default function Schedule(props) {
           <Row style={colHeader}>
             <input
               style={{
-                width: '345px',
-                backgroundColor: ' #F3F3F8',
-                border: '2px solid #636366',
-                borderRadius: '3px',
+                width: "345px",
+                backgroundColor: " #F3F3F8",
+                border: "2px solid #636366",
+                borderRadius: "3px",
               }}
-              value={selectedMeeting['summary']}
+              value={selectedMeeting["summary"]}
               //value={eventName}
               onChange={(e) => {
                 setSelectedMeeting({
@@ -487,10 +466,10 @@ export default function Schedule(props) {
               <input
                 type="date"
                 style={{
-                  width: '162px',
-                  backgroundColor: ' #F3F3F8',
-                  border: '1px solid #636366',
-                  borderRadius: '3px',
+                  width: "162px",
+                  backgroundColor: " #F3F3F8",
+                  border: "1px solid #636366",
+                  borderRadius: "3px",
                 }}
                 value={selectedMeetingDate}
                 onChange={(e) => setSelectedMeetingDate(e.target.value)}
@@ -500,10 +479,10 @@ export default function Schedule(props) {
               <input
                 type="time"
                 style={{
-                  width: '162px',
-                  backgroundColor: ' #F3F3F8',
-                  border: '1px solid #636366',
-                  borderRadius: '3px',
+                  width: "162px",
+                  backgroundColor: " #F3F3F8",
+                  border: "1px solid #636366",
+                  borderRadius: "3px",
                 }}
                 value={selectedMeetingTime}
                 onChange={(e) => setSelectedMeetingTime(e.target.value)}
@@ -513,7 +492,7 @@ export default function Schedule(props) {
 
           <Typography className={classes.colHeader}> Email </Typography>
           <Row style={colHeader} className={classes.colBody}>
-            Organizer : &nbsp;{selectedMeeting['creator']['email']}
+            Organizer : &nbsp;{selectedMeeting["creator"]["email"]}
           </Row>
           <Row style={colHeader} className={classes.colBody}>
             Attendees : &nbsp;
@@ -525,42 +504,42 @@ export default function Schedule(props) {
                 <div>
                   <button
                     style={{
-                      padding: '0px',
-                      margin: '0px',
-                      width: '20px',
-                      height: '25px',
-                      border: '1px solid #2C2C2E',
-                      borderRadius: ' 2px',
-                      backgroundColor: '#F3F3F8',
+                      padding: "0px",
+                      margin: "0px",
+                      width: "20px",
+                      height: "25px",
+                      border: "1px solid #2C2C2E",
+                      borderRadius: " 2px",
+                      backgroundColor: "#F3F3F8",
                     }}
                     onClick={() => handleRemove(idx)}
                   >
                     -
-                  </button>{' '}
+                  </button>{" "}
                   &nbsp;
                   <input
                     style={{
-                      width: '254px',
-                      backgroundColor: ' #F3F3F8',
-                      border: '1px solid #636366',
-                      borderRadius: '3px',
+                      width: "254px",
+                      backgroundColor: " #F3F3F8",
+                      border: "1px solid #636366",
+                      borderRadius: "3px",
                     }}
                     type="text"
                     id="email"
                     name="email"
                     value={field.email}
                     onChange={(e) => handleUpdate(idx, e)}
-                  />{' '}
+                  />{" "}
                   &nbsp;
                   <button
                     style={{
-                      padding: '0px',
-                      margin: '0px',
-                      width: '20px',
-                      height: '25px',
-                      border: '1px solid #2C2C2E',
-                      borderRadius: ' 2px',
-                      backgroundColor: '#F3F3F8',
+                      padding: "0px",
+                      margin: "0px",
+                      width: "20px",
+                      height: "25px",
+                      border: "1px solid #2C2C2E",
+                      borderRadius: " 2px",
+                      backgroundColor: "#F3F3F8",
                     }}
                     onClick={() => handleAdd()}
                   >
@@ -574,12 +553,12 @@ export default function Schedule(props) {
           <Row style={colHeader}>
             <input
               style={{
-                width: '254px',
-                backgroundColor: ' #F3F3F8',
-                border: '1px solid #636366',
-                borderRadius: '3px',
+                width: "254px",
+                backgroundColor: " #F3F3F8",
+                border: "1px solid #636366",
+                borderRadius: "3px",
               }}
-              value={selectedMeeting['location']}
+              value={selectedMeeting["location"]}
               onChange={(e) => {
                 setSelectedMeeting({
                   ...selectedMeeting,
@@ -594,10 +573,10 @@ export default function Schedule(props) {
             <Col xs={4}>
               <button
                 style={{
-                  backgroundColor: ' #F3F3F8',
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color: '#2C2C2E',
+                  backgroundColor: " #F3F3F8",
+                  border: "2px solid #2C2C2E",
+                  borderRadius: "3px",
+                  color: "#2C2C2E",
                 }}
                 onClick={() => {
                   closeUpdateMeetModal();
@@ -609,11 +588,11 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor: ' #F3F3F8',
+                  backgroundColor: " #F3F3F8",
 
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color: ' #2C2C2E',
+                  border: "2px solid #2C2C2E",
+                  borderRadius: "3px",
+                  color: " #2C2C2E",
                 }}
                 onClick={(e) => {
                   //createMeet();
@@ -640,10 +619,10 @@ export default function Schedule(props) {
   };
   function accept() {
     const headers = {
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + accessToken,
+      Accept: "application/json",
+      Authorization: "Bearer " + accessToken,
     };
-    let meetID = selectedMeeting['id'];
+    let meetID = selectedMeeting["id"];
 
     var response = {
       attendees: [{ email: userEmail, responseStatus: responseStatus }],
@@ -666,39 +645,35 @@ export default function Schedule(props) {
   }
   const acceptModal = () => {
     const modalStyle = {
-      position: 'absolute',
-      top: '10%',
-      left: '10%',
-      width: '400px',
+      position: "absolute",
+      top: "10%",
+      left: "10%",
+      width: "400px",
     };
     const headerStyle = {
-      border: 'none',
+      border: "none",
       //textAlign: 'center',
-      display: 'flex',
-      alignItems: 'center',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: '#2C2C2E',
-      textTransform: 'uppercase',
-      backgroundColor: ' #F3F3F8',
+      display: "flex",
+      alignItems: "center",
+      fontSize: "24px",
+      fontWeight: "bold",
+      color: "#2C2C2E",
+      textTransform: "uppercase",
+      backgroundColor: " #F3F3F8",
     };
     const footerStyle = {
-      border: 'none',
-      backgroundColor: ' #F3F3F8',
+      border: "none",
+      backgroundColor: " #F3F3F8",
     };
     const bodyStyle = {
-      backgroundColor: ' #F3F3F8',
+      backgroundColor: " #F3F3F8",
     };
     const colHeader = {
-      margin: '5px',
+      margin: "5px",
     };
 
     return (
-      <Modal
-        show={showAcceptModal}
-        onHide={closeAcceptModal}
-        style={modalStyle}
-      >
+      <Modal show={showAcceptModal} onHide={closeAcceptModal} style={modalStyle}>
         <Modal.Header style={headerStyle} closeButton>
           <Modal.Title></Modal.Title>
         </Modal.Header>
@@ -708,39 +683,39 @@ export default function Schedule(props) {
             <Col
               //className={classes.colHeader}
               style={{
-                textAlign: 'left',
-                font: 'normal normal bold 20px/24px SF Pro Display',
-                letterSpacing: '0px',
-                color: '#2C2C2E',
+                textAlign: "left",
+                font: "normal normal bold 20px/24px SF Pro Display",
+                letterSpacing: "0px",
+                color: "#2C2C2E",
                 opacity: 1,
-                textTransform: 'capitalize',
+                textTransform: "capitalize",
               }}
             >
-              {selectedMeeting['summary']}
+              {selectedMeeting["summary"]}
             </Col>
             <Col>
               <span
                 style={{
                   //textAlign: 'right',
-                  font: 'normal normal bold 12px/14px SF Pro Display',
-                  letterSpacing: '0px',
-                  color: '#636366',
+                  font: "normal normal bold 12px/14px SF Pro Display",
+                  letterSpacing: "0px",
+                  color: "#636366",
                   opacity: 1,
-                  textTransform: 'capitalize',
-                  textDecoration: 'underline',
+                  textTransform: "capitalize",
+                  textDecoration: "underline",
                 }}
               >
-                {' '}
+                {" "}
                 Edit Event
               </span>
               &nbsp;&nbsp;
               <img
                 src={Edit}
                 style={{
-                  width: '10px',
-                  height: '10px',
-                  cursor: 'pointer',
-                  marginRight: '5px',
+                  width: "10px",
+                  height: "10px",
+                  cursor: "pointer",
+                  marginRight: "5px",
                 }}
                 onClick={() => {
                   openUpdateMeetModal();
@@ -751,14 +726,9 @@ export default function Schedule(props) {
           </Row>
           <Typography className={classes.colHeader}>Date and Time</Typography>
           <Row>
+            <Col className={classes.colBody}>{moment(selectedMeeting["start"]["dateTime"]).format("MMMM DD, YYYY")}</Col>
             <Col className={classes.colBody}>
-              {moment(selectedMeeting['start']['dateTime']).format(
-                'MMMM DD, YYYY'
-              )}
-            </Col>
-            <Col className={classes.colBody}>
-              {moment(selectedMeeting['start']['dateTime']).format('hh:mm a')}-
-              {moment(selectedMeeting['end']['dateTime']).format('hh:mm a')}
+              {moment(selectedMeeting["start"]["dateTime"]).format("hh:mm a")}-{moment(selectedMeeting["end"]["dateTime"]).format("hh:mm a")}
             </Col>
           </Row>
           {/* <Typography className={classes.colHeader}> Event Type </Typography>
@@ -768,26 +738,26 @@ export default function Schedule(props) {
 
           <Typography className={classes.colHeader}> Email </Typography>
           <Row style={colHeader} className={classes.colBody}>
-            Organizer : &nbsp;{selectedMeeting['creator']['email']}
+            Organizer : &nbsp;{selectedMeeting["creator"]["email"]}
           </Row>
           <Row style={colHeader} className={classes.colBody}>
             Attendees : &nbsp;
             <div>
-              {selectedMeeting['attendees'].map((attendee) => (
-                <div>{attendee['email']}</div>
+              {selectedMeeting["attendees"].map((attendee) => (
+                <div>{attendee["email"]}</div>
               ))}
             </div>
           </Row>
 
           <Row></Row>
           <Typography className={classes.colHeader}> Location </Typography>
-          {selectedMeeting['location'] === undefined ? (
+          {selectedMeeting["location"] === undefined ? (
             <Row style={colHeader} className={classes.colBody}>
               No location given
             </Row>
           ) : (
             <Row style={colHeader} className={classes.colBody}>
-              {selectedMeeting['location']}
+              {selectedMeeting["location"]}
             </Row>
           )}
         </Modal.Body>
@@ -796,23 +766,13 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor:
-                    responseStatus === 'accepted' ||
-                    selectedMeeting['attendees'][0]['responseStatus'] ===
-                      'accepted'
-                      ? '#2C2C2E'
-                      : '#F3F3F8',
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color:
-                    responseStatus === 'accepted' ||
-                    selectedMeeting['attendees'][0]['responseStatus'] ===
-                      'accepted'
-                      ? '#F3F3F8'
-                      : '#2C2C2E',
+                  backgroundColor: responseStatus === "accepted" || selectedMeeting["attendees"][0]["responseStatus"] === "accepted" ? "#2C2C2E" : "#F3F3F8",
+                  border: "2px solid #2C2C2E",
+                  borderRadius: "3px",
+                  color: responseStatus === "accepted" || selectedMeeting["attendees"][0]["responseStatus"] === "accepted" ? "#F3F3F8" : "#2C2C2E",
                 }}
                 onClick={() => {
-                  setResponseStatus('accepted');
+                  setResponseStatus("accepted");
                   setRefreshKey((oldKey) => oldKey + 1);
                   accept();
                 }}
@@ -823,23 +783,13 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor:
-                    responseStatus === 'declined' ||
-                    selectedMeeting['attendees'][0]['responseStatus'] ===
-                      'declined'
-                      ? '#2C2C2E'
-                      : '#F3F3F8',
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color:
-                    responseStatus === 'declined' ||
-                    selectedMeeting['attendees'][0]['responseStatus'] ===
-                      'declined'
-                      ? '#F3F3F8'
-                      : '#2C2C2E',
+                  backgroundColor: responseStatus === "declined" || selectedMeeting["attendees"][0]["responseStatus"] === "declined" ? "#2C2C2E" : "#F3F3F8",
+                  border: "2px solid #2C2C2E",
+                  borderRadius: "3px",
+                  color: responseStatus === "declined" || selectedMeeting["attendees"][0]["responseStatus"] === "declined" ? "#F3F3F8" : "#2C2C2E",
                 }}
                 onClick={() => {
-                  setResponseStatus('declined');
+                  setResponseStatus("declined");
                   accept();
                 }}
               >
@@ -849,10 +799,10 @@ export default function Schedule(props) {
             <Col>
               <button
                 style={{
-                  backgroundColor: showUpdateMeetModal ? '#2C2C2E' : '#F3F3F8',
-                  border: '2px solid #2C2C2E',
-                  borderRadius: '3px',
-                  color: showUpdateMeetModal ? '#F3F3F8' : '#2C2C2E',
+                  backgroundColor: showUpdateMeetModal ? "#2C2C2E" : "#F3F3F8",
+                  border: "2px solid #2C2C2E",
+                  borderRadius: "3px",
+                  color: showUpdateMeetModal ? "#F3F3F8" : "#2C2C2E",
                 }}
                 onClick={(e) => {
                   openUpdateMeetModal();
@@ -870,36 +820,36 @@ export default function Schedule(props) {
     let arr = [];
     let today = new Date();
     let dateNew = moment(today);
-    let startDate = dateNew.startOf('week');
+    let startDate = dateNew.startOf("week");
     for (let i = 0; i < 12; i++) {
       arr.push(
         <Col
-          key={'day' + i}
+          key={"day" + i}
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
           <Col
             style={{
-              font: 'normal normal bold 16px SF Pro Display',
-              textAlign: 'center',
-              padding: '20px 0px',
+              font: "normal normal bold 16px SF Pro Display",
+              textAlign: "center",
+              padding: "20px 0px",
             }}
           >
             <div
               style={{
-                color: '#2C2C2E',
+                color: "#2C2C2E",
               }}
             >
-              {startDate.format('dddd')}
+              {startDate.format("dddd")}
             </div>
             <br />
-            <div style={{ color: '#636366' }}>{startDate.format('D')}</div>
+            <div style={{ color: "#636366" }}>{startDate.format("D")}</div>
           </Col>
         </Col>
       );
-      startDate.add(1, 'day');
+      startDate.add(1, "day");
     }
     return arr;
   };
@@ -910,22 +860,16 @@ export default function Schedule(props) {
     for (let i = 0; i < 24; ++i) {
       // if (i < 12) {
       arr.push(
-        <Row key={'weekEvent' + i}>
+        <Row key={"weekEvent" + i}>
           <Col
             style={{
-              textAlign: 'left',
-              height: '55px',
-              font: 'normal normal normal 12px/14px SF Pro Display',
+              textAlign: "left",
+              height: "55px",
+              font: "normal normal normal 12px/14px SF Pro Display",
               //borderBottom: '1px solid #AFAFB3',
             }}
           >
-            {i == 0
-              ? '12AM'
-              : i == 12
-              ? i + 'PM'
-              : i > 11
-              ? i - 12 + 'PM'
-              : i + 'AM'}
+            {i == 0 ? "12AM" : i == 12 ? i + "PM" : i > 11 ? i - 12 + "PM" : i + "AM"}
           </Col>
         </Row>
       );
@@ -950,7 +894,7 @@ export default function Schedule(props) {
         let tempStart = day[j].schedule.start_time;
         let tempEnd = day[j].schedule.end_time;
         //console.log(day[j], day.length);
-        let key = i + '_' + tempStart.substring(0, 2);
+        let key = i + "_" + tempStart.substring(0, 2);
         //console.log(key);
         if (dic[key] == null) {
           dic[key] = [];
@@ -967,7 +911,7 @@ export default function Schedule(props) {
         let tempStart = day[j].schedule.start_time;
         let tempEnd = day[j].schedule.end_time;
         //console.log(day[j], day.length);
-        let key = 7 + i + '_' + tempStart.substring(0, 2);
+        let key = 7 + i + "_" + tempStart.substring(0, 2);
         //console.log(key);
         if (dic[key] == null) {
           dic[key] = [];
@@ -981,14 +925,14 @@ export default function Schedule(props) {
   const sortMeetings = () => {
     var arr = allGoogleMeetings;
 
-    console.log('meetings', arr, allGoogleMeetings);
+    console.log("meetings", arr, allGoogleMeetings);
     var dic = {};
     for (let i = 0; i < arr.length; i++) {
       let tempStart = arr[i].start.dateTime;
       let tempEnd = arr[i].end.dateTime;
-      let tempStartTime = new Date(new Date(tempStart).toLocaleString('en-US'));
+      let tempStartTime = new Date(new Date(tempStart).toLocaleString("en-US"));
       // console.log(tempStartTime.getDate());
-      let key = tempStartTime.getDate() + '_' + tempStartTime.getHours();
+      let key = tempStartTime.getDate() + "_" + tempStartTime.getHours();
       if (dic[key] == null) {
         dic[key] = [];
       }
@@ -1002,7 +946,7 @@ export default function Schedule(props) {
   }
   function hex2dec(hex) {
     return hex
-      .replace('#', '')
+      .replace("#", "")
       .match(/.{2}/g)
       .map((n) => parseInt(n, 16));
   }
@@ -1014,7 +958,7 @@ export default function Schedule(props) {
     r = Math.min(r, 255);
     g = Math.min(g, 255);
     b = Math.min(b, 255);
-    return '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
+    return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
   }
 
   function rgb2cmyk(r, g, b) {
@@ -1039,14 +983,10 @@ export default function Schedule(props) {
   }
 
   function mix_cmyks(...cmyks) {
-    let c =
-      cmyks.map((cmyk) => cmyk[0]).reduce((a, b) => a + b, 0) / cmyks.length;
-    let m =
-      cmyks.map((cmyk) => cmyk[1]).reduce((a, b) => a + b, 0) / cmyks.length;
-    let y =
-      cmyks.map((cmyk) => cmyk[2]).reduce((a, b) => a + b, 0) / cmyks.length;
-    let k =
-      cmyks.map((cmyk) => cmyk[3]).reduce((a, b) => a + b, 0) / cmyks.length;
+    let c = cmyks.map((cmyk) => cmyk[0]).reduce((a, b) => a + b, 0) / cmyks.length;
+    let m = cmyks.map((cmyk) => cmyk[1]).reduce((a, b) => a + b, 0) / cmyks.length;
+    let y = cmyks.map((cmyk) => cmyk[2]).reduce((a, b) => a + b, 0) / cmyks.length;
+    let k = cmyks.map((cmyk) => cmyk[3]).reduce((a, b) => a + b, 0) / cmyks.length;
     return [c, m, y, k];
   }
   function mix_hexes(...hexes) {
@@ -1064,7 +1004,7 @@ export default function Schedule(props) {
     var unique = [];
     var tempStart = null;
     var tempEnd = null;
-    var arr = dic[day + '_' + hour];
+    var arr = dic[day + "_" + hour];
     var ex = [];
 
     //console.log('startObject = ', dic.length);
@@ -1085,20 +1025,16 @@ export default function Schedule(props) {
       // console.log(tempStart, tempEnd);
       let minsToMarginTop = (tempStart.substring(3, 5) / 60) * 55;
       let hourDiff = tempEnd.substring(0, 2) - tempStart.substring(0, 2);
-      let minDiff =
-        tempEnd.substring(3, 5) / 60 - tempStart.substring(3, 5) / 60;
+      let minDiff = tempEnd.substring(3, 5) / 60 - tempStart.substring(3, 5) / 60;
       let height = (hourDiff + minDiff) * 55;
       sameTimeEventCount++;
-      let color = 'lightslategray';
+      let color = "lightslategray";
       //check if there is already an event there overlapping from another hour
 
       for (let i = 0; i < arr.length; i++) {
         tempStart = arr[i].schedule.start_time;
         tempEnd = arr[i].schedule.end_time;
-        if (
-          tempStart.substring(0, 2) < hour &&
-          tempEnd.substring(0, 2) > hour
-        ) {
+        if (tempStart.substring(0, 2) < hour && tempEnd.substring(0, 2) > hour) {
           addmarginLeft += 20;
           itemWidth = itemWidth - 20;
         }
@@ -1125,34 +1061,34 @@ export default function Schedule(props) {
       }
 
       let newElement = (
-        <div key={'event' + i}>
+        <div key={"event" + i}>
           <div
             className="clickButton"
             data-toggle="tooltip"
             data-placement="right"
-            title={arr[i].name + '\nStart: ' + tempStart + '\nEnd: ' + tempEnd}
+            title={arr[i].name + "\nStart: " + tempStart + "\nEnd: " + tempEnd}
             key={i}
             style={{
               zIndex: 1,
-              marginTop: minsToMarginTop + 'px',
-              marginLeft: addmarginLeft + 'px',
-              padding: '3px',
-              fontSize: fontSize + 'px',
+              marginTop: minsToMarginTop + "px",
+              marginLeft: addmarginLeft + "px",
+              padding: "3px",
+              fontSize: fontSize + "px",
 
               // border: '1px lightgray solid ',
               // border:
               //   this.props.highLight === arr[i].title
               //     ? '2px solid #FF6B4A '
               //     : '',
-              float: 'left',
+              float: "left",
               background: color,
-              width: itemWidth + 'px',
-              position: 'absolute',
-              height: height + 'px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              opacity: '0.8',
+              width: itemWidth + "px",
+              position: "absolute",
+              height: height + "px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              opacity: "0.8",
             }}
           >
             {/* insert border change here: */}
@@ -1173,7 +1109,7 @@ export default function Schedule(props) {
     var unique = [];
     var tempStart = null;
     var tempEnd = null;
-    var arr = dic[day + '_' + hour];
+    var arr = dic[day + "_" + hour];
     var sameTimeEventCount = 0;
     var addmarginLeft = 0;
     let itemWidth = 80;
@@ -1187,27 +1123,24 @@ export default function Schedule(props) {
       tempStart = arr[i].start.dateTime;
       tempEnd = arr[i].end.dateTime;
 
-      let tempStartTime = new Date(new Date(tempStart).toLocaleString('en-US'));
-      let tempEndTime = new Date(new Date(tempEnd).toLocaleString('en-US'));
+      let tempStartTime = new Date(new Date(tempStart).toLocaleString("en-US"));
+      let tempEndTime = new Date(new Date(tempEnd).toLocaleString("en-US"));
       //console.log(tempStart, tempStartTime, tempEnd, tempEndTime);
       let minsToMarginTop = (tempStartTime.getMinutes() / 60) * 55;
 
       let hourDiff = tempEndTime.getHours() - tempStartTime.getHours();
-      let minDiff =
-        tempEndTime.getMinutes() / 60 - tempStartTime.getMinutes() / 60;
+      let minDiff = tempEndTime.getMinutes() / 60 - tempStartTime.getMinutes() / 60;
       let height = (hourDiff + minDiff) * 55;
       //console.log(tempStartTime.getMinutes(), tempStartTime.getHours());
       sameTimeEventCount++;
-      let color = 'lightslategray';
+      let color = "lightslategray";
       //check if there is already an event there overlapping from another hour
       //check if there is already an event there overlapping from another hour
       for (let i = 0; i < arr.length; i++) {
         tempStart = arr[i].start.dateTime;
         tempEnd = arr[i].end.dateTime;
-        let tempStartTime = new Date(
-          new Date(tempStart).toLocaleString('en-US')
-        );
-        let tempEndTime = new Date(new Date(tempEnd).toLocaleString('en-US'));
+        let tempStartTime = new Date(new Date(tempStart).toLocaleString("en-US"));
+        let tempEndTime = new Date(new Date(tempEnd).toLocaleString("en-US"));
         if (tempStartTime.getHours() < hour && tempEndTime.getHours() > hour) {
           addmarginLeft += 20;
           itemWidth = itemWidth - 20;
@@ -1228,15 +1161,13 @@ export default function Schedule(props) {
 
       let newElement = (
         <div
-          key={'event' + i}
+          key={"event" + i}
           onClick={() => {
             openAcceptModal();
             setSelectedMeeting(arr[i]);
-            setSelectedMeetingDate(moment(tempStartTime).format('YYYY-MM-DD'));
-            setSelectedMeetingTime(moment(tempStartTime).format('HH:mm'));
-            setSelectedMeetingDuration(
-              moment(tempEndTime).diff(moment(tempStartTime))
-            );
+            setSelectedMeetingDate(moment(tempStartTime).format("YYYY-MM-DD"));
+            setSelectedMeetingTime(moment(tempStartTime).format("HH:mm"));
+            setSelectedMeetingDuration(moment(tempEndTime).diff(moment(tempStartTime)));
             //console.log(arr[i]);
           }}
         >
@@ -1244,35 +1175,29 @@ export default function Schedule(props) {
             className="clickButton"
             data-toggle="tooltip"
             data-placement="right"
-            title={
-              arr[i].summary +
-              '\nStart: ' +
-              tempStartTime +
-              '\nEnd: ' +
-              tempEndTime
-            }
+            title={arr[i].summary + "\nStart: " + tempStartTime + "\nEnd: " + tempEndTime}
             key={i}
             style={{
               zIndex: 1,
-              marginTop: minsToMarginTop + 'px',
-              marginLeft: addmarginLeft + 'px',
-              padding: '3px',
-              fontSize: fontSize + 'px',
+              marginTop: minsToMarginTop + "px",
+              marginLeft: addmarginLeft + "px",
+              padding: "3px",
+              fontSize: fontSize + "px",
 
               // border: '1px lightgray solid ',
               // border:
               //   this.props.highLight === arr[i].title
               //     ? '2px solid #FF6B4A '
               //     : '',
-              float: 'left',
+              float: "left",
               background: color,
-              width: itemWidth + 'px',
-              position: 'absolute',
-              height: height + 'px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              opacity: '0.8',
+              width: itemWidth + "px",
+              position: "absolute",
+              height: height + "px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              opacity: "0.8",
             }}
           >
             {/* insert border change here: */}
@@ -1293,29 +1218,26 @@ export default function Schedule(props) {
     //console.log(dic, dicMeet);
     let today = new Date();
     let dateNew = moment(today);
-    let startDate = dateNew.startOf('week');
+    let startDate = dateNew.startOf("week");
     //console.log(new Date(startDate).getDate());
     for (let i = 0; i < 12; ++i) {
       var arr = [];
       //console.log(new Date(startDate).getDate());
       for (let j = 0; j < 24; ++j) {
         arr.push(
-          <Container
-            key={'weekschedule' + i + j}
-            style={{ marginLeft: '1rem' }}
-          >
-            <Row style={{ position: 'relative' }}>
+          <Container key={"weekschedule" + i + j} style={{ marginLeft: "1rem" }}>
+            <Row style={{ position: "relative" }}>
               <Col
                 style={{
-                  position: 'relative',
+                  position: "relative",
                   // borderTop: '1px solid lavender',
                   // background: 'aliceblue',
-                  height: '50px',
-                  color: 'black',
-                  borderTop: '1px solid #AFAFB3',
-                  margin: '0px',
-                  padding: '0px',
-                  width: '100%',
+                  height: "50px",
+                  color: "black",
+                  borderTop: "1px solid #AFAFB3",
+                  margin: "0px",
+                  padding: "0px",
+                  width: "100%",
                 }}
               >
                 {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
@@ -1328,16 +1250,16 @@ export default function Schedule(props) {
 
       res.push(
         <Col
-          key={'daySchedule' + i}
+          key={"daySchedule" + i}
           style={{
-            margin: '0px',
-            padding: '0px',
+            margin: "0px",
+            padding: "0px",
           }}
         >
           {arr}
         </Col>
       );
-      startDate.add(1, 'day');
+      startDate.add(1, "day");
     }
 
     return res;
@@ -1355,10 +1277,10 @@ export default function Schedule(props) {
                 <Col>
                   <Typography
                     style={{
-                      textTransform: 'uppercase',
-                      color: '#2C2C2E',
-                      padding: '0',
-                      font: 'normal normal normal 20px/25px Prohibition',
+                      textTransform: "uppercase",
+                      color: "#2C2C2E",
+                      padding: "0",
+                      font: "normal normal normal 20px/25px Prohibition",
                       backgroundColor: `${view.color}`,
                     }}
                   >
@@ -1373,22 +1295,22 @@ export default function Schedule(props) {
                             <div>
                               <div
                                 style={{
-                                  marginTop: '20px',
-                                  marginLeft: '10px',
-                                  width: '213px',
+                                  marginTop: "20px",
+                                  marginLeft: "10px",
+                                  width: "213px",
                                   //height: '148px',
                                   backgroundColor: `${view.color}`,
-                                  padding: '15px 10px',
+                                  padding: "15px 10px",
                                 }}
                               >
                                 <Row>
-                                  <Col style={{ paddingLeft: '7px' }}>
+                                  <Col style={{ paddingLeft: "7px" }}>
                                     <Typography
                                       style={{
-                                        textTransform: 'uppercase',
-                                        color: '#2C2C2E',
-                                        padding: '0',
-                                        font: 'normal normal normal 20px/25px Prohibition',
+                                        textTransform: "uppercase",
+                                        color: "#2C2C2E",
+                                        padding: "0",
+                                        font: "normal normal normal 20px/25px Prohibition",
                                       }}
                                     >
                                       {event.event_name}
@@ -1400,47 +1322,21 @@ export default function Schedule(props) {
                                 </Row>
                                 <div
                                   style={{
-                                    font: 'normal normal normal 14px/16px SF Pro Display',
+                                    font: "normal normal normal 14px/16px SF Pro Display",
                                   }}
                                 >
                                   <div>
-                                    {Number(event.duration.substring(0, 2)) >
-                                    '01'
-                                      ? event.duration.substring(3, 5) !== '59'
-                                        ? Number(
-                                            event.duration.substring(0, 2)
-                                          ) +
-                                          ' hrs ' +
-                                          Number(
-                                            event.duration.substring(3, 5)
-                                          ) +
-                                          ' min'
-                                        : Number(
-                                            event.duration.substring(0, 2)
-                                          ) +
-                                          1 +
-                                          ' hrs'
-                                      : Number(
-                                          event.duration.substring(0, 2)
-                                        ) == '01'
-                                      ? '60 min'
-                                      : event.duration.substring(3, 5) + ' min'}
+                                    {Number(event.duration.substring(0, 2)) > "01"
+                                      ? event.duration.substring(3, 5) !== "59"
+                                        ? Number(event.duration.substring(0, 2)) + " hrs " + Number(event.duration.substring(3, 5)) + " min"
+                                        : Number(event.duration.substring(0, 2)) + 1 + " hrs"
+                                      : Number(event.duration.substring(0, 2)) == "01"
+                                      ? "60 min"
+                                      : event.duration.substring(3, 5) + " min"}
                                   </div>
+                                  <div>Location: {event.location === "" ? "None Specified" : event.location}</div>
                                   <div>
-                                    Location:{' '}
-                                    {event.location === ''
-                                      ? 'None Specified'
-                                      : event.location}
-                                  </div>
-                                  <div>
-                                    -
-                                    {JSON.parse(
-                                      event.buffer_time
-                                    ).before.time.substring(3, 5)}{' '}
-                                    / +
-                                    {JSON.parse(
-                                      event.buffer_time
-                                    ).after.time.substring(3, 5)}
+                                    -{JSON.parse(event.buffer_time).before.time.substring(3, 5)} / +{JSON.parse(event.buffer_time).after.time.substring(3, 5)}
                                   </div>
                                   <div
                                     onClick={() =>
@@ -1450,7 +1346,7 @@ export default function Schedule(props) {
 
                                           document.location.href.length - 8
                                         ) +
-                                          'event/' +
+                                          "event/" +
                                           `${event.event_unique_id}`
                                       )
                                     }
@@ -1458,10 +1354,10 @@ export default function Schedule(props) {
                                     <img
                                       src={Link}
                                       style={{
-                                        width: '13px',
-                                        height: '13px',
-                                        float: 'right',
-                                        cursor: 'pointer',
+                                        width: "13px",
+                                        height: "13px",
+                                        float: "right",
+                                        cursor: "pointer",
                                       }}
                                     />
                                   </div>
@@ -1483,23 +1379,23 @@ export default function Schedule(props) {
           <Container
             fluid
             style={{
-              borderTop: '1px solid #AFAFB3',
-              margin: '20px 0px',
-              padding: '0px',
+              borderTop: "1px solid #AFAFB3",
+              margin: "20px 0px",
+              padding: "0px",
             }}
           >
             <Row>
               <Col
                 xs={1}
                 style={{
-                  color: '#636366',
-                  font: 'normal normal bold 16px SF Pro Display',
-                  paddingTop: '20px',
+                  color: "#636366",
+                  font: "normal normal bold 16px SF Pro Display",
+                  paddingTop: "20px",
                 }}
               >
                 <br></br>
                 <br></br>
-                {moment().format('MMMM')}
+                {moment().format("MMMM")}
               </Col>
               <Col>
                 <Row>{weekdaysAndDateDisplay()}</Row>
@@ -1507,14 +1403,9 @@ export default function Schedule(props) {
             </Row>
           </Container>
 
-          <Row
-            noGutters={true}
-            style={{ marginLeft: '0rem', marginRight: '0rem' }}
-          >
+          <Row noGutters={true} style={{ marginLeft: "0rem", marginRight: "0rem" }}>
             <Col xs={1}>
-              <Container style={{ margin: '0', padding: '0' }}>
-                {timeDisplay()}
-              </Container>
+              <Container style={{ margin: "0", padding: "0" }}>{timeDisplay()}</Container>
             </Col>
 
             <Col>

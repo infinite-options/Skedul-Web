@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { Toolbar, Button, AppBar, Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { ThemeProvider } from '@mui/material';
-import { createTheme } from '@mui/material';
-import { useHistory } from 'react-router-dom';
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import Logo from '../images/Logo.svg';
-import LoginContext from '../LoginContext';
+import React, { useContext, useState } from "react";
+import { Toolbar, Button, AppBar, Box } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import Logo from "../images/Logo.svg";
+import LoginContext from "../LoginContext";
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -15,13 +15,13 @@ const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 
 const headingFont = createTheme({
   typography: {
-    fontFamily: ['Prohibition', 'sans-serif'].join(','),
+    fontFamily: ["Prohibition", "sans-serif"].join(","),
   },
 });
 
 const buttonFont = createTheme({
   typography: {
-    fontFamily: ['Helvetica Neue', 'sans-serif'].join(','),
+    fontFamily: ["Helvetica Neue", "sans-serif"].join(","),
   },
 });
 
@@ -29,71 +29,71 @@ const buttonFont = createTheme({
 const useStyles = makeStyles({
   /* navigationContainer */
   navigationBar: {
-    background: '#f3f3f8',
-    width: '100%',
-    borderBottom: '2px solid #636366',
-    boxShadow: 'none',
+    background: "#f3f3f8",
+    width: "100%",
+    borderBottom: "2px solid #636366",
+    boxShadow: "none",
   },
 
   /* displaying the navigationBar as flex Containers */
   displayNav: {
-    display: 'flex',
+    display: "flex",
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 
   /* Title of the Navigation Bar */
   titleElement: {
     flex: 1.5,
-    fontSize: '32px',
-    color: '#2C2C2E',
-    letterSpacing: '0px',
+    fontSize: "32px",
+    color: "#2C2C2E",
+    letterSpacing: "0px",
   },
 
   /* Button  container for the navigation Bar */
   buttonContainer: {
     flex: 1,
-    display: 'flex',
-    justifyContent: 'flex-start',
+    display: "flex",
+    justifyContent: "flex-start",
   },
 
   /*Logout Button*/
   myButton: {
-    color: '#636366',
-    '&:hover, &:focus': {
-      color: '#2C2C2E',
+    color: "#636366",
+    "&:hover, &:focus": {
+      color: "#2C2C2E",
     },
-    height: '40px',
-    textTransform: 'initial',
+    height: "40px",
+    textTransform: "initial",
   },
   /* Navigation Buttons */
   buttonSelection: {
-    color: '#636366',
-    '&:hover, &:focus': {
-      color: '#2C2C2E',
+    color: "#636366",
+    "&:hover, &:focus": {
+      color: "#2C2C2E",
     },
-    textTransform: 'initial',
-    font: 'normal normal normal 18px/21px SF Pro Display',
+    textTransform: "initial",
+    font: "normal normal normal 18px/21px SF Pro Display",
   },
   activeButtonSelection: {
-    color: '#2C2C2E',
-    '&:hover, &:focus': {
-      color: '#2C2C2E',
+    color: "#2C2C2E",
+    "&:hover, &:focus": {
+      color: "#2C2C2E",
     },
-    fontWeight: 'bold',
-    textTransform: 'initial',
-    font: 'normal normal bold 18px/23px Helvetica Neue',
+    fontWeight: "bold",
+    textTransform: "initial",
+    font: "normal normal bold 18px/23px Helvetica Neue",
   },
 });
 
 /* Navigation Bar component function */
 export function Navigation() {
-  console.log('CLIENT ID', typeof CLIENT_ID, CLIENT_ID);
-  console.log('CLIENT_SECRET', typeof CLIENT_SECRET, CLIENT_SECRET);
-  console.log('BASE_URL', typeof BASE_URL, BASE_URL);
-  const history = useHistory();
+  console.log("CLIENT ID", typeof CLIENT_ID, CLIENT_ID);
+  console.log("CLIENT_SECRET", typeof CLIENT_SECRET, CLIENT_SECRET);
+  console.log("BASE_URL", typeof BASE_URL, BASE_URL);
+  const history = useNavigate();
   const classes = useStyles();
-  const [isActive, setActive] = useState('schedule');
+  const [isActive, setActive] = useState("schedule");
   const loginContext = useContext(LoginContext);
   console.log(loginContext.loginState.user.user_access);
   var selectedUser = loginContext.loginState.user.user_uid;
@@ -101,107 +101,75 @@ export function Navigation() {
 
   return (
     <>
-      <AppBar
-        className={classes.navigationBar}
-        style={{ backgroundColor: 'white', position: 'static' }}
-      >
+      <AppBar className={classes.navigationBar} style={{ backgroundColor: "white", position: "static" }}>
         <Toolbar>
           <div className={classes.displayNav}>
-            <div style={{ width: '20%', textAlign: 'left' }}>
-              <Box
-                className={classes.titleElement}
-                style={{ textAlign: 'left' }}
-              >
+            <div style={{ width: "20%", textAlign: "left" }}>
+              <Box className={classes.titleElement} style={{ textAlign: "left" }}>
                 <img
                   src={Logo}
                   alt="logo"
                   onClick={() => {
-                    history.push('/schedule');
+                    history.push("/schedule");
                   }}
                 />
               </Box>
             </div>
           </div>
 
-          {document.cookie
-            .split(';')
-            .some((item) => item.trim().startsWith('user_uid=')) ? (
-            <div style={{ width: '100%', textAlign: 'right' }}>
+          {document.cookie.split(";").some((item) => item.trim().startsWith("user_uid=")) ? (
+            <div style={{ width: "100%", textAlign: "right" }}>
               <ThemeProvider theme={buttonFont}>
                 <Button
-                  className={
-                    isActive === 'views'
-                      ? `${classes.activeButtonSelection}`
-                      : `${classes.buttonSelection}`
-                  }
+                  className={isActive === "views" ? `${classes.activeButtonSelection}` : `${classes.buttonSelection}`}
                   onClick={() => {
-                    history.push('/views');
-                    setActive('views');
+                    history.push("/views");
+                    setActive("views");
                   }}
                 >
                   Views
                 </Button>
                 <Button
-                  className={
-                    isActive === 'event'
-                      ? `${classes.activeButtonSelection}`
-                      : `${classes.buttonSelection}`
-                  }
+                  className={isActive === "event" ? `${classes.activeButtonSelection}` : `${classes.buttonSelection}`}
                   onClick={() => {
-                    history.push('/event');
-                    setActive('event');
+                    history.push("/event");
+                    setActive("event");
                   }}
                 >
                   Event Types
                 </Button>
                 <Button
-                  className={
-                    isActive === 'schedule'
-                      ? `${classes.activeButtonSelection}`
-                      : `${classes.buttonSelection}`
-                  }
+                  className={isActive === "schedule" ? `${classes.activeButtonSelection}` : `${classes.buttonSelection}`}
                   onClick={() => {
-                    history.push('/schedule');
-                    setActive('schedule');
+                    history.push("/schedule");
+                    setActive("schedule");
                   }}
                 >
                   Schedule
                 </Button>
                 <Button
-                  className={
-                    isActive === 'integration'
-                      ? `${classes.activeButtonSelection}`
-                      : `${classes.buttonSelection}`
-                  }
+                  className={isActive === "integration" ? `${classes.activeButtonSelection}` : `${classes.buttonSelection}`}
                   onClick={() => {
-                    history.push('/integration');
-                    setActive('integration');
+                    history.push("/integration");
+                    setActive("integration");
                   }}
                 >
                   Integration
                 </Button>
                 <Button
-                  className={
-                    isActive === 'help'
-                      ? `${classes.activeButtonSelection}`
-                      : `${classes.buttonSelection}`
-                  }
+                  className={isActive === "help" ? `${classes.activeButtonSelection}` : `${classes.buttonSelection}`}
                   onClick={() => {
-                    history.push('/help');
-                    setActive('help');
+                    history.push("/help");
+                    setActive("help");
                   }}
                 >
                   Help
                 </Button>
                 <Button
-                  className={
-                    isActive === 'account'
-                      ? `${classes.activeButtonSelection}`
-                      : `${classes.buttonSelection}`
-                  }
+                  className={isActive === "account" ? `${classes.activeButtonSelection}` : `${classes.buttonSelection}`}
                   onClick={() => {
-                    history.push('/account');
-                    setActive('account');
+                    history.push("/account");
+                    setActive("account");
                   }}
                 >
                   Account
@@ -209,20 +177,20 @@ export function Navigation() {
                 <Button
                   className={classes.myButton}
                   onClick={(e) => {
-                    document.cookie = 'user_uid=1;max-age=0';
-                    document.cookie = 'user_email=1;max-age=0';
-                    document.cookie = 'user_access=1;max-age=0';
+                    document.cookie = "user_uid=1;max-age=0";
+                    document.cookie = "user_email=1;max-age=0";
+                    document.cookie = "user_access=1;max-age=0";
                     loginContext.setLoginState({
                       ...loginContext.loginState,
                       loggedIn: false,
                       user: {
                         ...loginContext.loginState.ta,
-                        id: '',
-                        email: '',
-                        user_access: '',
+                        id: "",
+                        email: "",
+                        user_access: "",
                       },
                     });
-                    history.push('/');
+                    history.push("/");
                   }}
                 >
                   Logout
