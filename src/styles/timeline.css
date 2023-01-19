@@ -1,0 +1,14 @@
+.timeSlot {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    background-color: rgb(255, 255, 255, 0);
+    opacity: 25%;
+    box-shadow: 0;
+    mix-blend-mode: luminosity;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.timeSlot:hover {
+    background-color: rgb(255, 255, 255, 0.5);
+    box-shadow: 1px 1px 5px black;
+}

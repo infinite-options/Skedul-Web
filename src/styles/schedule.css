@@ -1,0 +1,17 @@
+.container {
+    min-width: 1200px;
+    background-color: #f3f3f8;
+    padding: 20px;
+}
+.colHeader {
+    font-size: 14px;
+    color: #2c2c2e;
+    padding: 10px 0px;
+    font: normal normal bold 14px/16px SF Pro Display;
+}
+.colBody {
+    text-align: left;
+    font: normal normal normal 14px/16px SF Pro Display;
+    letter-spacing: 0px;
+    color: #636366;
+}

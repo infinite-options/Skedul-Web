@@ -1,0 +1,70 @@
+.navigationBar {
+    background: #f3f3f8;
+    width: 100%;
+    border-bottom: 2px solid #636366;
+    box-shadow: none;
+}
+
+/* displaying the navigationBar as flex Containers */
+.displayNav {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+}
+
+/* Title of the Navigation Bar */
+.titleElement {
+    flex: 1.5;
+    font-size: 32px;
+    color: #2c2c2e;
+    letter-spacing: 0px;
+}
+
+/* Button  container for the navigation Bar */
+.buttonContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/*Logout Button*/
+.myButton {
+    color: #636366;
+    height: 40px;
+    text-transform: initial;
+}
+.myButton:hover {
+    color: #2c2c2e;
+}
+
+.myButton:focus {
+    color: #2c2c2e;
+}
+
+/* Navigation Buttons */
+.buttonSelection {
+    color: #636366;
+    text-transform: initial;
+    font: normal normal normal 18px/21px SF Pro Display;
+}
+.buttonSelection:hover {
+    color: #2c2c2e;
+}
+
+.buttonSelection:focus {
+    color: #2c2c2e;
+}
+
+.activeButtonSelection {
+    color: #2c2c2e;
+    font-weight: bold;
+    text-transform: initial;
+    font: normal normal bold 18px/23px Helvetica Neue;
+}
+.activeButtonSelection:hover {
+    color: #2c2c2e;
+}
+
+.activeButtonSelection:focus {
+    color: #2c2c2e;
+}

@@ -1,0 +1,17 @@
+.container {
+    background-color: #f3f3f8;
+    padding: 20px;
+}
+.title {
+    color: #2c2c2e;
+    font-size: 18px;
+    font-weight: bold;
+    font: normal normal bold 18px/21px SF Pro Display;
+}
+
+.colHeader {
+    font-size: 14px;
+    color: #2c2c2e;
+    padding: 10px 0px;
+    font: normal normal bold 14px/16px SF Pro Display;
+}
