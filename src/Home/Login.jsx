@@ -276,90 +276,63 @@ export default function Login() {
         });
     } else {
     }
-
     return (
-        <Container
+        <div
+            className="main"
             style={{
-                background: "#F3F3F8 0% 0% no-repeat padding-box",
-                //padding: '0px 100px',
-                minWidth: "100%",
+                display: "flex",
+                flexDirection: "column",
             }}
         >
-            <Row
-                style={{
-                    background: "#C9C9EB 0% 0% no-repeat padding-box",
-                    height: "131px",
-                    minWidth: "100%",
-                }}
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                width="100%"
+                height="130px"
+                backgroundColor="rgb(201, 201, 235)"
+                padding="10px"
             >
-                <Col
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: "30%",
-                    }}
+                <Box
+                    display="flex"
+                    flexWrap="nowrap"
+                    justifyContent="space-between"
+                    alignItems="center"
                 >
-                    <Box marginTop="6rem" marginRight="2rem">
-                        <TextField
-                            className={"textFieldBackground"}
-                            variant="outlined"
-                            label="Email"
-                            size="small"
-                            error={validation}
-                            fullWidth={true}
-                            onChange={handleEmailChange}
-                        />
-                    </Box>
-
-                    <Box marginTop="6rem" marginRight="2rem">
-                        <TextField
-                            className={"textFieldBackground"}
-                            variant="outlined"
-                            label="Password"
-                            size="small"
-                            type="password"
-                            error={validation}
-                            fullWidth={true}
-                            onChange={handlePasswordChange}
-                        />
-                    </Box>
-                    <Box marginTop="6rem">
-                        {" "}
-                        <Button
-                            onClick={handleSubmit}
-                            style={{
-                                width: "75px",
-                                height: "40px",
-                                textAlign: "left",
-                                font: "normal normal normal 18px/21px SF Pro Display",
-                                letterSpacing: "0px",
-                                color: "#F3F3F8",
-                                textTransform: "none",
-                                background:
-                                    "#2C2C2E 0% 0% no-repeat padding-box",
-                                borderRadius: "3px",
-                            }}
-                            marginTop="5rem"
-                        >
-                            Login
-                        </Button>
-                        <Box color="red" style={{ textTransform: "lowercase" }}>
-                            <Typography>{validation}</Typography>
-                        </Box>
-                    </Box>
-                </Col>
-
-                <Col
-                    xs={2}
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
+                    <TextField
+                        variant="outlined"
+                        label="Email"
+                        size="small"
+                        error={Boolean(validation)}
+                        onChange={handleEmailChange}
+                        sx={{ margin: "0 10px" }}
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="Password"
+                        size="small"
+                        type="password"
+                        error={Boolean(validation)}
+                        onChange={handlePasswordChange}
+                        sx={{ margin: "0 10px" }}
+                    />
+                    <Button
+                        onClick={handleSubmit}
+                        style={{
+                            width: "75px",
+                            height: "40px",
+                            textAlign: "left",
+                            font: "normal normal normal 18px/21px SF Pro Display",
+                            letterSpacing: "0px",
+                            color: "#F3F3F8",
+                            textTransform: "none",
+                            background: "#2C2C2E 0% 0% no-repeat padding-box",
+                            borderRadius: "3px",
+                            margin: "0 10px",
+                        }}
+                    >
+                        Login
+                    </Button>
                     <GoogleLogin
                         clientId={CLIENT_ID}
                         render={(renderProps) => (
@@ -369,12 +342,12 @@ export default function Login() {
                                     backgroundImage: `url(${Google})`,
                                     backgroundSize: "contain",
                                     backgroundRepeat: "no-repeat",
-                                    width: "241px",
+
                                     height: "52px",
                                     //background: `transparent url(${Google}) 0% 0% no-repeat padding-box`,
                                 }}
                                 onClick={renderProps.onClick}
-                                disabled={renderProps.disabled}
+                                // disabled={renderProps.disabled}
                             ></Button>
                         )}
                         buttonText="Log In"
@@ -390,25 +363,22 @@ export default function Login() {
                             backgroundImage: `url(${Apple})`,
                             backgroundSize: "contain",
                             backgroundRepeat: "no-repeat",
-                            width: "241px",
+
                             height: "52px",
                             //background: `transparent url(${Google}) 0% 0% no-repeat padding-box`,
                         }}
                     ></Button>
-                </Col>
-                <Col
-                    xs={2}
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
+                </Box>
+
+                <Box
+                    display="flex"
+                    flexWrap="nowrap"
+                    flexDirection="column"
+                    justifyContent="space-between"
+                    alignItems="center"
                 >
-                    {" "}
                     Don't have an account?
                     <Button
-                        marginTop="1rem"
                         onClick={() => history.push("/signup")}
                         style={{
                             marginTop: "1rem",
@@ -425,17 +395,9 @@ export default function Login() {
                     >
                         Sign Up
                     </Button>
-                </Col>
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: "1rem",
-                }}
-            >
+                </Box>
+            </Box>
+            <Box display="flex" flexDirection="row" alignSelf="center">
                 <Typography
                     style={{
                         textAlign: "left",
@@ -457,18 +419,8 @@ export default function Login() {
                 >
                     ing made easy!
                 </Typography>
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    // float: 'left',
-                    alignItems: "left",
-                    position: "relative",
-                    left: "30%",
-                    marginTop: "1rem",
-                }}
-            >
+            </Box>
+            <Box display="flex" flexDirection="row" alignSelf="center">
                 <Typography
                     style={{
                         textAlign: "left",
@@ -480,6 +432,8 @@ export default function Login() {
                 >
                     Share available times with friends, colleagues and others
                 </Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" alignSelf="center">
                 <Typography
                     style={{
                         textAlign: "left",
@@ -500,6 +454,8 @@ export default function Login() {
                     </span>{" "}
                     you provide
                 </Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" alignSelf="center">
                 <Typography
                     style={{
                         textAlign: "left",
@@ -519,16 +475,9 @@ export default function Login() {
                         SKEDUL
                     </span>
                 </Typography>
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: "3rem",
-                }}
-            >
+            </Box>
+            <br />
+            <Box display="flex" flexDirection="row" alignSelf="center">
                 <Typography
                     style={{
                         textAlign: "left",
@@ -540,280 +489,187 @@ export default function Login() {
                     How to use&nbsp;
                 </Typography>
                 <img src={Logo} />
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "2rem",
-                }}
-            >
-                <Col
-                    xs={1.5}
+            </Box>
+            <Box margin="20px">
+                <Box
+                    position="absolute"
+                    left="105px"
+                    width="75vw"
+                    height="50px"
+                    backgroundColor="#f3a3bb"
+                    zIndex="5"
+                ></Box>
+                <Typography
                     style={{
+                        position: "relative",
+                        zIndex: "10",
                         textAlign: "left",
                         font: "normal normal normal 24px/29px SF Pro Display",
                         letterSpacing: "0px",
                         color: "#2C2C2E",
-                        marginTop: "1.7rem",
+                        marginTop: "1rem",
                     }}
                 >
                     1. Create a{" "}
-                </Col>
-                <Col style={{ padding: "0px" }}>
-                    <img src={Login1} style={{ width: "100%", margin: 0 }} />
-                    <Typography
+                    <span
                         style={{
-                            position: "absolute",
-                            top: "0",
-                            bottom: "0",
-                            left: "0",
-                            right: "0",
-                            textAlign: "left",
-                            font: "normal normal normal 24px/29px SF Pro Display",
-                            letterSpacing: "0px",
-                            color: "#2C2C2E",
-                            marginTop: "1.5rem",
+                            font: "normal normal normal 24px/29px Prohibition",
+                            textTransform: "uppercase",
                         }}
                     >
-                        <span
-                            style={{
-                                font: "normal normal normal 24px/29px Prohibition",
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            &nbsp;View&nbsp;
-                        </span>
-                        on your calendar
-                    </Typography>
-                </Col>
-            </Row>
-            <Row>
-                <img src={Login2} />
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "2rem",
-                }}
-            >
-                <div
+                        &nbsp;View&nbsp;
+                    </span>
+                    on your calendar
+                </Typography>
+                <img
+                    src={Login2}
+                    style={{ position: "relative", zIndex: "10" }}
+                />
+            </Box>
+            <Box margin="20px">
+                <Box
+                    position="absolute"
+                    left="105px"
+                    width="75vw"
+                    height="50px"
+                    backgroundColor="#f4d484"
+                    zIndex="5"
+                ></Box>
+                <Typography
                     style={{
-                        width: "13rem",
-                        display: "flex",
-                        flexDirection: "row",
-                        height: "6.8rem",
-                        backgroundImage: `url(${Login3})`,
-                        backgroundSize: "fill",
-                    }}
-                >
-                    {" "}
-                    {/* <img src={Login7} style={{ width: '100%', position: 'relative' }} /> */}
-                    <Typography
-                        style={{
-                            position: "absolute",
-                            // top: '0',
-                            // bottom: '0',
-                            // left: '0',
-                            // right: '0',
-                            textAlign: "left",
-                            font: "normal normal normal 24px/29px SF Pro Display",
-                            letterSpacing: "0px",
-                            color: "#2C2C2E",
-                            marginTop: "2.5rem",
-                        }}
-                    >
-                        2. Create
-                        <span
-                            style={{
-                                font: "normal normal normal 24px/29px Prohibition",
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            &nbsp;EVENT types&nbsp;
-                        </span>
-                    </Typography>
-                </div>
-
-                <Col
-                    style={{
+                        position: "relative",
+                        zIndex: "10",
                         textAlign: "left",
                         font: "normal normal normal 24px/29px SF Pro Display",
                         letterSpacing: "0px",
                         color: "#2C2C2E",
-                        marginTop: "2.7rem",
-                        //padding: '0px',
-                        paddingLeft: "8px",
+                        marginTop: "1rem",
                     }}
                 >
+                    2. Create{" "}
+                    <span
+                        style={{
+                            font: "normal normal normal 24px/29px Prohibition",
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        &nbsp;Event Types&nbsp;
+                    </span>
                     for the view
-                </Col>
-            </Row>
-            <Row>
-                <img src={Login4} />
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "2rem",
-                }}
-            >
-                <Col
-                    xs={1.5}
+                </Typography>
+                <img
+                    src={Login4}
+                    style={{ position: "relative", zIndex: "10" }}
+                />
+            </Box>
+            <Box margin="20px">
+                <Box
+                    position="absolute"
+                    left="105px"
+                    width="75vw"
+                    height="50px"
+                    backgroundColor="#e45c1c"
+                    zIndex="5"
+                ></Box>
+                <Typography
                     style={{
+                        position: "relative",
+                        zIndex: "10",
                         textAlign: "left",
                         font: "normal normal normal 24px/29px SF Pro Display",
                         letterSpacing: "0px",
                         color: "#2C2C2E",
-                        marginTop: "2.7rem",
+                        marginTop: "1rem",
                     }}
                 >
-                    3. Copy / Paste
-                </Col>
-                <Col style={{ padding: "0px" }}>
-                    <img src={Login5} style={{ width: "100%", margin: 0 }} />
-                    <Typography
+                    3. Copy/ Paste{" "}
+                    <span
                         style={{
-                            position: "absolute",
-                            top: "0",
-                            bottom: "0",
-                            left: "0",
-                            right: "0",
-                            textAlign: "left",
-                            font: "normal normal normal 24px/29px SF Pro Display",
-                            letterSpacing: "0px",
-                            color: "#2C2C2E",
-                            marginTop: "2.5rem",
+                            font: "normal normal normal 24px/29px Prohibition",
+                            textTransform: "uppercase",
                         }}
                     >
-                        <span
-                            style={{
-                                font: "normal normal normal 24px/29px Prohibition",
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            &nbsp;EVENT type&nbsp;
-                        </span>
-                        links to share with friends, family and colleagues
-                    </Typography>
-                </Col>
-            </Row>
-            <Row>
-                <img src={Login6} />
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "2rem",
-                }}
-            >
-                <div
+                        &nbsp;Event Type&nbsp;
+                    </span>
+                    links to share with friends, family and colleagues
+                </Typography>
+                <img
+                    src={Login6}
+                    style={{ position: "relative", zIndex: "10" }}
+                />
+            </Box>
+            <Box margin="20px">
+                <Box
+                    position="absolute"
+                    left="105px"
+                    width="75vw"
+                    height="50px"
+                    backgroundColor="#74d3a3"
+                    zIndex="5"
+                ></Box>
+                <Typography
                     style={{
-                        width: "15rem",
-                        display: "flex",
-                        flexDirection: "row",
-                        height: "6.8rem",
-                        backgroundImage: `url(${Login7})`,
-                        backgroundSize: "fill",
-                    }}
-                >
-                    {" "}
-                    {/* <img src={Login7} style={{ width: '100%', position: 'relative' }} /> */}
-                    <Typography
-                        style={{
-                            position: "absolute",
-                            // top: '0',
-                            // bottom: '0',
-                            // left: '0',
-                            // right: '0',
-                            textAlign: "left",
-                            font: "normal normal normal 24px/29px SF Pro Display",
-                            letterSpacing: "0px",
-                            color: "#2C2C2E",
-                            marginTop: "2.5rem",
-                        }}
-                    >
-                        4. Others can easily
-                        <span
-                            style={{
-                                font: "normal normal normal 24px/29px Prohibition",
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            &nbsp;VIEW&nbsp;&nbsp;
-                        </span>
-                    </Typography>
-                </div>
-
-                <Col
-                    style={{
+                        position: "relative",
+                        zIndex: "10",
                         textAlign: "left",
                         font: "normal normal normal 24px/29px SF Pro Display",
                         letterSpacing: "0px",
                         color: "#2C2C2E",
-                        marginTop: "2.7rem",
-                        paddingLeft: "10px",
+                        marginTop: "1rem",
                     }}
                 >
+                    4. Others can easily
+                    <span
+                        style={{
+                            font: "normal normal normal 24px/29px Prohibition",
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        &nbsp;View&nbsp;
+                    </span>
                     your calendar and pick a date & time
-                </Col>
-            </Row>
-            <Row>
-                <img src={Login8} />
-            </Row>
-            <Row
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "2rem",
-                }}
-            >
-                <Col
-                    xs={1.5}
+                </Typography>
+                <img
+                    src={Login8}
+                    style={{ position: "relative", zIndex: "10" }}
+                />
+            </Box>
+            <Box margin="20px">
+                <Box
+                    position="absolute"
+                    left="105px"
+                    width="75vw"
+                    height="50px"
+                    backgroundColor="#f4e4cc"
+                    zIndex="5"
+                ></Box>
+                <Typography
                     style={{
+                        position: "relative",
+                        zIndex: "10",
                         textAlign: "left",
                         font: "normal normal normal 24px/29px SF Pro Display",
                         letterSpacing: "0px",
                         color: "#2C2C2E",
-                        marginTop: "2.7rem",
+                        marginTop: "1rem",
                     }}
                 >
                     5. See the meetings on your
-                </Col>
-                <Col style={{ padding: "0px" }}>
-                    <img src={Login9} style={{ width: "100%", margin: 0 }} />
-                    <Typography
+                    <span
                         style={{
-                            position: "absolute",
-                            top: "0",
-                            bottom: "0",
-                            left: "0",
-                            right: "0",
-                            textAlign: "left",
-                            font: "normal normal normal 24px/29px SF Pro Display",
-                            letterSpacing: "0px",
-                            color: "#2C2C2E",
-                            marginTop: "2.5rem",
+                            font: "normal normal normal 24px/29px Prohibition",
+                            textTransform: "uppercase",
                         }}
                     >
-                        <span
-                            style={{
-                                font: "normal normal normal 24px/29px Prohibition",
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            &nbsp;SKEDUL&nbsp;
-                        </span>
-                        and on your Google calendar
-                    </Typography>
-                </Col>
-            </Row>
-            <Row>
-                <img src={Login10} />
-            </Row>
-        </Container>
+                        &nbsp;Skedul&nbsp;
+                    </span>
+                    and on your Google calendar
+                </Typography>
+                <img
+                    src={Login10}
+                    style={{ position: "relative", zIndex: "10" }}
+                />{" "}
+            </Box>
+        </div>
     );
 }

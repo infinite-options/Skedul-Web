@@ -35,7 +35,7 @@ export default function App() {
         setIsLoggedIn(false);
     };
     return (
-        <div class="hero-container">
+        <div className="hero-container">
             <Router>
                 <Switch>
                     <LoginContext.Provider
