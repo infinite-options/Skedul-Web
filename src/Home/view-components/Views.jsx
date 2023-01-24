@@ -1,6 +1,6 @@
 import { useEffect, useState, createContext } from "react";
 import { Box } from "@mui/material";
-import { userID, getAllViews, updateView } from "./endpoints";
+import { getAllViews, updateView } from "./endpoints";
 import SelectView from "./SelectView";
 import AddView from "./AddView";
 import CreateViewDialog from "./CreateViewDialog";
@@ -12,6 +12,14 @@ import "../../styles/views.css";
 export const PageContext = createContext();
 
 function Views() {
+    const userID = document.cookie
+        .split(";")
+        .some((item) => item.trim().startsWith("user_uid="))
+        ? document.cookie
+              .split("; ")
+              .find((row) => row.startsWith("user_uid="))
+              .split("=")[1]
+        : "";
     const [allViews, setAllViews] = useState([]);
     const [pageStatus, setPageStatus] = useState(); // Create, Update, Loading, Null
     const [showCreateViewDialog, setShowCreateViewDialog] = useState(false);
