@@ -24,6 +24,7 @@ function Views() {
     const [pageStatus, setPageStatus] = useState(); // Create, Update, Loading, Null
     const [showCreateViewDialog, setShowCreateViewDialog] = useState(false);
     const [data, setData] = useState();
+    console.log(userID);
 
     useEffect(() => {
         getAllViews(setAllViews, userID);

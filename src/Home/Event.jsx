@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-import { Row, Col, Modal } from "react-bootstrap";
+import { Row, Col, Modal, Container } from "react-bootstrap";
 import { Typography } from "@mui/material";
 import Bookmark from "../images/bookmark.svg";
 import Edit from "../images/edit.svg";
@@ -815,7 +815,7 @@ export default function Event() {
     };
 
     return (
-        <div className={"container"}>
+        <Container>
             <Row className={"title"}>
                 <Col xs={2}>ALL VIEWS</Col>
                 <Col>ALL EVENT TYPES</Col>
@@ -862,16 +862,12 @@ export default function Event() {
                                 </button>
                             </div>
                         </Col>
-                        <div>
-                            {showCreateNewEventModal && createNewEventModal()}
-                        </div>
-                        <div>{showUpdateEventModal && updateEventModal()}</div>
-                        <div>{showShareModal && shareModal()}</div>
                         <Col
                             style={{
                                 display: "flex",
                                 flexDirection: "row",
                                 alignItems: "flex-start",
+                                margin: "0 30px",
                             }}
                         >
                             {allEvents.map((event) => {
@@ -1137,6 +1133,9 @@ export default function Event() {
                     </Row>
                 );
             })}
-        </div>
+            <div>{showCreateNewEventModal && createNewEventModal()}</div>
+            <div>{showUpdateEventModal && updateEventModal()}</div>
+            <div>{showShareModal && shareModal()}</div>
+        </Container>
     );
 }

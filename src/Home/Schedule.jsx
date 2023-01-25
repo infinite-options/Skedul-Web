@@ -1312,7 +1312,7 @@ export default function Schedule(props) {
                 arr.push(
                     <Container
                         key={"weekschedule" + i + j}
-                        style={{ marginLeft: "1rem" }}
+                        style={{ marginLeft: "1rem", padding: "0" }}
                     >
                         <Row style={{ position: "relative" }}>
                             <Col
@@ -1320,7 +1320,7 @@ export default function Schedule(props) {
                                     position: "relative",
                                     // borderTop: '1px solid lavender',
                                     // background: 'aliceblue',
-                                    height: "50px",
+                                    height: "55px",
                                     color: "black",
                                     borderTop: "1px solid #AFAFB3",
                                     margin: "0px",
@@ -1348,6 +1348,7 @@ export default function Schedule(props) {
                 <Col
                     key={"daySchedule" + i}
                     style={{
+                        position: "absolute",
                         margin: "0px",
                         padding: "0px",
                     }}
@@ -1362,243 +1363,254 @@ export default function Schedule(props) {
     };
 
     return (
-        <div className={"container"}>
-            {isLoading ? (
-                <h1>No Views</h1>
-            ) : (
-                <div>
-                    <Row>
-                        {allViews.map((view) => {
-                            return (
-                                <Col>
-                                    <Typography
-                                        style={{
-                                            textTransform: "uppercase",
-                                            color: "#2C2C2E",
-                                            padding: "0",
-                                            font: "normal normal normal 20px/25px Prohibition",
-                                            backgroundColor: `${view.color}`,
-                                        }}
-                                    >
-                                        {view.view_name}
-                                    </Typography>
+        <div>
+            <Container>
+                {isLoading ? (
+                    <h1>No Views</h1>
+                ) : (
+                    <div>
+                        <Row>
+                            {allViews.map((view) => {
+                                return (
+                                    <Col>
+                                        <Typography
+                                            style={{
+                                                textTransform: "uppercase",
+                                                color: "#2C2C2E",
+                                                padding: "0",
+                                                font: "normal normal normal 20px/25px Prohibition",
+                                                backgroundColor: `${view.color}`,
+                                            }}
+                                        >
+                                            {view.view_name}
+                                        </Typography>
 
-                                    <Row>
-                                        {allEvents.map((event) => {
-                                            return (
-                                                <div>
-                                                    {event.view_id ===
-                                                    view.view_unique_id ? (
-                                                        <div>
-                                                            <div
-                                                                style={{
-                                                                    marginTop:
-                                                                        "20px",
-                                                                    marginLeft:
-                                                                        "10px",
-                                                                    width: "213px",
-                                                                    //height: '148px',
-                                                                    backgroundColor: `${view.color}`,
-                                                                    padding:
-                                                                        "15px 10px",
-                                                                }}
-                                                            >
-                                                                <Row>
-                                                                    <Col
-                                                                        style={{
-                                                                            paddingLeft:
-                                                                                "7px",
-                                                                        }}
-                                                                    >
-                                                                        <Typography
-                                                                            style={{
-                                                                                textTransform:
-                                                                                    "uppercase",
-                                                                                color: "#2C2C2E",
-                                                                                padding:
-                                                                                    "0",
-                                                                                font: "normal normal normal 20px/25px Prohibition",
-                                                                            }}
-                                                                        >
-                                                                            {
-                                                                                event.event_name
-                                                                            }
-                                                                        </Typography>
-                                                                    </Col>
-                                                                    <Col xs={2}>
-                                                                        <img
-                                                                            src={
-                                                                                Bookmark
-                                                                            }
-                                                                            alt="bookmark"
-                                                                        />
-                                                                    </Col>
-                                                                </Row>
+                                        <Row>
+                                            {allEvents.map((event) => {
+                                                return (
+                                                    <div>
+                                                        {event.view_id ===
+                                                        view.view_unique_id ? (
+                                                            <div>
                                                                 <div
                                                                     style={{
-                                                                        font: "normal normal normal 14px/16px SF Pro Display",
+                                                                        marginTop:
+                                                                            "20px",
+                                                                        marginLeft:
+                                                                            "10px",
+                                                                        width: "213px",
+                                                                        //height: '148px',
+                                                                        backgroundColor: `${view.color}`,
+                                                                        padding:
+                                                                            "15px 10px",
                                                                     }}
                                                                 >
-                                                                    <div>
-                                                                        {Number(
-                                                                            event.duration.substring(
-                                                                                0,
+                                                                    <Row>
+                                                                        <Col
+                                                                            style={{
+                                                                                paddingLeft:
+                                                                                    "7px",
+                                                                            }}
+                                                                        >
+                                                                            <Typography
+                                                                                style={{
+                                                                                    textTransform:
+                                                                                        "uppercase",
+                                                                                    color: "#2C2C2E",
+                                                                                    padding:
+                                                                                        "0",
+                                                                                    font: "normal normal normal 20px/25px Prohibition",
+                                                                                }}
+                                                                            >
+                                                                                {
+                                                                                    event.event_name
+                                                                                }
+                                                                            </Typography>
+                                                                        </Col>
+                                                                        <Col
+                                                                            xs={
                                                                                 2
-                                                                            )
-                                                                        ) > "01"
-                                                                            ? event.duration.substring(
-                                                                                  3,
-                                                                                  5
-                                                                              ) !==
-                                                                              "59"
-                                                                                ? Number(
-                                                                                      event.duration.substring(
-                                                                                          0,
-                                                                                          2
-                                                                                      )
-                                                                                  ) +
-                                                                                  " hrs " +
-                                                                                  Number(
-                                                                                      event.duration.substring(
-                                                                                          3,
-                                                                                          5
-                                                                                      )
-                                                                                  ) +
-                                                                                  " min"
+                                                                            }
+                                                                        >
+                                                                            <img
+                                                                                src={
+                                                                                    Bookmark
+                                                                                }
+                                                                                alt="bookmark"
+                                                                            />
+                                                                        </Col>
+                                                                    </Row>
+                                                                    <div
+                                                                        style={{
+                                                                            font: "normal normal normal 14px/16px SF Pro Display",
+                                                                        }}
+                                                                    >
+                                                                        <div>
+                                                                            {Number(
+                                                                                event.duration.substring(
+                                                                                    0,
+                                                                                    2
+                                                                                )
+                                                                            ) >
+                                                                            "01"
+                                                                                ? event.duration.substring(
+                                                                                      3,
+                                                                                      5
+                                                                                  ) !==
+                                                                                  "59"
+                                                                                    ? Number(
+                                                                                          event.duration.substring(
+                                                                                              0,
+                                                                                              2
+                                                                                          )
+                                                                                      ) +
+                                                                                      " hrs " +
+                                                                                      Number(
+                                                                                          event.duration.substring(
+                                                                                              3,
+                                                                                              5
+                                                                                          )
+                                                                                      ) +
+                                                                                      " min"
+                                                                                    : Number(
+                                                                                          event.duration.substring(
+                                                                                              0,
+                                                                                              2
+                                                                                          )
+                                                                                      ) +
+                                                                                      1 +
+                                                                                      " hrs"
                                                                                 : Number(
                                                                                       event.duration.substring(
                                                                                           0,
                                                                                           2
                                                                                       )
+                                                                                  ) ==
+                                                                                  "01"
+                                                                                ? "60 min"
+                                                                                : event.duration.substring(
+                                                                                      3,
+                                                                                      5
                                                                                   ) +
-                                                                                  1 +
-                                                                                  " hrs"
-                                                                            : Number(
-                                                                                  event.duration.substring(
-                                                                                      0,
-                                                                                      2
-                                                                                  )
-                                                                              ) ==
-                                                                              "01"
-                                                                            ? "60 min"
-                                                                            : event.duration.substring(
-                                                                                  3,
-                                                                                  5
-                                                                              ) +
-                                                                              " min"}
-                                                                    </div>
-                                                                    <div>
-                                                                        Location:{" "}
-                                                                        {event.location ===
-                                                                        ""
-                                                                            ? "None Specified"
-                                                                            : event.location}
-                                                                    </div>
-                                                                    <div>
-                                                                        -
-                                                                        {JSON.parse(
-                                                                            event.buffer_time
-                                                                        ).before.time.substring(
-                                                                            3,
-                                                                            5
-                                                                        )}{" "}
-                                                                        / +
-                                                                        {JSON.parse(
-                                                                            event.buffer_time
-                                                                        ).after.time.substring(
-                                                                            3,
-                                                                            5
-                                                                        )}
-                                                                    </div>
-                                                                    <div
-                                                                        onClick={() =>
-                                                                            navigator.clipboard.writeText(
-                                                                                document.location.href.substring(
-                                                                                    0,
+                                                                                  " min"}
+                                                                        </div>
+                                                                        <div>
+                                                                            Location:{" "}
+                                                                            {event.location ===
+                                                                            ""
+                                                                                ? "None Specified"
+                                                                                : event.location}
+                                                                        </div>
+                                                                        <div>
+                                                                            -
+                                                                            {JSON.parse(
+                                                                                event.buffer_time
+                                                                            ).before.time.substring(
+                                                                                3,
+                                                                                5
+                                                                            )}{" "}
+                                                                            / +
+                                                                            {JSON.parse(
+                                                                                event.buffer_time
+                                                                            ).after.time.substring(
+                                                                                3,
+                                                                                5
+                                                                            )}
+                                                                        </div>
+                                                                        <div
+                                                                            onClick={() =>
+                                                                                navigator.clipboard.writeText(
+                                                                                    document.location.href.substring(
+                                                                                        0,
 
-                                                                                    document
-                                                                                        .location
-                                                                                        .href
-                                                                                        .length -
-                                                                                        8
-                                                                                ) +
-                                                                                    "event/" +
-                                                                                    `${event.event_unique_id}`
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <img
-                                                                            src={
-                                                                                Link
+                                                                                        document
+                                                                                            .location
+                                                                                            .href
+                                                                                            .length -
+                                                                                            8
+                                                                                    ) +
+                                                                                        "event/" +
+                                                                                        `${event.event_unique_id}`
+                                                                                )
                                                                             }
-                                                                            style={{
-                                                                                width: "13px",
-                                                                                height: "13px",
-                                                                                float: "right",
-                                                                                cursor: "pointer",
-                                                                            }}
-                                                                        />
+                                                                        >
+                                                                            <img
+                                                                                src={
+                                                                                    Link
+                                                                                }
+                                                                                style={{
+                                                                                    width: "13px",
+                                                                                    height: "13px",
+                                                                                    float: "right",
+                                                                                    cursor: "pointer",
+                                                                                }}
+                                                                            />
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div></div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </Row>
-                                </Col>
-                            );
-                        })}
-                    </Row>
-
-                    <Container
-                        fluid
-                        style={{
-                            borderTop: "1px solid #AFAFB3",
-                            margin: "20px 0px",
-                            padding: "0px",
-                        }}
-                    >
-                        <Row>
-                            <Col
-                                xs={1}
-                                style={{
-                                    color: "#636366",
-                                    font: "normal normal bold 16px SF Pro Display",
-                                    paddingTop: "20px",
-                                }}
-                            >
-                                <br></br>
-                                <br></br>
-                                {moment().format("MMMM")}
-                            </Col>
-                            <Col>
-                                <Row>{weekdaysAndDateDisplay()}</Row>
-                            </Col>
+                                                        ) : (
+                                                            <div></div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </Row>
+                                    </Col>
+                                );
+                            })}
                         </Row>
-                    </Container>
 
-                    <Row
-                        noGutters={true}
-                        style={{ marginLeft: "0rem", marginRight: "0rem" }}
-                    >
-                        <Col xs={1}>
-                            <Container style={{ margin: "0", padding: "0" }}>
-                                {timeDisplay()}
-                            </Container>
-                        </Col>
+                        <Container
+                            fluid
+                            style={{
+                                borderTop: "1px solid #AFAFB3",
+                                margin: "20px 0px",
+                                padding: "0px",
+                            }}
+                        >
+                            <Row>
+                                <Col
+                                    xs={1}
+                                    style={{
+                                        color: "#636366",
+                                        font: "normal normal bold 16px SF Pro Display",
+                                        paddingTop: "20px",
+                                    }}
+                                >
+                                    <br></br>
+                                    <br></br>
+                                    {moment().format("MMMM")}
+                                </Col>
+                                <Col>
+                                    <Row>{weekdaysAndDateDisplay()}</Row>
+                                </Col>
+                            </Row>
+                        </Container>
 
-                        <Col>
-                            <Row>{weekViewItems()}</Row>
-                        </Col>
-                        <div>{showAcceptModal && acceptModal()}</div>
-                        <div>{showUpdateMeetModal && updateModal()}</div>
-                    </Row>
-                </div>
-            )}
+                        <Container>
+                            <Row
+                                noGutters={true}
+                                // style={{ marginLeft: "0rem", marginRight: "0rem" }}
+                            >
+                                <Col xs={1}>
+                                    <Container
+                                        style={{ margin: "0", padding: "0" }}
+                                    >
+                                        {timeDisplay()}
+                                    </Container>
+                                </Col>
+
+                                <Col>
+                                    <Row>{weekViewItems()}</Row>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </div>
+                )}
+            </Container>
+            <div>{showAcceptModal && acceptModal()}</div>
+            <div>{showUpdateMeetModal && updateModal()}</div>
         </div>
     );
 }
