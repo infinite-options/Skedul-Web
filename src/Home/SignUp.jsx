@@ -91,154 +91,143 @@ export default function Login() {
                 minWidth: "100%",
             }}
         >
-            <Row>
-                <Col>
+            <Row style={{ height: "150%" }}>
+                <Col style={{ maxWidth: "45%", height: "150%" }}>
                     <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
                         style={{
-                            width: "100%",
-                            height: "100%",
+                            maxWidth: "45%",
+                            margin: "0",
+                            height: "150%",
                             backgroundColor: "#F3F3F8",
                         }}
                     >
-                        <Box
-                            marginTop="10%"
-                            display="flex"
-                            flexDirection="column"
-                            alignItems="center"
-                            style={{ width: "25rem" }}
-                        >
-                            <Typography>SIGN UP</Typography>
-                            <Box
-                                display="flex"
-                                justifyContent="center"
-                                marginTop="1rem"
-                            >
-                                <SocialLogin />
-                            </Box>
-                            <Box
-                                marginTop="1rem"
-                                marginBottom="1rem"
-                                display="flex"
-                                justifyContent="center"
-                                style={{ fontWeight: "bold" }}
-                            >
-                                Or continue with Email
-                            </Box>
-                            <Form as={Container}>
-                                <Form.Group className="formEltMargin">
-                                    <Form.Group
-                                        as={Row}
-                                        className="formEltMargin"
-                                    >
-                                        <Col>
-                                            <Form.Control
-                                                className={
-                                                    "textFieldBackgorund"
-                                                }
-                                                type="text"
-                                                placeholder="First Name"
-                                                value={newFName}
-                                                onChange={handleNewFNameChange}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <Form.Control
-                                                className={
-                                                    "textFieldBackgorund"
-                                                }
-                                                type="text"
-                                                placeholder="Last Name"
-                                                value={newLName}
-                                                onChange={handleNewLNameChange}
-                                            />
-                                        </Col>
-                                    </Form.Group>
-                                    <Col>
-                                        <Form.Group
-                                            as={Row}
-                                            className="formEltMargin"
-                                        >
-                                            <Form.Control
-                                                className={
-                                                    "textFieldBackgorund"
-                                                }
-                                                type="text"
-                                                placeholder="Email address"
-                                                value={newEmail}
-                                                onChange={handleNewEmailChange}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                </Form.Group>
-                                <Col>
-                                    <Form.Group
-                                        as={Row}
-                                        className="formEltMargin"
-                                    >
-                                        <Form.Control
-                                            className={"textFieldBackgorund"}
-                                            type="password"
-                                            placeholder="Create Password"
-                                            value={newPassword}
-                                            onChange={handleNewPasswordChange}
-                                        />
-                                    </Form.Group>
-                                </Col>
+                        <Typography>SIGN UP</Typography>
 
-                                <Form.Group className="formEltMargin">
-                                    <div
+                        <SocialLogin />
+
+                        <Box
+                            marginTop="1rem"
+                            marginBottom="1rem"
+                            display="flex"
+                            justifyContent="center"
+                            style={{ fontWeight: "bold" }}
+                        >
+                            Or continue with Email
+                        </Box>
+
+                        <Form as={Container}>
+                            <div
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "50% 50%",
+                                    gridTemplateRows: "20% 20% 20% 20% 20%",
+                                    height: "150%",
+                                    width: "45%",
+                                }}
+                            >
+                                <div style={{ gridColumnStart: "1" }}>
+                                    <Form.Control
+                                        className={"textFieldBackgorund"}
+                                        type="text"
+                                        placeholder="First Name"
+                                        value={newFName}
+                                        onChange={handleNewFNameChange}
+                                    />
+                                </div>
+                                <div style={{ gridColumnStart: "2" }}>
+                                    <Form.Control
+                                        className={"textFieldBackgorund"}
+                                        type="text"
+                                        placeholder="Last Name"
+                                        value={newLName}
+                                        onChange={handleNewLNameChange}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        gridColumnStart: "1",
+                                        gridColumnEnd: "3",
+                                        gridRowStart: "2",
+                                    }}
+                                >
+                                    <Form.Control
+                                        className={"textFieldBackgorund"}
+                                        type="text"
+                                        placeholder="Email address"
+                                        value={newEmail}
+                                        onChange={handleNewEmailChange}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        gridColumnStart: "1",
+                                        gridColumnEnd: "3",
+                                        gridRowStart: "3",
+                                    }}
+                                >
+                                    <Form.Control
+                                        className={"textFieldBackgorund"}
+                                        type="password"
+                                        placeholder="Create Password"
+                                        value={newPassword}
+                                        onChange={handleNewPasswordChange}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        gridColumnStart: "1",
+                                        gridRowStart: "4",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={handleSignUpDone}
                                         style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            justifyContent: "center",
+                                            marginTop: "1rem",
+                                            width: "93px",
+                                            height: "40px",
+                                            textAlign: "left",
+                                            font: "normal normal normal 18px/21px SF Pro Display",
+                                            letterSpacing: "0px",
+                                            color: "#2C2C2E",
+                                            textTransform: "none",
+                                            border: " 2px solid #2C2C2E",
+                                            borderRadius: " 3px",
                                         }}
                                     >
-                                        <Button
-                                            onClick={handleSignUpDone}
-                                            style={{
-                                                marginTop: "1rem",
-                                                width: "93px",
-                                                height: "40px",
-                                                textAlign: "left",
-                                                font: "normal normal normal 18px/21px SF Pro Display",
-                                                letterSpacing: "0px",
-                                                color: "#2C2C2E",
-                                                textTransform: "none",
-                                                border: " 2px solid #2C2C2E",
-                                                borderRadius: " 3px",
-                                            }}
-                                        >
-                                            Sign Up
-                                        </Button>
-
-                                        <Button
-                                            onClick={hideSignUp}
-                                            style={{
-                                                marginTop: "1rem",
-                                                width: "93px",
-                                                height: "40px",
-                                                textAlign: "left",
-                                                font: "normal normal normal 18px/21px SF Pro Display",
-                                                letterSpacing: "0px",
-                                                color: "#F3F3F8",
-                                                textTransform: "none",
-                                                background:
-                                                    "#2C2C2E 0% 0% no-repeat padding-box",
-                                                borderRadius: "3px",
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                </Form.Group>
-                            </Form>
-                        </Box>
+                                        Sign Up
+                                    </Button>
+                                </div>
+                                <div
+                                    style={{
+                                        gridColumnStart: "2",
+                                        gridRowStart: "4",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={hideSignUp}
+                                        style={{
+                                            marginTop: "1rem",
+                                            width: "93px",
+                                            height: "40px",
+                                            textAlign: "left",
+                                            font: "normal normal normal 18px/21px SF Pro Display",
+                                            letterSpacing: "0px",
+                                            color: "#F3F3F8",
+                                            textTransform: "none",
+                                            background:
+                                                "#2C2C2E 0% 0% no-repeat padding-box",
+                                            borderRadius: "3px",
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        </Form>
                     </Box>
                 </Col>
+
+                {/* Side text */}
                 <Col
                     style={{
                         display: "flex",

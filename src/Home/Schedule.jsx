@@ -1310,37 +1310,26 @@ export default function Schedule(props) {
             //console.log(new Date(startDate).getDate());
             for (let j = 0; j < 24; ++j) {
                 arr.push(
-                    <Container
-                        key={"weekschedule" + i + j}
-                        style={{ marginLeft: "1rem", padding: "0" }}
+                    <Col
+                        style={{
+                            position: "relative",
+                            // borderTop: '1px solid lavender',
+                            // background: 'aliceblue',
+                            height: "55px",
+                            color: "black",
+                            borderTop: "1px solid #AFAFB3",
+                            margin: "0px",
+                            padding: "0px",
+                            width: "100%",
+                        }}
                     >
-                        <Row style={{ position: "relative" }}>
-                            <Col
-                                style={{
-                                    position: "relative",
-                                    // borderTop: '1px solid lavender',
-                                    // background: 'aliceblue',
-                                    height: "55px",
-                                    color: "black",
-                                    borderTop: "1px solid #AFAFB3",
-                                    margin: "0px",
-                                    padding: "0px",
-                                    width: "100%",
-                                }}
-                            >
-                                {getScheduleItemFromDic(
-                                    i,
-                                    leftFillNum(j, 2),
-                                    dic
-                                )}
-                                {getMeetItemFromDic(
-                                    new Date(startDate).getDate(),
-                                    j,
-                                    dicMeet
-                                )}
-                            </Col>
-                        </Row>
-                    </Container>
+                        {getScheduleItemFromDic(i, leftFillNum(j, 2), dic)}
+                        {getMeetItemFromDic(
+                            new Date(startDate).getDate(),
+                            j,
+                            dicMeet
+                        )}
+                    </Col>
                 );
             }
 
@@ -1348,9 +1337,9 @@ export default function Schedule(props) {
                 <Col
                     key={"daySchedule" + i}
                     style={{
-                        position: "absolute",
                         margin: "0px",
                         padding: "0px",
+                        flexGrow: "1",
                     }}
                 >
                     {arr}
@@ -1588,10 +1577,14 @@ export default function Schedule(props) {
                             </Row>
                         </Container>
 
-                        <Container>
+                        <Container style={{ padding: "0" }}>
                             <Row
                                 noGutters={true}
-                                // style={{ marginLeft: "0rem", marginRight: "0rem" }}
+                                style={{
+                                    marginLeft: "0rem",
+                                    marginRight: "0rem",
+                                    flexWrap: "nowrap",
+                                }}
                             >
                                 <Col xs={1}>
                                     <Container
@@ -1602,7 +1595,13 @@ export default function Schedule(props) {
                                 </Col>
 
                                 <Col>
-                                    <Row>{weekViewItems()}</Row>
+                                    <Row
+                                        style={{
+                                            flexWrap: "nowrap",
+                                        }}
+                                    >
+                                        {weekViewItems()}
+                                    </Row>
                                 </Col>
                             </Row>
                         </Container>

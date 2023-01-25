@@ -1316,7 +1316,7 @@ export default function CreateMeet() {
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "start",
-                                        margin: "20px 20px",
+                                        margin: " 0 100px",
                                         padding: "0px",
                                     }}
                                     hidden={
