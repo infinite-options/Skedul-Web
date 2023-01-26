@@ -518,11 +518,13 @@ export default function CreateMeet() {
         setShowCreateNewMeetModal(false);
     };
 
+    const [newAttendees, setNewAttendees] = useState();
     function handleChange(i, event) {
         const emails = [...attendees];
         console.log(emails);
         emails[i].email = event.target.value;
         setAttendees(emails);
+        setNewAttendees(emails);
         console.log(emails);
     }
 
@@ -1503,12 +1505,12 @@ export default function CreateMeet() {
                                                 {" "}
                                                 Guests{" "}
                                             </Typography>
-                                            <Typography className={"colBody"}>
+                                            {/* <Typography className={"colBody"}>
                                                 {googleAuthedName}
                                             </Typography>
                                             <Typography className={"colBody"}>
                                                 {userName}
-                                            </Typography>
+                                            </Typography> */}
                                             <div
                                                 style={{
                                                     padding: "0",
@@ -1521,7 +1523,13 @@ export default function CreateMeet() {
                                             >
                                                 + Add Guests
                                             </div>
-                                            <Row>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    flexWrap: "nowrap",
+                                                }}
+                                            >
                                                 {attendees.map((field, idx) => {
                                                     return (
                                                         <input
@@ -1543,7 +1551,7 @@ export default function CreateMeet() {
                                                         />
                                                     );
                                                 })}
-                                            </Row>
+                                            </div>
                                             <Typography className={"colHeader"}>
                                                 {" "}
                                                 Location{" "}
@@ -1630,8 +1638,60 @@ export default function CreateMeet() {
                                                 "MMMM DD, YYYY"
                                             )}{" "}
                                             at {meetTime.substring(0, 5)} <br />{" "}
-                                            The email invite has been sent to
-                                            the {userEmail}.
+                                            The email invite has been sent to{" "}
+                                            {newAttendees.map(
+                                                (attendee, idx) => {
+                                                    console.log(newAttendees);
+                                                    if (
+                                                        attendee.email ===
+                                                        userEmail
+                                                    ) {
+                                                        return;
+                                                    }
+                                                    if (
+                                                        newAttendees.length ===
+                                                        2
+                                                    ) {
+                                                        return attendee.email;
+                                                    }
+                                                    if (
+                                                        newAttendees.length ===
+                                                        3
+                                                    ) {
+                                                        if (idx === 0) {
+                                                            return attendee.email;
+                                                        } else {
+                                                            return (
+                                                                " and " +
+                                                                attendee.email
+                                                            );
+                                                        }
+                                                    }
+                                                    if (
+                                                        newAttendees.length > 3
+                                                    ) {
+                                                        if (idx === 0) {
+                                                            return attendee.email;
+                                                        } else if (
+                                                            idx > 0 &&
+                                                            idx <
+                                                                newAttendees.length -
+                                                                    2
+                                                        ) {
+                                                            return (
+                                                                ", " +
+                                                                attendee.email
+                                                            );
+                                                        } else {
+                                                            return (
+                                                                ", and " +
+                                                                attendee.email
+                                                            );
+                                                        }
+                                                    }
+                                                }
+                                            )}
+                                            .
                                         </Typography>
                                     </Col>
                                 ) : null}
