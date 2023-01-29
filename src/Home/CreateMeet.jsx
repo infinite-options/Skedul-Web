@@ -277,6 +277,10 @@ export default function CreateMeet() {
                         setAccessToken(response.data.google_auth_token);
                         setSelectedUser(response.data.user_unique_id);
                         setUserEmail(response.data.user_email_id);
+                        setNewAttendees((a) => {
+                            a[0].email = response.data.user_email_id;
+                            return a;
+                        });
                         setAttendees([{ email: response.data.user_email_id }]);
                         setUserName(
                             response.data.user_first_name +
@@ -518,13 +522,20 @@ export default function CreateMeet() {
         setShowCreateNewMeetModal(false);
     };
 
-    const [newAttendees, setNewAttendees] = useState();
+    const [newAttendees, setNewAttendees] = useState([
+        { email: "" },
+        { email: "" },
+    ]);
     function handleChange(i, event) {
         const emails = [...attendees];
         console.log(emails);
         emails[i].email = event.target.value;
         setAttendees(emails);
-        setNewAttendees(emails);
+        setNewAttendees((a) => {
+            console.log(a);
+            a[a.length - 1].email = event.target.value;
+            return a;
+        });
         console.log(emails);
     }
 
@@ -533,6 +544,10 @@ export default function CreateMeet() {
         console.log(emails);
         emails.push({ email: userEmail });
         setAttendees(emails);
+        setNewAttendees((a) => {
+            a.push({ email: "" });
+            return a;
+        });
     }
 
     function handleRemove(i) {
@@ -1601,6 +1616,7 @@ export default function CreateMeet() {
                                                             color: " #F3F3F8",
                                                         }}
                                                         onClick={(e) => {
+                                                            console.log();
                                                             createMeet();
                                                             createNewMeet();
                                                         }}
@@ -1641,7 +1657,6 @@ export default function CreateMeet() {
                                             The email invite has been sent to{" "}
                                             {newAttendees.map(
                                                 (attendee, idx) => {
-                                                    console.log(newAttendees);
                                                     if (
                                                         attendee.email ===
                                                         userEmail
@@ -1658,7 +1673,7 @@ export default function CreateMeet() {
                                                         newAttendees.length ===
                                                         3
                                                     ) {
-                                                        if (idx === 0) {
+                                                        if (idx === 1) {
                                                             return attendee.email;
                                                         } else {
                                                             return (
@@ -1670,13 +1685,13 @@ export default function CreateMeet() {
                                                     if (
                                                         newAttendees.length > 3
                                                     ) {
-                                                        if (idx === 0) {
+                                                        if (idx === 1) {
                                                             return attendee.email;
                                                         } else if (
-                                                            idx > 0 &&
+                                                            idx > 1 &&
                                                             idx <
                                                                 newAttendees.length -
-                                                                    2
+                                                                    1
                                                         ) {
                                                             return (
                                                                 ", " +
