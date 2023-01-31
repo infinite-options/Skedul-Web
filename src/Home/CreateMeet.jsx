@@ -420,6 +420,7 @@ export default function CreateMeet() {
             };
             const timeMin = dateString + "T" + startTime + ":00-0800";
             const timeMax = dateString + "T" + endTime + ":00-0800";
+            // timeMin and timeMax reformat the schedule.Sunday[0] startTime and endTime
 
             axios
                 .post(
@@ -431,11 +432,12 @@ export default function CreateMeet() {
                 )
                 .then((response) => {
                     let busy = response.data.calendars.primary.busy;
-                    //console.log(busy, appt_start_time, end_time);
                     let start_time = Date.parse(timeMin) / 1000;
                     let end_time = Date.parse(timeMax) / 1000;
-                    let free = [];
                     let appt_start_time = start_time;
+                    // start_time and end_time === startTime and endTime
+
+                    let free = [];
                     let seconds = convert(duration);
                     // Loop through each appt slot in the search range.
                     while (appt_start_time < end_time) {
@@ -1658,22 +1660,16 @@ export default function CreateMeet() {
                                             {newAttendees.map(
                                                 (attendee, idx) => {
                                                     if (
-                                                        attendee.email ===
-                                                        userEmail
-                                                    ) {
-                                                        return;
-                                                    }
-                                                    if (
                                                         newAttendees.length ===
-                                                        2
+                                                        1
                                                     ) {
                                                         return attendee.email;
                                                     }
                                                     if (
                                                         newAttendees.length ===
-                                                        3
+                                                        2
                                                     ) {
-                                                        if (idx === 1) {
+                                                        if (idx === 0) {
                                                             return attendee.email;
                                                         } else {
                                                             return (
@@ -1683,12 +1679,12 @@ export default function CreateMeet() {
                                                         }
                                                     }
                                                     if (
-                                                        newAttendees.length > 3
+                                                        newAttendees.length > 2
                                                     ) {
-                                                        if (idx === 1) {
+                                                        if (idx === 0) {
                                                             return attendee.email;
                                                         } else if (
-                                                            idx > 1 &&
+                                                            idx > 0 &&
                                                             idx <
                                                                 newAttendees.length -
                                                                     1
