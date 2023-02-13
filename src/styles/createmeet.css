@@ -1,90 +1,131 @@
 .container {
-    background-color: #f3f3f8;
-    padding: 20px;
+  background-color: #f3f3f8;
+  padding: 20px;
 }
 
 .timeslotButton {
-    background-color: #f3f3f8;
-    width: 20rem;
-    padding: 0.5rem;
-    max-width: 80%;
-    font: normal normal normal 14px/16px SF Pro Display;
-    color: #2c2c2e;
-    text-align: center;
-    text-decoration: none;
-    border: 2px solid #2c2c2e;
-    border-radius: 3px;
-    display: block;
-    margin: 1rem 0rem;
+  background-color: #f3f3f8;
+  width: 20rem;
+  padding: 0.5rem;
+  max-width: 80%;
+  font: normal normal normal 14px/16px SF Pro Display;
+  color: #2c2c2e;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid #2c2c2e;
+  border-radius: 3px;
+  display: block;
+  margin: 1rem 0rem;
 }
 .timeslotButton:hover {
-    background-color: #2c2c2e;
-    border: 2px solid #2c2c2e;
-    color: white;
+  background-color: #2c2c2e;
+  border: 2px solid #2c2c2e;
+  color: white;
 }
 .activeTimeSlotButton {
-    width: 20rem;
-    padding: 0.5rem;
-    max-width: 80%;
-    font: normal normal normal 14px/16px SF Pro Display;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 3px;
-    display: block;
-    margin: 1rem 0rem;
-    background-color: #2c2c2e;
-    color: white;
-    outline: none;
-    box-shadow: none;
+  width: 20rem;
+  padding: 0.5rem;
+  max-width: 80%;
+  font: normal normal normal 14px/16px SF Pro Display;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 3px;
+  display: block;
+  margin: 1rem 0rem;
+  background-color: #2c2c2e;
+  color: white;
+  outline: none;
+  box-shadow: none;
 }
 .timeButton {
-    background-color: #f3f3f8;
-    width: 6rem;
-    height: 2rem;
-    padding: 0.5rem;
-    max-width: 80%;
-    font: normal normal normal 14px/16px SF Pro Display;
-    color: #2c2c2e;
-    text-align: center;
-    text-decoration: none;
-    border: 2px solid #2c2c2e;
-    border-radius: 3px;
-    display: block;
-    margin: 0.5rem 0.5rem;
+  background-color: #f3f3f8;
+  width: 6rem;
+  height: 2rem;
+  padding: 0.5rem;
+  max-width: 80%;
+  font: normal normal normal 14px/16px SF Pro Display;
+  color: #2c2c2e;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid #2c2c2e;
+  border-radius: 3px;
+  display: block;
+  margin: 0.5rem 0.5rem;
 }
 .timeButton:hover {
-    background-color: #2c2c2e;
-    border: 2px solid #2c2c2e;
-    color: white;
+  background-color: #2c2c2e;
+  border: 2px solid #2c2c2e;
+  color: white;
 }
 .activeTimeButton {
-    width: 6rem;
-    height: 2rem;
-    padding: 0.5rem;
-    max-width: 80%;
-    font: normal normal normal 14px/16px SF Pro Display;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 3px;
-    display: block;
-    margin: 0.5rem 0.5rem;
-    background-color: #2c2c2e;
-    border: 2px solid #2c2c2e;
-    color: white;
-    outline: none;
-    box-shadow: none;
+  width: 6rem;
+  height: 2rem;
+  padding: 0.5rem;
+  max-width: 80%;
+  font: normal normal normal 14px/16px SF Pro Display;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 3px;
+  display: block;
+  margin: 0.5rem 0.5rem;
+  background-color: #2c2c2e;
+  border: 2px solid #2c2c2e;
+  color: white;
+  outline: none;
+  box-shadow: none;
 }
 .colHeader {
-    font-size: 14px;
-    color: #2c2c2e;
-    padding: 10px 0px;
-    font: normal normal bold 14px/16px SF Pro Display;
-    margin: 5px;
+  font-size: 14px;
+  color: #2c2c2e;
+  padding: 10px 0px;
+  font: normal normal bold 14px/16px SF Pro Display;
+  margin: 5px;
 }
 .colBody {
-    text-align: left;
-    font: normal normal normal 14px/16px SF Pro Display;
-    letter-spacing: 0px;
-    color: #636366;
-    margin: 5px;
+  text-align: left;
+  font: normal normal normal 14px/16px SF Pro Display;
+  letter-spacing: 0px;
+  color: #636366;
+  margin: 5px;
+}
+.eventCSS {
+  margin-top: 20px;
+  width: 212px;
+  margin-left: 10px;
+  cursor: pointer;
+  padding: 0px 10px;
+  border: 1px solid #2c2c2e;
+  color: blue;
+}
+.eventTitle {
+  text-transform: uppercase;
+  padding-left: 17px;
+  font-size: 24px;
+  color: #2c2c2e;
+  padding: 0;
+  font: normal normal normal 24px/30px Prohibition;
+}
+
+.eventBody {
+  font-size: 14px;
+  font-weight: normal;
+  font: normal normal normal 14px/16px SF Pro Display;
+}
+
+.dayCSS {
+  text-transform: "none";
+  font-size: 24px;
+  margin-top: 20px;
+  color: #2c2c2e;
+  padding: 0 10px;
+  font: normal normal bold 18px/21px SF Pro Display;
+}
+
+.timeCSS {
+  text-transform: "none";
+  font-size: 24px;
+  margin-top: 20px;
+  color: #2c2c2e;
+  padding: 0 10px;
+  font: normal normal bold 18px/21px SF Pro Display;
 }

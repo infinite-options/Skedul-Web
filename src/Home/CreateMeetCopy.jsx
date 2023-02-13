@@ -330,7 +330,7 @@ export default function CreateMeet() {
     }
   }, [selectedEvent, selectedSchedule, refreshKey]);
 
-  console.log("Attendees and userEmail: ", attendees, userEmail);
+  console.log(attendees, userEmail);
 
   useEffect(() => {
     if (timeSelected) {
@@ -1101,7 +1101,7 @@ export default function CreateMeet() {
                       </div>
                     </div>
                   </div>
-                  {console.log("Display Meeting Card: ", showCreateNewMeetModal)}
+                  {console.log(showCreateNewMeetModal)}
                   <div hidden={!showCreateNewMeetModal}>
                     <Typography
                       style={{
@@ -1112,11 +1112,8 @@ export default function CreateMeet() {
                         font: "normal normal bold 18px/21px SF Pro Display",
                       }}
                     >
-                      {console.log("Meeting Time: ", meetTime)}
                       {meetTime.substring(0, 5)} <br />
-                      {console.log("Meeting Day: ", meetDate)}
                       {moment(meetDate).format("MMMM DD, YYYY")}
-                      {console.log("Meeting Day: ", meetDate)}
                     </Typography>
                   </div>
                 </Col>

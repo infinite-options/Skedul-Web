@@ -11,6 +11,7 @@ import GoogleLogin from "react-google-login";
 import "../styles/createmeet.css";
 
 import LoginContext from "../LoginContext";
+import { type } from "@testing-library/user-event/dist/type";
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -184,6 +185,8 @@ export default function CreateMeet() {
 
   let curURL = window.location.href;
   const eventID = curURL.substring(curURL.length - 10);
+  console.log("Event ID parsed: ", eventID);
+
   useEffect(() => {
     initClient((success) => {
       if (success) {
@@ -212,32 +215,43 @@ export default function CreateMeet() {
     }
     //console.log('booknowbtn', successfull);
   };
-  //console.log(googleAuthedEmail, googleAuthedName);
+
   useEffect(() => {
-    const url = BASE_URL + `GetEvent/${eventID}`;
+    const url = BASE_URL + `GetWeekAvailableAppointments/${eventID}`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        //console.log(json.result.result[0]);
-        setSelectedEvent(json.result.result[0]);
-        let viewID = json.result.result[0].view_id;
-        let userID = json.result.result[0].user_id;
-        setUserID(userID);
-        axios
-          .get(BASE_URL + `GetView/${viewID}`)
-          .then((response) => {
-            let schedule = JSON.parse(response.data.result.result[0].schedule);
+        console.log("Running endpoint");
+        console.log("Get Week Available Appointments Result: ", json.result[0]);
+        setSelectedEvent(json.result[0]);
 
-            setSelectedSchedule(schedule);
-            setViewID(response.data.result.result[0].view_unique_id);
-            setViewColor(response.data.result.result[0].color);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        let event_unique_id = json.result[0].event_unique_id;
+        let user_id = json.result[0].user_id;
+        let view_id = json.result[0].view_id;
+        let event_name = json.result[0].event_name;
+        let location = json.result[0].location;
+        let duration = json.result[0].duration;
+        let before_time = json.result[0].before_time;
+        let before_enabled = json.result[0].before_enabled;
+        let after_time = json.result[0].after_time;
+        let after_enabled = json.result[0].after_enabled;
+        let view_name = json.result[0].view_name;
+        let color = json.result[0].color;
+        let schedule = JSON.parse(json.result[0].schedule);
+        // setSelectedEvent(event_unique_id);
+        setUserID(user_id);
+        setViewID(view_id);
+        setEventName(event_name);
+        setMeetLocation(location);
+        setDuration(duration);
+        setViewColor(color);
+        setSelectedSchedule(schedule);
+
+        console.log("Variables input and set: ", user_id, view_id, event_name);
+        console.log("Schedule: ", schedule);
 
         axios
-          .get(BASE_URL + `UserDetails/${userID}`)
+          .get(BASE_URL + `UserDetails/${user_id}`)
           .then((response) => {
             //console.log(response.data);
             setAccessToken(response.data.google_auth_token);
@@ -295,7 +309,7 @@ export default function CreateMeet() {
                     let at = data["access_token"];
                     setAccessToken(at);
                     //console.log('in events', at);
-                    let url = BASE_URL + `UpdateAccessToken/${userID}`;
+                    let url = BASE_URL + `UpdateAccessToken/${user_id}`;
                     axios
                       .post(url, {
                         google_auth_token: at,
@@ -319,8 +333,10 @@ export default function CreateMeet() {
             console.log(error);
           });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log("Error: ", error));
   }, [refreshKey]);
+
+  console.log("Stored in Selected Event: ", selectedEvent);
 
   useEffect(() => {
     console.log("selectedEvent length: ", selectedEvent.length);
@@ -329,7 +345,6 @@ export default function CreateMeet() {
       setIsLoading(false);
     }
   }, [selectedEvent, selectedSchedule, refreshKey]);
-
   console.log("Attendees and userEmail: ", attendees, userEmail);
 
   useEffect(() => {
@@ -598,34 +613,193 @@ export default function CreateMeet() {
     date = mm + "/" + dd + "/" + yyyy;
     return date;
   }
-  function Last7Days() {
-    var result = [];
-    var resultDay = [];
-    let date = {};
-    for (var i = 0; i < 7; i++) {
-      var d = new Date();
-      var x = new Date().getDay();
-      d.setDate(d.getDate() + i);
-      x = moment(d).format("dddd");
-      result.push(formatDate(d));
-      resultDay.push(x);
-      date[x] = moment(d).format("YYYY-MM-DD");
-    }
+  // function Last7Days() {
+  //   console.log("In Last7Days");
+  //   var result = [];
+  //   var resultDay = [];
+  //   let date = {};
+  //   for (var i = 0; i < 7; i++) {
+  //     var d = new Date();
+  //     var x = new Date().getDay();
+  //     console.log("Date & Day:", i, d, x);
+  //     d.setDate(d.getDate() + i);
+  //     x = moment(d).format("dddd");
+  //     console.log(i, d, x);
+  //     result.push(formatDate(d));
+  //     resultDay.push(x);
+  //     date[x] = moment(d).format("YYYY-MM-DD");
+  //     console.log(resultDay, date);
+  //     // console.log(resultDay);
+  //     // console.log(date);
+  //   }
+  //   console.log("Date: ", date);
+  //   return date;
+  // }
 
-    return date;
+  function Last7Days() {
+    console.log("In Last7Days", selectedSchedule);
+
+    const result = {};
+    let keys = Object.keys(selectedSchedule); // Retrieves only the KEYS from selectedSchedule JSON object as an ARRAY
+    // console.log("Keys: ", keys);
+    keys.map((k) => {
+      // for each element of the array
+      // console.log("K: ", k);
+      let x = [];
+      x = k.split(" "); // split the element
+      // console.log("X: ", x, x[0], x[1]);
+      result[x[0]] = x[1]; // store it as a key:value pair in result
+      // console.log("Result: ", result);
+    });
+
+    // console.log("Last 7 Days result: ", result);
+    return result;
   }
+
+  // var result = [];
+  // var resultDay = [];
+  // let date = {};
+  // for (var i = 0; i < 7; i++) {
+  //   var d = new Date();
+  //   var x = new Date().getDay();
+  //   console.log("Date & Day:", i, d, x);
+  //   d.setDate(d.getDate() + i);
+  //   x = moment(d).format("dddd");
+  //   console.log(i, d, x);
+  //   result.push(formatDate(d));
+  //   resultDay.push(x);
+  //   date[x] = moment(d).format("YYYY-MM-DD");
+  //   console.log(resultDay, date);
+  //   // console.log(resultDay);
+  //   // console.log(date);
+  // }
+  // console.log("Date: ", date);
+  //   return;
+  // }
+
+  // STRATEGY IS TO REWRITE THIS FUNCTION TO DISPLAY THE DAYS
+  function renderAvailableTimesVertical() {
+    console.log("In render Available Appointments", dateString);
+
+    console.log(`Here are the Time Slots on the Selected Day: ${selectedSchedule[dateString]} ${dateString}`);
+    // Data is stored in an array
+
+    // const array1 = ["a", "b", "c"];
+
+    // array1.forEach((element) => console.log(element));
+
+    const availTimes = `${selectedSchedule[dateString]}`;
+    console.log("This is currently in the array: ", availTimes, typeof availTimes);
+
+    // const listOfTimes = availTimes.map((someVarialble) => {someFunction})
+
+    // const listOfTimes = JSON.parse(availTimes).map((eachObject) => {
+    // console.log("This is what is in each Object; ", eachObject);
+    // console.log("This is what is in each Object; ", eachObject.start_time);
+    return (
+      <Col
+        style={{
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          console.log("Button Clicked Time Selected ");
+          // setTimeSelected(false); // triggers UseEffect line 394 to call AvailableAppointments endpoint
+          // setShowTimes(true); // Not sure what this does
+          // // setDateString(dateRange["Sunday"]);
+          // setDateString(displayDay);
+          // console.log("STORED IN DATERANGE: ", dateRange);
+          // console.log("Day Selected: ", displayDay);
+          // renderAvailableTimesVertical(displayDay);
+          // setTimeAASlots([]);
+          // setTimeSlots([]);
+          // setStartTime(selectedSchedule.Sunday[0].start_time);
+          // setEndTime(selectedSchedule.Sunday[0].end_time);
+        }}
+      >
+        {JSON.parse(availTimes).map((eachObject) => {
+          return (
+            <button>
+              {console.log("Start Time: ", eachObject.start_time)}
+              {eachObject.start_time}
+            </button>
+          );
+        })}
+      </Col>
+    );
+  }
+
+  // console.log(listOfTimes[0].end_time);
+
+  // const listOfTimes = availTimes.map((displayTime) => (
+  //   <Col
+  //     style={{
+  //       cursor: "pointer",
+  //     }}
+  //     onClick={() => {
+  //       console.log("Button Clicked Time Selected ");
+  //       // setTimeSelected(false); // triggers UseEffect line 394 to call AvailableAppointments endpoint
+  //       // setShowTimes(true); // Not sure what this does
+  //       // // setDateString(dateRange["Sunday"]);
+  //       // setDateString(displayDay);
+  //       // console.log("STORED IN DATERANGE: ", dateRange);
+  //       // console.log("Day Selected: ", displayDay);
+  //       // renderAvailableTimesVertical(displayDay);
+  //       // setTimeAASlots([]);
+  //       // setTimeSlots([]);
+  //       // setStartTime(selectedSchedule.Sunday[0].start_time);
+  //       // setEndTime(selectedSchedule.Sunday[0].end_time);
+  //     }}
+  //   >
+  //     {console.log(displayTime)}
+  //     {displayTime.start_time}
+  //   </Col>
+  // ));
+
+  // listOfTimes.forEach((element) => console.log(element));
+
+  //   let availTimes = Object.keys(`${selectedSchedule[displayDay]}`);
+
+  //   const listOfTimes = availTimes.map((displayDay) => (
+  //     <Col
+  //       style={{
+  //         cursor: "pointer",
+  //       }}
+  //       onClick={() => {
+  //         console.log("Button Clicked Time Selected ");
+  //         setTimeSelected(false); // triggers UseEffect line 394 to call AvailableAppointments endpoint
+  //         setShowTimes(true); // Not sure what this does
+  //         // setDateString(dateRange["Sunday"]);
+  //         setDateString(displayDay);
+  //         console.log("Day Selected: ", displayDay);
+  //         setTimeAASlots([]);
+  //         setTimeSlots([]);
+  //         setStartTime(selectedSchedule.Sunday[0].start_time);
+  //         setEndTime(selectedSchedule.Sunday[0].end_time);
+  //       }}
+  //     >
+  //       {displayDay}
+  //     </Col>
+  //   ));
+  // }
+
   function renderAvailableApptsVertical() {
+    console.log("In render Available Appointments");
+
     Last7Days();
+
     let result = [];
+    console.log("In render Date: ", timeAASlots);
     {
       timeSlots.length === 0 ? (result = timeAASlots) : timeAASlots.length === 0 ? (result = timeSlots) : (result = timeSlots.filter((o1) => timeAASlots.some((o2) => o1 === o2)));
     }
+    console.log("In render Appts: ", timeSlots);
 
     return (
       <div>
         <div style={{ height: "10rem" }}>
           <Grid container direction="column" spacing={1} style={{ height: "20rem" }}>
             {result.map(function (element) {
+              console.log("Meeting Info; ", element);
               return (
                 <Box
                   sx={{
@@ -650,12 +824,136 @@ export default function CreateMeet() {
 
   //console.log(dateString)
   function showAvailableDays() {
+    console.log("In Show Available Days");
+    console.log("Selected Schedule: ", selectedSchedule);
+    console.log("Selected Schedule for Friday 2023-02-10: ", `${selectedSchedule["Friday 2023-02-10"]}`);
     let dateRange = Last7Days();
-    //console.log(dateRange);
+    console.log("showAvailableDays result:", dateRange);
+    let keys = Object.keys(selectedSchedule);
+    console.log("Keys: ", keys);
+    console.log("Sunday: ", keys[2]);
 
+    console.log("Object Keys with For Each Study");
+
+    // let genders = Object.keys(population);
+    // genders.forEach((gender) => console.log(gender));
+    keys.forEach((key) => console.log(key));
+
+    // genders.forEach((gender) => {
+    //   console.log(`There are ${population[gender]} ${gender}`);
+    // });
+    console.log("Object Keys with For Each to Return Value Study");
+    keys.forEach((key) => {
+      if (`${selectedSchedule[key]}` !== "[]") {
+        // this shows the value for each key
+        console.log(`Here are the avialable days: ${selectedSchedule[key]} ${key}`);
+      }
+    });
+
+    // let populationArr = Object.entries(population);
+    // console.log(populationArr);
+
+    // OBJECT STUDY
+    console.log("Object Values Study");
+    let scheduleValues = Object.values(selectedSchedule);
+    console.log("Schedule Values: ", scheduleValues);
+    console.log(`Here are the corresponding lengths: ${scheduleValues.length}`);
+
+    console.log("Object Entries Study");
+    let scheduleEntries = Object.entries(selectedSchedule);
+    console.log("Schedule Entries: ", scheduleEntries);
+    scheduleEntries.forEach((entry) => {
+      console.log(`Here is the key: ${Object.keys(scheduleEntries)}`);
+      // console.log(`Here are the corresponding lengths: ${scheduleEntries.entry.length}`);
+    });
+    // console.log(`Here are the corresponding lengths: ${scheduleEntries.length}`);
+
+    console.log("Reduce selectedSchedule to only the days avaialble");
+    const filteredAvailability = {};
+    keys.forEach((key) => {
+      if (`${selectedSchedule[key]}` !== "[]") {
+        //  let x = [];
+        //     x = k.split(" "); // split the element
+        //     // console.log("X: ", x, x[0], x[1]);
+        //     result[x[0]] = x[1];
+
+        // let x = [];
+        // result[x[${key}]] = x[${selectedSchedule[key]}];
+        // this shows the value for each key
+        filteredAvailability[`${key}`] = `${selectedSchedule[key]}`;
+        console.log(`Here are the avialable days: ${key}`);
+        console.log(`Here are the avialable times: ${selectedSchedule[key]}`);
+      }
+      console.log("Resultant Array: ", filteredAvailability);
+    });
+
+    let availDay = Object.keys(filteredAvailability);
+
+    // THIS WORKS
+    // const listOfDays = availDay.map(
+    //   (displayDay) => <p>{displayDay}</p>
+    // );
+
+    const listOfDays = availDay.map((displayDay) => (
+      <Col
+        style={{
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          console.log("Button Clicked Date Selected ");
+          setTimeSelected(false); // triggers UseEffect line 394 to call AvailableAppointments endpoint
+          setShowTimes(true); // Not sure what this does
+          // setDateString(dateRange["Sunday"]);
+          setDateString(displayDay);
+          console.log("STORED IN DATERANGE: ", dateRange);
+          console.log("Day Selected: ", displayDay);
+          // renderAvailableTimesVertical(displayDay);
+          setTimeAASlots([]);
+          setTimeSlots(displayDay);
+          setStartTime(selectedSchedule.Sunday[0].start_time);
+          setEndTime(selectedSchedule.Sunday[0].end_time);
+        }}
+      >
+        {displayDay}
+      </Col>
+    ));
+
+    // (
+    //   <Col
+    //     style={{
+    //       cursor: "pointer",
+    //     }}
+    //     className={dateString === dateRange["Sunday"] ? `${"activeTimeSlotButton"}` : `${"timeslotButton"}`}
+    //     onClick={() => {
+    //       setTimeSelected(true);
+    //       setShowTimes(true);
+    //       setDateString(dateRange["Sunday"]);
+    //       setTimeAASlots([]);
+    //       setTimeSlots([]);
+    //       setStartTime(selectedSchedule.Sunday[0].start_time);
+    //       setEndTime(selectedSchedule.Sunday[0].end_time);
+    //     }}
+    //   >
+    //     Sunday, {dateRange["Sunday"]}
+    //   </Col>
+    // )
+
+    //   // ORIGINAL RANJIT REFERENCE
+    //   .map((filteredRestaurant) => (
+    //     <RecommendationCard key={filteredRestaurant.place_id} restaurant={filteredRestaurant} deleteRecHandler={() => deleteRecHandler(filteredRestaurant)} />
+    //   ));
+
+    console.log("This is what is in ListOfDays: ", listOfDays);
+
+    // THIS IS THE RETURN STATEMENT OF WHAT IS DISPLAYED ON THE SCREEN
     return (
       <Col>
-        {selectedSchedule.Sunday.length <= 0 ? (
+        {console.log("THIS IS WHAT I WANT TO MAP: ", filteredAvailability)}
+        {availDay.forEach((key) => console.log(key))}
+
+        {listOfDays}
+
+        {/* {selectedSchedule.Sunday.length <= 0 ? (
           ""
         ) : (
           <div>
@@ -710,7 +1008,6 @@ export default function CreateMeet() {
             )}
           </div>
         )}
-
         {selectedSchedule.Tuesday.length <= 0 ? (
           ""
         ) : (
@@ -845,7 +1142,7 @@ export default function CreateMeet() {
               <div></div>
             )}
           </div>
-        )}
+        )} */}
       </Col>
     );
   }
@@ -1005,7 +1302,7 @@ export default function CreateMeet() {
       {console.log("This is the value of isLoading: ", isLoading)}
       {isLoading ? (
         <Row>
-          <h1>Is Loading is True, {isLoading}</h1>
+          <h1>Is Loading is True Modified Page, {isLoading}</h1>
           <Col>
             <Typography>Just schedule this meeting</Typography>
             <button
@@ -1035,7 +1332,7 @@ export default function CreateMeet() {
         </Row>
       ) : (
         <div>
-          <h1>Is Loading is False Original Page, {isLoading}</h1>
+          <h1>Is Loading is False Modified Page, {isLoading}</h1>
           {signedin ? (
             <div>
               <Row>
@@ -1053,15 +1350,16 @@ export default function CreateMeet() {
                     onClick={() => {
                       // getAuthToGoogle();
                       // setSignedIn(true);
+                      console.log("Button Clicked - Event Selected");
                       setShowDays(true);
                       setMeetingConfirmed(false);
                       setTimeSelected(false);
                       setTimeSlots([]);
                       setTimeAASlots([]);
                       setDuration(selectedEvent.duration);
-                      getView();
-                      setViewID(selectedEvent.view_id);
-                      setEventName(selectedEvent.event_name);
+                      // getView();
+                      // setViewID(selectedEvent.view_id);
+                      // setEventName(selectedEvent.event_name);
                     }}
                   >
                     <Col>
@@ -1075,6 +1373,7 @@ export default function CreateMeet() {
                             font: "normal normal normal 24px/30px Prohibition",
                           }}
                         >
+                          {console.log("Selected Event: ", selectedEvent.event_name)}
                           {selectedEvent.event_name}
                         </Typography>
                       </Col>
@@ -1087,6 +1386,7 @@ export default function CreateMeet() {
                       }}
                     >
                       <div>
+                        {console.log("Selected Event Duration: ", selectedEvent.duration)}
                         {Number(selectedEvent.duration.substring(0, 2)) > 1
                           ? selectedEvent.duration.substring(3, 5) !== "59"
                             ? Number(selectedEvent.duration.substring(0, 2)) + " hrs " + Number(selectedEvent.duration.substring(3, 5)) + " min"
@@ -1096,8 +1396,11 @@ export default function CreateMeet() {
                           : selectedEvent.duration.substring(3, 5) + " min"}
                       </div>
                       <div>Location: {selectedEvent.location === "" ? "None Specified" : selectedEvent.location}</div>
-                      <div>
+                      {/* <div>
                         -{JSON.parse(selectedEvent.buffer_time).before.time.substring(3, 5)} / +{JSON.parse(selectedEvent.buffer_time).after.time.substring(3, 5)}
+                      </div> */}
+                      <div>
+                        -{selectedEvent.before_time} / +{selectedEvent.after_time}
                       </div>
                     </div>
                   </div>
@@ -1146,6 +1449,7 @@ export default function CreateMeet() {
                       >
                         Select a Date & Time
                       </Typography>
+                      {console.log("In Select a Date & Time")}
                       {showAvailableDays()}
                     </div>
                   ) : (
@@ -1176,7 +1480,7 @@ export default function CreateMeet() {
                       >
                         Available Times
                       </Typography>
-                      {renderAvailableApptsVertical()}
+                      {renderAvailableTimesVertical()}
                     </div>
                   ) : (
                     <div></div>
