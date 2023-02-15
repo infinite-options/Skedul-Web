@@ -186,9 +186,9 @@ export default function CreateMeet() {
   // Get Event ID from URL
   let curURL = window.location.href;
   const eventID = curURL.substring(curURL.length - 10);
-  console.log("Event ID parsed: ", eventID);
-  console.log("Attendees and userEmail: ", attendees, userEmail);
-  console.log("Stored in Selected Event: ", selectedEvent);
+  // console.log("Event ID parsed: ", eventID);
+  // console.log("Attendees and userEmail: ", attendees, userEmail);
+  // console.log("Stored in Selected Event: ", selectedEvent);
 
   useEffect(() => {
     const url = BASE_URL + `GetWeekAvailableAppointments/${eventID}`;
@@ -348,6 +348,9 @@ export default function CreateMeet() {
         onClick={() => {
           console.log("Button Clicked - Event Selected");
           setShowDays(true);
+          setShowTimes(false);
+          setShowButton(false);
+          setShowCreateNewMeetModal(false);
         }}
       >
         {" "}
@@ -388,8 +391,11 @@ export default function CreateMeet() {
         }}
         onClick={() => {
           console.log("Button Clicked - Date Selected ");
+          setMeetTime(""); // Resets and previous Meet Time
+          setShowButton(false); // Ensures Show Button is set to False
           setShowTimes(true); // Allows for Times to be displayed
-          setDateString(displayDay);
+          // setDateString(displayDay);
+          setMeetDate(displayDay);
           console.log("Day Selected: ", displayDay);
         }}
       >
@@ -403,29 +409,34 @@ export default function CreateMeet() {
   }
 
   function showAvailableTimes() {
-    console.log("In Show Available Times", dateString, typeof dateString);
+    console.log("In Show Available Times", meetDate, typeof meetDate);
 
-    console.log(`For ${dateString} here are the avialable times: ${selectedSchedule[dateString]}`);
+    // console.log(`For ${meetDate} here are the avialable times: ${selectedSchedule[meetDate]}`);
 
-    if (dateString !== "") {
-      let availTimes = `${selectedSchedule[dateString]}`; // This works just as well as the next statement
-      // let availTimes = JSON.parse(`${selectedSchedule[dateString]}`);
-      console.log("These are the available Time: ", availTimes, typeof availTimes);
+    if (meetDate !== "") {
+      let availTimes = `${selectedSchedule[meetDate]}`; // This works just as well as the next statement
+      // let availTimes = JSON.parse(`${selectedSchedule[meetDate]}`);
+      // console.log("These are the available Time: ", availTimes, typeof availTimes);
 
       return (
         <div
           style={{
             cursor: "pointer",
           }}
-          onClick={() => {
-            console.log("Button Clicked - Time Selected ");
-            setShowButton(true);
-          }}
         >
           {JSON.parse(availTimes).map((eachObject) => {
             return (
-              <button>
-                {console.log("Start Time: ", eachObject.start_time)}
+              <button
+                onClick={() => {
+                  console.log("Button Clicked - Time Selected ");
+                  // console.log("Selected Start Time: ", eachObject.start_time);
+                  // console.log("Selected Object: ", eachObject);
+                  // setStartTime(eachObject.start_time);
+                  setMeetTime(eachObject.start_time);
+                  setShowButton(true);
+                }}
+              >
+                {/* {console.log("Start Time: ", eachObject.start_time)} */}
                 {eachObject.start_time}
               </button>
             );
@@ -434,19 +445,6 @@ export default function CreateMeet() {
       );
     }
   }
-
-  const openCreateNewMeetModal = () => {
-    setShowButton(false);
-    setShowCreateNewMeetModal((prevState) => {
-      return {
-        showCreateNewMeetModal: !prevState.showCreateNewMeetModal,
-      };
-    });
-  };
-
-  const closeCreateNewMeetModal = () => {
-    setShowCreateNewMeetModal(false);
-  };
 
   const [newAttendees, setNewAttendees] = useState([{ email: "" }, { email: "" }]);
   function handleChange(i, event) {
@@ -462,24 +460,129 @@ export default function CreateMeet() {
     console.log(emails);
   }
 
-  function handleAdd() {
-    const emails = [...attendees];
-    console.log(emails);
-    emails.push({ email: userEmail });
-    setAttendees(emails);
-    setNewAttendees((a) => {
-      a.push({ email: "" });
-      return a;
-    });
+  // function createNewMeet() {
+  //   console.log("In Create New Meet");
+  //   var meeting = {
+  //     user_id: `${selectedUser}`,
+  //     view_id: `${viewID}`,
+  //     event_id: `${eventID}`,
+  //     meeting_name: meetName,
+  //     location: meetLocation,
+  //     attendees: attendees,
+  //     meeting_date: meetDate,
+  //     meeting_time: meetTime,
+  //   };
+  //   console.log("Endpoint JSON Object: ", meeting);
+
+  //   axios
+  //     .post(BASE_URL + "AddMeeting", meeting)
+  //     .then((response) => {
+  //       setRefreshKey((oldKey) => oldKey + 1);
+  //     })
+  //     .catch((error) => {
+  //       console.log("error", error);
+  //     });
+  //   setShowCreateNewMeetModal(false);
+  //   setTimeSelected(false);
+  //   setShowDays(false);
+  //   setShowTimes(false);
+  //   setMeetingConfirmed(true);
+  //   setTimeAASlots([]);
+  //   setTimeSlots([]);
+  //   setMeetName("");
+  //   //setMeetDate('');
+  //   setMeetLocation("");
+  //   //setMeetTime('');
+  //   setAttendees([{ email: "" }]);
+  // }
+
+  function openCreateNewMeetModal() {
+    // console.log("In Open Create New Meet Modal", meetDate, timeSelected);
+    console.log("In Open Create New Meet Modal");
+    // console.log("Date: ", meetDate);
+    // console.log("Time: ", meetTime);
+
+    // setShowDays(false);
+    // setShowTimes(false);
+    // setShowButton(false);
+    return (
+      <div>
+        <div>
+          <h1>Meeting Name</h1>
+          <input
+            style={{
+              width: "344px",
+              backgroundColor: " #F3F3F8",
+              border: "1px solid #636366",
+              borderRadius: "3px",
+            }}
+            value={meetName}
+            onChange={(e) => setMeetName(e.target.value)}
+          />
+        </div>
+        <div>
+          <h1>{meetDate}</h1>
+          <h1>{meetTime}</h1>
+          Event Type
+          <h1>{eventName}</h1>
+          Location
+          <h1>{meetLocation}</h1>
+        </div>
+        <button
+          style={{
+            backgroundColor: " #F3F3F8",
+            border: "2px solid #2C2C2E",
+            borderRadius: "3px",
+            color: "#2C2C2E",
+          }}
+          onClick={() => {
+            console.log("Cancle button clicked");
+            // closeCreateNewMeetModal();
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          style={{
+            background: "#2C2C2E 0% 0% no-repeat padding-box",
+            border: "2px solid #2C2C2E",
+            borderRadius: "3px",
+            color: " #F3F3F8",
+          }}
+          onClick={(e) => {
+            console.log("Schedule Meeting button clicked");
+            // createMeet();
+            createNewMeet();
+          }}
+        >
+          Schedule Meeting
+        </button>
+      </div>
+    );
   }
 
-  function handleRemove(i) {
-    const emails = [...attendees];
-    emails.splice(i, 1);
-    setAttendees(emails);
-  }
+  // function handleAdd() {
+  //   const emails = [...attendees];
+  //   console.log(emails);
+  //   emails.push({ email: userEmail });
+  //   setAttendees(emails);
+  //   setNewAttendees((a) => {
+  //     a.push({ email: "" });
+  //     return a;
+  //   });
+  // }
+
+  // function handleRemove(i) {
+  //   const emails = [...attendees];
+  //   emails.splice(i, 1);
+  //   setAttendees(emails);
+  // }
 
   function createNewMeet() {
+    console.log("In Create New Meet 2");
+    // console.log("Meet Date Split: ", meetDate, typeof meetDate);
+    console.log("Meet Date Split: ", meetDate.split(" "));
+    console.log("Meet Date Split: ", meetDate.split(" ")[1]);
     var meeting = {
       user_id: `${selectedUser}`,
       view_id: `${viewID}`,
@@ -487,9 +590,12 @@ export default function CreateMeet() {
       meeting_name: meetName,
       location: meetLocation,
       attendees: attendees,
-      meeting_date: meetDate,
+      meeting_date: meetDate.split(" ")[1],
       meeting_time: meetTime,
     };
+
+    console.log("Endpoint JSON Object: ", meeting);
+    console.log("Endpoint JSON Object: ", attendees);
 
     axios
       .post(BASE_URL + "AddMeeting", meeting)
@@ -512,104 +618,104 @@ export default function CreateMeet() {
     //setMeetTime('');
     setAttendees([{ email: "" }]);
   }
-  function createMeet() {
-    //console.log(meetDate, meetTime, duration);
-    let start_time = meetDate + "T" + meetTime + "-0800";
-    //console.log(start_time);
-    let d = convert(duration);
-    let et = Date.parse(start_time) / 1000 + d;
-    //console.log(d);
-    //console.log(et);
-    let end_time = moment(new Date(et * 1000)).format();
-    attendees.push({ email: userEmail });
-    console.log(attendees);
-    var meet = {
-      summary: meetName,
+  // function createMeet() {
+  //   //console.log(meetDate, meetTime, duration);
+  //   let start_time = meetDate + "T" + meetTime + "-0800";
+  //   //console.log(start_time);
+  //   let d = convert(duration);
+  //   let et = Date.parse(start_time) / 1000 + d;
+  //   //console.log(d);
+  //   //console.log(et);
+  //   let end_time = moment(new Date(et * 1000)).format();
+  //   attendees.push({ email: userEmail });
+  //   console.log(attendees);
+  //   var meet = {
+  //     summary: meetName,
 
-      location: meetLocation,
-      creator: {
-        email: googleAuthedEmail,
-        self: true,
-      },
-      organizer: {
-        email: googleAuthedEmail,
-        self: true,
-      },
-      start: {
-        dateTime: start_time,
-      },
-      end: {
-        dateTime: end_time,
-      },
-      attendees: attendees,
-    };
-    console.log(meet);
+  //     location: meetLocation,
+  //     creator: {
+  //       email: googleAuthedEmail,
+  //       self: true,
+  //     },
+  //     organizer: {
+  //       email: googleAuthedEmail,
+  //       self: true,
+  //     },
+  //     start: {
+  //       dateTime: start_time,
+  //     },
+  //     end: {
+  //       dateTime: end_time,
+  //     },
+  //     attendees: attendees,
+  //   };
+  //   console.log(meet);
 
-    publishTheCalenderEvent(meet);
-    setTimeSelected(false);
-    setShowDays(false);
-    setShowTimes(false);
-    setMeetingConfirmed(true);
-    setMeetName("");
-    //setMeetDate('');
-    setMeetLocation("");
-    //setMeetTime('');
-    setAttendees([{ email: "" }]);
-  }
+  //   publishTheCalenderEvent(meet);
+  //   setTimeSelected(false);
+  //   setShowDays(false);
+  //   setShowTimes(false);
+  //   setMeetingConfirmed(true);
+  //   setMeetName("");
+  //   //setMeetDate('');
+  //   setMeetLocation("");
+  //   //setMeetTime('');
+  //   setAttendees([{ email: "" }]);
+  // }
 
-  function formatTime(date, time) {
-    if (time == null) {
-      return "?";
-    } else {
-      var newDate = new Date((date + "T" + time).replace(/\s/, "T"));
-      var hours = newDate.getHours();
-      var minutes = newDate.getMinutes();
+  // function formatTime(date, time) {
+  //   if (time == null) {
+  //     return "?";
+  //   } else {
+  //     var newDate = new Date((date + "T" + time).replace(/\s/, "T"));
+  //     var hours = newDate.getHours();
+  //     var minutes = newDate.getMinutes();
 
-      var ampm = hours >= 12 ? "pm" : "am";
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      var strTime = hours + ":" + minutes + " " + ampm;
-      return strTime;
-    }
-  }
-  function convert(value) {
-    var a = value.split(":"); // split it at the colons
+  //     var ampm = hours >= 12 ? "pm" : "am";
+  //     hours = hours % 12;
+  //     hours = hours ? hours : 12; // the hour '0' should be '12'
+  //     minutes = minutes < 10 ? "0" + minutes : minutes;
+  //     var strTime = hours + ":" + minutes + " " + ampm;
+  //     return strTime;
+  //   }
+  // }
+  // function convert(value) {
+  //   var a = value.split(":"); // split it at the colons
 
-    // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+  //   // minutes are worth 60 seconds. Hours are worth 60 minutes.
+  //   var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
 
-    return seconds + 1;
-  }
-  function formatDate(date) {
-    var dd = date.getDate();
-    var mm = date.getMonth() + 1;
-    var yyyy = date.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
-    date = mm + "/" + dd + "/" + yyyy;
-    return date;
-  }
-  function Last7Days() {
-    var result = [];
-    var resultDay = [];
-    let date = {};
-    for (var i = 0; i < 7; i++) {
-      var d = new Date();
-      var x = new Date().getDay();
-      d.setDate(d.getDate() + i);
-      x = moment(d).format("dddd");
-      result.push(formatDate(d));
-      resultDay.push(x);
-      date[x] = moment(d).format("YYYY-MM-DD");
-    }
+  //   return seconds + 1;
+  // }
+  // function formatDate(date) {
+  //   var dd = date.getDate();
+  //   var mm = date.getMonth() + 1;
+  //   var yyyy = date.getFullYear();
+  //   if (dd < 10) {
+  //     dd = "0" + dd;
+  //   }
+  //   if (mm < 10) {
+  //     mm = "0" + mm;
+  //   }
+  //   date = mm + "/" + dd + "/" + yyyy;
+  //   return date;
+  // }
+  // function Last7Days() {
+  //   var result = [];
+  //   var resultDay = [];
+  //   let date = {};
+  //   for (var i = 0; i < 7; i++) {
+  //     var d = new Date();
+  //     var x = new Date().getDay();
+  //     d.setDate(d.getDate() + i);
+  //     x = moment(d).format("dddd");
+  //     result.push(formatDate(d));
+  //     resultDay.push(x);
+  //     date[x] = moment(d).format("YYYY-MM-DD");
+  //   }
 
-    return date;
-  }
+  //   return date;
+  // }
 
   // This is what gets displayed on the screen
   return (
@@ -637,15 +743,29 @@ export default function CreateMeet() {
         Select a Time
         {showAvailableTimes()}
       </div>
+
+      {/* Show Confirmation Button */}
       <div hidden={!showButton}>
         <button
           className={"activeTimeSlotButton"}
           onClick={() => {
-            openCreateNewMeetModal();
+            setShowCreateNewMeetModal(true);
+            setShowDays(false);
+            setShowTimes(false);
+            setShowButton(false);
           }}
         >
           Confirm Date and Time
         </button>
+        {meetDate}
+        {meetTime}
+      </div>
+
+      {/* Show Creating Meeting Page */}
+      <div hidden={!showCreateNewMeetModal}>
+        {console.log("Return: In Creating Meeting Page", showCreateNewMeetModal)}
+        Here is the Create Modal Page
+        {openCreateNewMeetModal()}
       </div>
     </div>
   );

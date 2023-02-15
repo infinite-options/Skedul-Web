@@ -21,8 +21,7 @@ import CreateMeetModified from "./Home/CreateMeetModified";
 export default function App() {
   const cookies = new Cookies();
   const [loginState, setLoginState] = useState(LoginInitState);
-  console.log("login State");
-  console.log(loginState);
+  console.log("login State", loginState);
   let uid = cookies.get("user_uid") == null ? "" : cookies.get("user_uid");
   let guesProfile = localStorage.getItem("guestProfile") == null ? "" : localStorage.getItem("guestProfile");
   const [isGuest, setIsGuest] = useState(guesProfile === "" ? false : true); // checks if user is logged in
