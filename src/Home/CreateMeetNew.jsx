@@ -224,88 +224,92 @@ export default function CreateMeet() {
         // console.log("Variables input and set: ", user_id, view_id, event_name, duration, typeof duration);
         // console.log("Schedule: ", schedule);
 
-        axios
-          .get(BASE_URL + `UserDetails/${user_id}`)
-          .then((response) => {
-            console.log("JSON OBJECT returned from UserDetails: : ", response.data);
-            setAccessToken(response.data.google_auth_token);
-            setSelectedUser(response.data.user_unique_id);
-            setUserEmail(response.data.user_email_id);
-            // setNewAttendees((a) => {
-            //   a[0].email = response.data.user_email_id;
-            //   return a;
-            // });
-            setAttendees([{ email: response.data.user_email_id }]);
-            setUserName(response.data.user_first_name + "" + response.data.user_last_name);
-            var old_at = response.data.google_auth_token;
-            var refresh_token = response.data.google_refresh_token;
-            //console.log(refresh_token);
-            //console.log('in events', old_at);
-            fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`, {
-              method: "GET",
-            }).then((response) => {
-              console.log("Fetch Access Token: ", response);
-              if (response["status"] === 400) {
-                //console.log('in events if');
-                let authorization_url = "https://accounts.google.com/o/oauth2/token";
+        axios.get(BASE_URL + `UserDetails/${user_id}`).then((response) => {
+          console.log("JSON OBJECT returned from UserDetails: : ", response.data);
+          setAttendees([{ email: response.data.user_email_id }]);
 
-                var details = {
-                  refresh_token: refresh_token,
-                  client_id: CLIENT_ID,
-                  client_secret: CLIENT_SECRET,
-                  grant_type: "refresh_token",
-                };
-                //console.log(details);
-                var formBody = [];
-                for (var property in details) {
-                  var encodedKey = encodeURIComponent(property);
-                  var encodedValue = encodeURIComponent(details[property]);
-                  formBody.push(encodedKey + "=" + encodedValue);
-                }
-                formBody = formBody.join("&");
+          // axios
+          //   .get(BASE_URL + `UserDetails/${user_id}`)
+          //   .then((response) => {
+          //     console.log("JSON OBJECT returned from UserDetails: : ", response.data);
+          //     setAccessToken(response.data.google_auth_token);
+          //     setSelectedUser(response.data.user_unique_id);
+          //     setUserEmail(response.data.user_email_id);
+          //     // setNewAttendees((a) => {
+          //     //   a[0].email = response.data.user_email_id;
+          //     //   return a;
+          //     // });
+          //     setAttendees([{ email: response.data.user_email_id }]);
+          //     setUserName(response.data.user_first_name + "" + response.data.user_last_name);
+          //     var old_at = response.data.google_auth_token;
+          //     var refresh_token = response.data.google_refresh_token;
+          //     //console.log(refresh_token);
+          //     //console.log('in events', old_at);
+          //     fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`, {
+          //       method: "GET",
+          //     }).then((response) => {
+          //       console.log("Fetch Access Token: ", response);
+          //       if (response["status"] === 400) {
+          //         //console.log('in events if');
+          //         let authorization_url = "https://accounts.google.com/o/oauth2/token";
 
-                fetch(authorization_url, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-                  },
-                  body: formBody,
-                })
-                  .then((response) => {
-                    return response.json();
-                  })
-                  .then((responseData) => {
-                    console.log(responseData);
-                    return responseData;
-                  })
-                  .then((data) => {
-                    //console.log(data);
-                    let at = data["access_token"];
-                    setAccessToken(at);
-                    //console.log('in events', at);
-                    let url = BASE_URL + `UpdateAccessToken/${user_id}`;
-                    axios
-                      .post(url, {
-                        google_auth_token: at,
-                      })
-                      .then((response) => {})
-                      .catch((err) => {
-                        console.log(err);
-                      });
-                    return accessToken;
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              } else {
-                setAccessToken(old_at);
-                //console.log(old_at);
-              }
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+          //         var details = {
+          //           refresh_token: refresh_token,
+          //           client_id: CLIENT_ID,
+          //           client_secret: CLIENT_SECRET,
+          //           grant_type: "refresh_token",
+          //         };
+          //         //console.log(details);
+          //         var formBody = [];
+          //         for (var property in details) {
+          //           var encodedKey = encodeURIComponent(property);
+          //           var encodedValue = encodeURIComponent(details[property]);
+          //           formBody.push(encodedKey + "=" + encodedValue);
+          //         }
+          //         formBody = formBody.join("&");
+
+          //         fetch(authorization_url, {
+          //           method: "POST",
+          //           headers: {
+          //             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          //           },
+          //           body: formBody,
+          //         })
+          //           .then((response) => {
+          //             return response.json();
+          //           })
+          //           .then((responseData) => {
+          //             console.log(responseData);
+          //             return responseData;
+          //           })
+          //           .then((data) => {
+          //             //console.log(data);
+          //             let at = data["access_token"];
+          //             setAccessToken(at);
+          //             //console.log('in events', at);
+          //             let url = BASE_URL + `UpdateAccessToken/${user_id}`;
+          //             axios
+          //               .post(url, {
+          //                 google_auth_token: at,
+          //               })
+          //               .then((response) => {})
+          //               .catch((err) => {
+          //                 console.log(err);
+          //               });
+          //             return accessToken;
+          //           })
+          //           .catch((err) => {
+          //             console.log(err);
+          //           });
+          //       } else {
+          //         setAccessToken(old_at);
+          //         //console.log(old_at);
+          //       }
+          //     });
+          //   })
+          //   .catch((error) => {
+          //     console.log(error);
+        });
       })
       .catch((error) => console.log("Error: ", error));
   }, [refreshKey]);
@@ -717,48 +721,223 @@ export default function CreateMeet() {
   //   return date;
   // }
 
+  const hideSignUp = () => {
+    //setSignUpModalShow(false);
+    setSocialSignUpModalShow(false);
+    //history.push(document.location.href.substring(21, 39));
+    setRefreshKey((oldKey) => oldKey + 1);
+    setSignedIn(true);
+    setNewFName("");
+    setNewLName("");
+  };
+
+  const handleNewFNameChange = (event) => {
+    setNewFName(event.target.value);
+  };
+
+  const handleNewLNameChange = (event) => {
+    setNewLName(event.target.value);
+  };
+
+  const handleSocialSignUpDone = () => {
+    axios
+      .post(BASE_URL + "UserSocialSignUp", {
+        email_id: newEmail,
+        first_name: newFName,
+        last_name: newLName,
+        time_zone: "",
+        google_auth_token: accessToken,
+        google_refresh_token: refreshToken,
+        social_id: socialId,
+        access_expires_in: accessExpiresIn,
+      })
+      .then((response) => {
+        console.log("Sign up response: ", response);
+        setSignedIn(true);
+        setgoogleAuthedEmail(newEmail);
+        hideSignUp();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const socialSignUpModal = () => {
+    return (
+      <Modal show={socialSignUpModalShow} onHide={hideSignUp} style={{ marginTop: "70px" }}>
+        <Form as={Container}>
+          <h3
+            className="bigfancytext formEltMargin"
+            style={{
+              textAlign: "center",
+              letterSpacing: "0.49px",
+              color: "#000000",
+              opacity: 1,
+            }}
+          >
+            Sign Up with Social Media
+          </h3>
+          <Form.Group className="formEltMargin">
+            <Form.Group as={Row} className="formEltMargin">
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="First Name"
+                  value={newFName}
+                  onChange={handleNewFNameChange}
+                  style={{
+                    background: "#FFFFFF 0% 0% no-repeat padding-box",
+                    borderRadius: "26px",
+                    opacity: 1,
+                    width: "230px",
+                  }}
+                />
+              </Col>
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="Last Name"
+                  value={newLName}
+                  onChange={handleNewLNameChange}
+                  style={{
+                    background: "#FFFFFF 0% 0% no-repeat padding-box",
+                    borderRadius: "26px",
+                    opacity: 1,
+                    width: "230px",
+                  }}
+                />
+              </Col>
+            </Form.Group>
+
+            <Col>
+              <Form.Group as={Row} className="formEltMargin">
+                <Form.Control
+                  plaintext
+                  readOnly
+                  value={newEmail}
+                  style={{
+                    background: "#FFFFFF 0% 0% no-repeat padding-box",
+                    borderRadius: "26px",
+                    opacity: 1,
+                    width: "500px",
+                  }}
+                />
+              </Form.Group>
+            </Col>
+          </Form.Group>
+
+          <Form.Group className="formEltMargin">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <button
+                variant="primary"
+                type="submit"
+                onClick={handleSocialSignUpDone}
+                style={{
+                  background: "#F8BE28 0% 0% no-repeat padding-box",
+                  borderRadius: "20px",
+                  opacity: 1,
+                  width: "300px",
+                }}
+              >
+                Sign Up
+              </button>
+
+              <button
+                variant="primary"
+                type="submit"
+                onClick={hideSignUp}
+                style={{
+                  marginTop: "10px",
+                  background: "#FF6B4A 0% 0% no-repeat padding-box",
+                  borderRadius: "20px",
+                  opacity: 1,
+                  width: "300px",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </Form.Group>
+        </Form>
+      </Modal>
+    );
+  };
+
+  // ---------------------------------------------------  DISPLAY -----------------------------------------------
   // This is what gets displayed on the screen
   return (
     <div>
-      {/* Show Event Box */}
-      <div
-        className="eventCSS"
-        style={{
-          backgroundColor: `${viewColor}`,
-        }}
-      >
-        {showEvents()}
-      </div>
+      <div>
+        <Row>
+          <h1>Welcome to Skedul {isLoading}</h1>
+          <Col>
+            <h4>Just schedule this meeting</h4>
+            {/* Show Event Box */}
+            <div
+              className="eventCSS"
+              style={{
+                backgroundColor: `${viewColor}`,
+              }}
+            >
+              {showEvents()}
+            </div>
 
-      {/* Show available days */}
-      <div hidden={!showDays} className="dayCSS">
-        {console.log("Return: In Select a Date", showDays)}
-        Select a Date
-        {showAvailableDays()}
-      </div>
+            {/* Show available days */}
+            <div hidden={!showDays} className="dayCSS">
+              {console.log("Return: In Select a Date", showDays)}
+              Select a Date
+              {showAvailableDays()}
+            </div>
 
-      {/* Show available Times */}
-      <div hidden={!showTimes} className="timeCSS">
-        {console.log("Return: In Select a Time", showTimes)}
-        Select a Time
-        {showAvailableTimes()}
-      </div>
+            {/* Show available Times */}
+            <div hidden={!showTimes} className="timeCSS">
+              {console.log("Return: In Select a Time", showTimes)}
+              Select a Time
+              {showAvailableTimes()}
+            </div>
 
-      {/* Show Confirmation Button */}
-      <div hidden={!showButton}>
-        <button
-          className={"activeTimeSlotButton"}
-          onClick={() => {
-            setShowCreateNewMeetModal(true);
-            setShowDays(false);
-            setShowTimes(false);
-            setShowButton(false);
-          }}
-        >
-          Confirm Date and Time
-        </button>
-        {meetDate}
-        {meetTime}
+            {/* Show Confirmation Button */}
+            <div hidden={!showButton}>
+              <button
+                className={"activeTimeSlotButton"}
+                onClick={() => {
+                  setShowCreateNewMeetModal(true);
+                  setShowDays(false);
+                  setShowTimes(false);
+                  setShowButton(false);
+                }}
+              >
+                Confirm Date and Time
+              </button>
+              {meetDate}
+              {meetTime}
+            </div>
+          </Col>
+          <Col>
+            <h4>Sign up for SKEDUL and stay in control</h4>
+            <button
+              className="eventCSS"
+              onClick={handleSocialSignUpDone}
+              style={{
+                backgroundColor: `${viewColor}`,
+              }}
+              // style={{
+              //   background: "#2C2C2E 0% 0% no-repeat padding-box",
+              //   border: "2px solid #2C2C2E",
+              //   borderRadius: "3px",
+              //   color: " #F3F3F8",
+              // }}
+            >
+              Sign Up
+            </button>
+          </Col>
+        </Row>
       </div>
 
       {/* Show Creating Meeting Page */}

@@ -218,7 +218,7 @@ export default function CreateMeet() {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        //console.log(json.result.result[0]);
+        console.log("JSON Result: ", json.result.result[0]);
         setSelectedEvent(json.result.result[0]);
         let viewID = json.result.result[0].view_id;
         let userID = json.result.result[0].user_id;
@@ -326,7 +326,7 @@ export default function CreateMeet() {
     console.log("selectedEvent length: ", selectedEvent.length);
     console.log("is Loading Status 1: ", isLoading);
     if (selectedEvent.length !== 0) {
-      setIsLoading(false);
+      setIsLoading(true);
     }
   }, [selectedEvent, selectedSchedule, refreshKey]);
 
@@ -1139,7 +1139,9 @@ export default function CreateMeet() {
                         style={{
                           textTransform: "none",
                           //fontSize: '24px',
-                          color: "#2C2C2E",
+                          color: "blue",
+                          backgroundColor: "red",
+                          // color: "#2C2C2E",
                           padding: "0",
                           font: "normal normal bold 18px/21px SF Pro Display",
                         }}
