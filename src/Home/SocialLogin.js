@@ -51,7 +51,7 @@ function SocialLogin(props) {
             code: auth_code,
             client_id: client_id,
             client_secret: client_secret,
-            redirect_uri: "http://localhost:3000",
+            redirect_uri: window.location.origin,
             //redirectUri: 'https://skedul.online',
             grant_type: "authorization_code",
         };
@@ -62,6 +62,7 @@ function SocialLogin(props) {
             var encodedValue = encodeURIComponent(details[property]);
             formBody.push(encodedKey + "=" + encodedValue);
         }
+        console.log(window.location.origin)
         formBody = formBody.join("&");
         console.log(formBody);
 
@@ -288,7 +289,7 @@ function SocialLogin(props) {
                 onHide={hideSignUp}
                 style={modalStyle}
             >
-                <Form as={Container}>
+                {/* <Form as={Container}> */}
                     <Modal.Header style={headerStyle} closeButton>
                         <Modal.Title>Sign Up with Social Media</Modal.Title>
                     </Modal.Header>
@@ -396,7 +397,7 @@ function SocialLogin(props) {
                             </Col>
                         </Row>
                     </Modal.Footer>
-                </Form>
+                {/* </Form> */}
             </Modal>
         );
     };

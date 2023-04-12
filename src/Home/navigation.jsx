@@ -103,7 +103,7 @@ export function Navigation() {
                                         setActive("schedule");
                                     }}
                                 >
-                                    Schedule
+                                    Calendar
                                 </Button>
                                 <Button
                                     className={

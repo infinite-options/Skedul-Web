@@ -6,8 +6,11 @@ import AddView from "./AddView";
 import CreateViewDialog from "./CreateViewDialog";
 import Calendar from "./Calendar";
 import UpdateView from "./UpdateView";
+import UpdateViewDialog from "./UpdateViewDialog";
+import LoadingView from "./LoadingDialog"
 import { Button } from "@mui/material";
 import "../../styles/views.css";
+
 
 export const PageContext = createContext();
 
@@ -16,18 +19,21 @@ function Views() {
         .split(";")
         .some((item) => item.trim().startsWith("user_uid="))
         ? document.cookie
-              .split("; ")
-              .find((row) => row.startsWith("user_uid="))
-              .split("=")[1]
+            .split("; ")
+            .find((row) => row.startsWith("user_uid="))
+            .split("=")[1]
         : "";
     const [allViews, setAllViews] = useState([]);
     const [pageStatus, setPageStatus] = useState(); // Create, Update, Loading, Null
     const [showCreateViewDialog, setShowCreateViewDialog] = useState(false);
+    const [showUpdateViewDialog, setshowUpdateViewDialog] = useState(false);
+    const [showLoadingImg, setshowLoadingImg] = useState(false);
+
     const [data, setData] = useState();
     console.log(userID);
 
     useEffect(() => {
-        getAllViews(setAllViews, userID);
+        getAllViews(setAllViews, userID, setshowLoadingImg);
     }, []);
     console.log(data);
 
@@ -48,11 +54,23 @@ function Views() {
                         <SelectView />
                         <AddView
                             setShowCreateViewDialog={setShowCreateViewDialog}
+                            setshowUpdateViewDialog={setshowUpdateViewDialog}
+                            userID={userID}
+                            setshowLoadingImg={setshowLoadingImg}
                         />
                         <CreateViewDialog
                             showCreateViewDialog={showCreateViewDialog}
                             setShowCreateViewDialog={setShowCreateViewDialog}
+                            setshowLoadingImg={setshowLoadingImg}
                         />
+                        <UpdateViewDialog
+                            showUpdateViewDialog={showUpdateViewDialog}
+                            setshowUpdateViewDialog={setshowUpdateViewDialog}
+                            setshowLoadingImg={setshowLoadingImg}
+                        />
+                        <LoadingView
+                            showLoadingImg={showLoadingImg}
+                        ></LoadingView>
                     </Box>
                     <p className={"subTitle"}>Time zone:</p>
                     <p className={"subTitle"}>Pacific Time - US Canada</p>
@@ -71,7 +89,9 @@ function Views() {
                                     setAllViews,
                                     userID,
                                     view,
-                                    view.view_unique_id
+                                    view.view_unique_id,
+                                    "schedule",
+                                    setshowLoadingImg
                                 );
                             });
                         }}

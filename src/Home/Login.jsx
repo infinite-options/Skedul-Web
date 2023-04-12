@@ -146,7 +146,7 @@ export default function Login() {
                                         .post(url, {
                                             google_auth_token: at,
                                         })
-                                        .then((response) => {})
+                                        .then((response) => { })
                                         .catch((err) => {
                                             console.log(err);
                                         });
@@ -220,12 +220,13 @@ export default function Login() {
         axios
             .get(
                 BASE_URL +
-                    "UserLogin/" +
-                    email.toString() +
-                    "," +
-                    password.toString()
+                "UserLogin/" +
+                email.toString() +
+                "," +
+                password.toString()
             )
             .then((response) => {
+                console.log(response.data)
                 if (response.data.result !== false) {
                     document.cookie = "user_uid=" + response.data.result;
                     document.cookie = "user_email=" + email;
@@ -347,7 +348,7 @@ export default function Login() {
                                     //background: `transparent url(${Google}) 0% 0% no-repeat padding-box`,
                                 }}
                                 onClick={renderProps.onClick}
-                                // disabled={renderProps.disabled}
+                            // disabled={renderProps.disabled}
                             ></Button>
                         )}
                         buttonText="Log In"

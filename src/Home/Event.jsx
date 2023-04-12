@@ -260,7 +260,21 @@ export default function Event() {
     const closeUpdateEventModal = () => {
         setShowUpdateEventModal(false);
     };
+    function validatetime(value, fieldname) {
+        var isValid = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])?$/.test(value);
+
+        if (!isValid) {
+
+            alert(fieldname + " is invalid. valid time foramt :  HH:MM:SS")
+        }
+        return isValid;
+    }
     function updateEvent(event_id) {
+        if (!validatetime(selectedEvent.duration, "duration")
+            || !validatetime(selectedEventBuffer.before.time, "before time")
+            || !validatetime(selectedEventBuffer.after.time, "after time")) {
+            return
+        }
         var event = {
             event_name: selectedEvent.event_name,
             duration: selectedEvent.duration,
@@ -344,7 +358,7 @@ export default function Event() {
             <Modal
                 show={showUpdateEventModal}
                 onHide={closeUpdateEventModal}
-                //style={modalStyle}
+            //style={modalStyle}
             >
                 <Modal.Header style={headerStyle} closeButton>
                     <Modal.Title>
@@ -431,7 +445,7 @@ export default function Event() {
                             id="before"
                             checked={
                                 selectedEventBuffer.before.is_enabled !==
-                                    "False" &&
+                                "False" &&
                                 selectedEventBuffer.before.is_enabled !== false
                             }
                             onChange={(event) => {
@@ -467,6 +481,7 @@ export default function Event() {
                     />
                     <div>
                         {console.log(
+                            "teml",
                             selectedEventBuffer.before.time,
                             selectedEventBuffer.after.time
                         )}
@@ -474,7 +489,7 @@ export default function Event() {
                             type="checkbox"
                             checked={
                                 selectedEventBuffer.after.is_enabled !==
-                                    "False" &&
+                                "False" &&
                                 selectedEventBuffer.after.is_enabled !== false
                             }
                             onChange={(event) => {
@@ -560,24 +575,29 @@ export default function Event() {
         let bt = "";
         let at = "";
         let d = "";
-        const numHoursBT =
-            beforeBufferTime >= 60 ? Math.floor(beforeBufferTime / 60) : "00";
-        let numMinsBT = beforeBufferTime % 60;
-        if (numMinsBT < 10) numMinsBT = "0" + numMinsBT;
-        bt = `${numHoursBT}:${numMinsBT}:00`;
+        // const numHoursBT =
+        //     beforeBufferTime >= 60 ? Math.floor(beforeBufferTime / 60) : "00";
+        // let numMinsBT = beforeBufferTime % 60;
+        // if (numMinsBT < 10) numMinsBT = "0" + numMinsBT;
+        // bt = `${numHoursBT}:${numMinsBT}:00`;
 
-        const numHoursAT =
-            afterBufferTime >= 60 ? Math.floor(afterBufferTime / 60) : "00";
-        let numMinsAT = afterBufferTime % 60;
-        if (numMinsAT < 10) numMinsAT = "0" + numMinsAT;
-        at = `${numHoursAT}:${numMinsAT}:00`;
+        // const numHoursAT =
+        //     afterBufferTime >= 60 ? Math.floor(afterBufferTime / 60) : "00";
+        // let numMinsAT = afterBufferTime % 60;
+        // if (numMinsAT < 10) numMinsAT = "0" + numMinsAT;
+        // at = `${numHoursAT}:${numMinsAT}:00`;
 
-        const numHoursD =
-            eventDuration >= 60 ? Math.floor(eventDuration / 60) : "00";
-        let numMinsD = eventDuration % 60;
-        if (numMinsD < 10) numMinsD = "0" + numMinsD;
-        d = `${numHoursD}:${numMinsD}:00`;
-
+        // const numHoursD =
+        //     eventDuration >= 60 ? Math.floor(eventDuration / 60) : "00";
+        // let numMinsD = eventDuration % 60;
+        // if (numMinsD < 10) numMinsD = "0" + numMinsD;
+        // d = `${numHoursD}:${numMinsD}:00`;
+        console.log(eventDuration, beforeBufferTime, afterBufferTime)
+        if (!validatetime(eventDuration, "duration")
+            || !validatetime(beforeBufferTime, "before time")
+            || !validatetime(afterBufferTime, "after time")) {
+            return
+        }
         var event = {
             user_id: `${selectedUser}`,
             view_id: viewID,
@@ -748,8 +768,11 @@ export default function Event() {
                             borderRadius: "3px",
                         }}
                         value={beforeBufferTime}
-                        placeholder="00 min"
-                        onChange={(e) => setBeforeBufferTime(e.target.value)}
+                        placeholder="00:00:00"
+                        onChange={(e) => {
+                            if (e.target.value < 0) return;
+                            setBeforeBufferTime(e.target.value)
+                        }}
                     />
                     <div>
                         <input
@@ -774,9 +797,12 @@ export default function Event() {
                             border: "2px solid #636366",
                             borderRadius: "3px",
                         }}
-                        placeholder="00 min"
+                        placeholder="00:00:00"
                         value={afterBufferTime}
-                        onChange={(e) => setAfterBufferTime(e.target.value)}
+                        onChange={(e) => {
+                            if (e.target.value < 0) return;
+                            setAfterBufferTime(e.target.value)
+                        }}
                     />
                 </Modal.Body>
                 <Modal.Footer style={footerStyle}>
@@ -874,7 +900,7 @@ export default function Event() {
                                 return (
                                     <div>
                                         {event.view_id ===
-                                        view.view_unique_id ? (
+                                            view.view_unique_id ? (
                                             <div>
                                                 <div
                                                     style={{
@@ -933,47 +959,47 @@ export default function Event() {
                                                                 )
                                                             ) > "01"
                                                                 ? event.duration.substring(
-                                                                      3,
-                                                                      5
-                                                                  ) !== "59"
+                                                                    3,
+                                                                    5
+                                                                ) !== "59"
                                                                     ? Number(
-                                                                          event.duration.substring(
-                                                                              0,
-                                                                              2
-                                                                          )
-                                                                      ) +
-                                                                      " hrs " +
-                                                                      Number(
-                                                                          event.duration.substring(
-                                                                              3,
-                                                                              5
-                                                                          )
-                                                                      ) +
-                                                                      " min"
+                                                                        event.duration.substring(
+                                                                            0,
+                                                                            2
+                                                                        )
+                                                                    ) +
+                                                                    " hrs " +
+                                                                    Number(
+                                                                        event.duration.substring(
+                                                                            3,
+                                                                            5
+                                                                        )
+                                                                    ) +
+                                                                    " min"
                                                                     : Number(
-                                                                          event.duration.substring(
-                                                                              0,
-                                                                              2
-                                                                          )
-                                                                      ) +
-                                                                      1 +
-                                                                      " hrs"
+                                                                        event.duration.substring(
+                                                                            0,
+                                                                            2
+                                                                        )
+                                                                    ) +
+                                                                    1 +
+                                                                    " hrs"
                                                                 : Number(
-                                                                      event.duration.substring(
-                                                                          0,
-                                                                          2
-                                                                      )
-                                                                  ) == "01"
-                                                                ? "60 min"
-                                                                : event.duration.substring(
-                                                                      3,
-                                                                      5
-                                                                  ) + " min"}
+                                                                    event.duration.substring(
+                                                                        0,
+                                                                        2
+                                                                    )
+                                                                ) == "01"
+                                                                    ? "60 min"
+                                                                    : event.duration.substring(
+                                                                        3,
+                                                                        5
+                                                                    ) + " min"}
                                                         </div>
                                                         <div>
                                                             Location:{" "}
                                                             {event.location ===
-                                                            ""
+                                                                ""
                                                                 ? "None Specified"
                                                                 : event.location}
                                                         </div>
@@ -1062,9 +1088,11 @@ export default function Event() {
                                                                     cursor: "pointer",
                                                                 }}
                                                                 onClick={() => {
-                                                                    deleteEvent(
-                                                                        event.event_unique_id
-                                                                    );
+                                                                    if (window.confirm("Are you sure You want to delete this Event")) {
+                                                                        deleteEvent(
+                                                                            event.event_unique_id
+                                                                        );
+                                                                    }
                                                                 }}
                                                                 alt="edit event"
                                                             />
@@ -1093,8 +1121,8 @@ export default function Event() {
                                                                 document
                                                                     .location
                                                                     .href +
-                                                                    "/" +
-                                                                    `${event.event_unique_id}`
+                                                                "/" +
+                                                                `${event.event_unique_id}`
                                                             )
                                                         }
                                                     >
