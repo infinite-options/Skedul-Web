@@ -96,7 +96,7 @@ export default function CreateMeet() {
       });
       // access tokens
     }
-  }, []);
+  }, [isLoading]);
   useEffect(() => {
     const url = BASE_URL + `GetEvent/${eventID}`;
     fetch(url)
@@ -1271,7 +1271,10 @@ export default function CreateMeet() {
                 >
                   Just schedule this meeting
                 </Typography>
-                <div id="signInDiv"></div>
+                <div>
+                  <div id="signInDiv"></div>
+                </div>
+
                 {/* <button
                   style={{
                     background: "#2C2C2E 0% 0% no-repeat padding-box",
