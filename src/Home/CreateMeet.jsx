@@ -1,28 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
+import jwt_decode from "jwt-decode";
 import axios from "axios";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { Row, Col, Container, Form, Modal } from "react-bootstrap";
 import { Box, Typography } from "@mui/material";
 import { Grid } from "@mui/material";
-import {
-  signInToGoogle,
-  initClient,
-  getSignedInUserEmail,
-  publishTheCalenderEvent,
-} from "./GoogleApiService";
+import { publishTheCalenderEvent } from "./GoogleApiService";
 import "../styles/createmeet.css";
-
 import LoginContext from "../LoginContext";
 import GoogleSignUp from "./Google/GoogleSignUp";
-const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 
 export default function CreateMeet() {
-  const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
-
   const loginContext = useContext(LoginContext);
   const history = useHistory();
   const [accessToken, setAccessToken] = useState("");
@@ -33,8 +27,8 @@ export default function CreateMeet() {
   const [eventName, setEventName] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState([]);
 
-  const [googleAuthedEmail, setgoogleAuthedEmail] = useState("");
-  const [googleAuthedName, setgoogleAuthedName] = useState("");
+  const [googleAuthedEmail, setGoogleAuthedEmail] = useState("");
+  const [googleAuthedName, setGoogleAuthedName] = useState("");
 
   const [signedin, setSignedIn] = useState(false);
   const [signUp, setSignUp] = useState(false);
@@ -70,35 +64,39 @@ export default function CreateMeet() {
 
   let curURL = window.location.href;
   const eventID = curURL.substring(curURL.length - 10);
+
+  function handleCallBackResponse(response) {
+    var userObject = jwt_decode(response.credential);
+    if (userObject) {
+      let email = userObject.email;
+      let name = userObject.name;
+      console.log(userObject);
+      setGoogleAuthedEmail(email);
+      setGoogleAuthedName(name);
+      setSignedIn(true);
+    }
+  }
   useEffect(() => {
-    initClient((success) => {
-      if (success) {
-        getGoogleAuthorizedEmail();
-      }
-    });
+    /* global google */
+    console.log("in useeffect google", window.google);
+
+    if (window.google) {
+      console.log("in if");
+      //  initializes the Sign In With Google client based on the configuration object
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCallBackResponse,
+      });
+      //    method renders a Sign In With Google button in your web pages.
+      google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+        size: "large",
+        text: "signin_with",
+        shape: "pill",
+        theme: "dark",
+      });
+      // access tokens
+    }
   }, []);
-
-  const getGoogleAuthorizedEmail = async () => {
-    let profile = [];
-    profile = await getSignedInUserEmail();
-
-    if (profile) {
-      setSignedIn(true);
-      let email = profile[0];
-      let fullName = profile[1];
-      setgoogleAuthedEmail(email);
-      setgoogleAuthedName(fullName);
-      setSignedIn(true);
-    }
-  };
-  const getAuthToGoogle = async () => {
-    let successfull = await signInToGoogle();
-    if (successfull) {
-      getGoogleAuthorizedEmail();
-    }
-    //console.log('booknowbtn', successfull);
-  };
-  //console.log(googleAuthedEmail, googleAuthedName);
   useEffect(() => {
     const url = BASE_URL + `GetEvent/${eventID}`;
     fetch(url)
@@ -220,7 +218,7 @@ export default function CreateMeet() {
       setIsLoading(false);
     }
   }, [selectedEvent, selectedSchedule, refreshKey]);
-  console.log(attendees, userEmail);
+
   useEffect(() => {
     if (timeSelected) {
       axios
@@ -811,7 +809,8 @@ export default function CreateMeet() {
         <Row>
           <Col>
             <Typography>Just schedule this meeting</Typography>
-            <button
+            <div id="signInDiv"></div>
+            {/* <button
               style={{
                 background: "#2C2C2E 0% 0% no-repeat padding-box",
                 border: "2px solid #2C2C2E",
@@ -820,7 +819,7 @@ export default function CreateMeet() {
               }}
             >
               Proceed
-            </button>
+            </button> */}
           </Col>
           <Col>
             <Typography>Sign up for SKEDUL and stay in control</Typography>
@@ -1272,7 +1271,8 @@ export default function CreateMeet() {
                 >
                   Just schedule this meeting
                 </Typography>
-                <button
+                <div id="signInDiv"></div>
+                {/* <button
                   style={{
                     background: "#2C2C2E 0% 0% no-repeat padding-box",
                     border: "2px solid #2C2C2E",
@@ -1288,7 +1288,7 @@ export default function CreateMeet() {
                   }}
                 >
                   Proceed
-                </button>
+                </button> */}
               </Col>
               <Col
                 style={{
