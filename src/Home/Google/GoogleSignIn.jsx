@@ -29,20 +29,15 @@ function GoogleSignIn(props) {
   const loginContext = useContext(LoginContext);
   // gets back ID token, decoded to get email and other account info, used to sign in
   function handleCallBackResponse(response) {
-    // console.log("Encoded JWT ID token:" + response.credential);
     var userObject = jwt_decode(response.credential);
-    // console.log("User object", userObject);
     if (userObject) {
       let email = userObject.email;
       setEmail(email);
       let user_id = "";
       axios.get(BASE_URL + `/UserToken/${email}`).then((response) => {
-        console.log("in events", response);
         setAccessToken(response["data"]["google_auth_token"]);
-
         user_id = response["data"]["user_unique_id"];
         var old_at = response["data"]["google_auth_token"];
-        // console.log("in events", old_at);
         var refreshToken = response["data"]["google_refresh_token"];
         loginContext.setLoginState({
           ...loginContext.loginState,
@@ -67,9 +62,7 @@ function GoogleSignIn(props) {
           }
         )
           .then((response) => {
-            // console.log("in events", response);
             if (response["status"] === 400) {
-              // console.log("in events if");
               let authorization_url =
                 "https://accounts.google.com/o/oauth2/token";
 
@@ -100,14 +93,11 @@ function GoogleSignIn(props) {
                   return response.json();
                 })
                 .then((responseData) => {
-                  // console.log(responseData);
                   return responseData;
                 })
                 .then((data) => {
-                  // console.log(data);
                   let at = data["access_token"];
                   setAccessToken(at);
-                  // console.log("in events", at);
                   let url = BASE_URL + `/UpdateAccessToken/${user_id}`;
                   axios
                     .post(url, {
@@ -124,14 +114,12 @@ function GoogleSignIn(props) {
                 });
             } else {
               setAccessToken(old_at);
-              // console.log(old_at);
             }
           })
           .catch((err) => {
             console.log(err);
           });
       });
-
       socialGoogle(email);
     }
   }
@@ -141,7 +129,6 @@ function GoogleSignIn(props) {
     axios
       .get(BASE_URL + "UserSocialLogin/" + email)
       .then((res) => {
-        console.log(res);
         if (res.data.result !== false) {
           document.cookie = "user_uid=" + res.data.result[0];
           document.cookie = "user_email=" + email;
@@ -158,8 +145,6 @@ function GoogleSignIn(props) {
               user_access: res.data.result[1],
             },
           });
-          console.log("Login successful");
-          console.log(email, document.cookie);
           history.push({
             pathname: "/schedule",
             state: {
@@ -170,8 +155,6 @@ function GoogleSignIn(props) {
           setShowSpinner(false);
           // Successful log in, Try to update tokens, then continue to next page based on role
         } else {
-          console.log("log in error");
-          // history.push("/signup");
           setSocialSignUpModalShow(true);
           setShowSpinner(false);
         }
@@ -188,7 +171,6 @@ function GoogleSignIn(props) {
     /* global google */
 
     if (window.google) {
-      // console.log("in here singnin");
       //  initializes the Sign In With Google client based on the configuration object
       google.accounts.id.initialize({
         client_id: CLIENT_ID,

@@ -15,9 +15,6 @@ export default function Login() {
   const history = useHistory();
 
   console.log("In Sign Up page");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newFName, setNewFName] = useState("");
@@ -25,10 +22,9 @@ export default function Login() {
 
   const hideSignUp = () => {
     //setSignUpModalShow(false);
-    setSocialSignUpModalShow(false);
     history.push("/");
-    setEmail("");
-    setPassword("");
+    setNewEmail("");
+    setNewPassword("");
     setNewFName("");
     setNewLName("");
   };
@@ -67,22 +63,6 @@ export default function Login() {
         console.log(error);
       });
   };
-  const handleSocialSignUpDone = () => {
-    axios
-      .post(BASE_URL + "UserSocialSignUp", {
-        email_id: newEmail,
-        first_name: newFName,
-        last_name: newLName,
-      })
-      .then((response) => {
-        console.log(response.data);
-        hideSignUp();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   return (
     <Container
       style={{

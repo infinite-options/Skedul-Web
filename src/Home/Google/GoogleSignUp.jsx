@@ -39,21 +39,16 @@ function GoogleSignUp() {
     /* global google */
 
     if (window.google) {
-      // console.log("in here signup");
-      // console.log(CLIENT_ID, SCOPES);
       // initialize a code client for the authorization code flow.
       codeClient = google.accounts.oauth2.initCodeClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
         callback: (tokenResponse) => {
-          // console.log(tokenResponse);
           // gets back authorization code
           if (tokenResponse && tokenResponse.code) {
             let auth_code = tokenResponse.code;
             let authorization_url =
               "https://accounts.google.com/o/oauth2/token";
-
-            // console.log("auth_code", auth_code);
             var details = {
               code: auth_code,
               client_id: CLIENT_ID,
@@ -61,7 +56,6 @@ function GoogleSignUp() {
               redirectUri: "postmessage",
               grant_type: "authorization_code",
             };
-            console.log(details);
             var formBody = [];
             for (var property in details) {
               var encodedKey = encodeURIComponent(property);
@@ -83,7 +77,6 @@ function GoogleSignUp() {
               })
 
               .then((data) => {
-                console.log(data);
                 let at = data["access_token"];
                 let rt = data["refresh_token"];
                 let ax = data["expires_in"];
@@ -99,8 +92,6 @@ function GoogleSignUp() {
                       at
                   )
                   .then((response) => {
-                    // console.log(response.data);
-
                     let data = response.data;
                     //setUserInfo(data);
                     let e = data["email"];
@@ -113,46 +104,18 @@ function GoogleSignUp() {
                     setNewLName(ln);
                     setSocialId(si);
                     axios.get(BASE_URL + "GetEmailId/" + e).then((response) => {
-                      console.log(response.data);
                       if (
                         response.data.message === "User EmailID doesnt exist"
                       ) {
                         setSocialSignUpModalShow(!socialSignUpModalShow);
                       } else {
-                        console.log("ACCESS", accessToken);
                         setAlreadyExists(true);
-                        // document.cookie = "user_uid=" + response.data.result;
-                        // document.cookie = "user_email=" + e;
-                        // document.cookie =
-                        //   "user_access=" + accessToken.toString();
-                        // setLoggedIn(true);
-                        // loginContext.setLoginState({
-                        //   ...loginContext.loginState,
-                        //   loggedIn: true,
-                        //   user: {
-                        //     ...loginContext.loginState.user,
-                        //     id: response.data.result.toString(),
-                        //     email: e.toString(),
-                        //     user_access: accessToken.toString(),
-                        //   },
-                        // });
-                        // history.push({
-                        //   pathname: "/schedule",
-                        //   state: {
-                        //     email: e.toString(),
-                        //     accessToken: accessToken.toString(),
-                        //   },
-                        // });
                       }
                     });
                   })
                   .catch((error) => {
-                    // console.log("its in landing page");
                     console.log(error);
                   });
-
-                // setSocialSignUpModalShow(!socialSignUpModalShow);
-
                 return (
                   accessToken,
                   refreshToken,
@@ -204,7 +167,6 @@ function GoogleSignUp() {
         access_expires_in: accessExpiresIn.toString(),
       })
       .then((response) => {
-        console.log(response);
         hideSignUp();
       })
       .catch((error) => {

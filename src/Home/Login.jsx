@@ -25,9 +25,6 @@ const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 /* Navigation Bar component function */
 export default function Login() {
   const loginContext = useContext(LoginContext);
-  const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
-  console.log("in login page");
   const history = useHistory();
 
   const [email, setEmail] = useState("");
@@ -45,7 +42,6 @@ export default function Login() {
   };
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("event", event, email, password);
     axios
       .get(
         BASE_URL + "UserLogin/" + email.toString() + "," + password.toString()
@@ -98,6 +94,7 @@ export default function Login() {
     });
   } else {
   }
+  console.log("validation", validation);
   return (
     <div
       className="main"
@@ -117,68 +114,84 @@ export default function Login() {
       >
         <Box
           display="flex"
+          flexDirection="column"
           flexWrap="nowrap"
           justifyContent="space-between"
           alignItems="center"
+          paddingTop="10px"
         >
-          <TextField
-            variant="outlined"
-            label="Email"
-            size="small"
-            error={Boolean(validation)}
-            onChange={handleEmailChange}
-            sx={{ margin: "0 10px" }}
-          />
-          <TextField
-            variant="outlined"
-            label="Password"
-            size="small"
-            type="password"
-            error={Boolean(validation)}
-            onChange={handlePasswordChange}
-            sx={{ margin: "0 10px" }}
-          />
-          <Button
-            onClick={handleSubmit}
-            style={{
-              width: "75px",
-              height: "40px",
-              textAlign: "left",
-              font: "normal normal normal 18px/21px SF Pro Display",
-              letterSpacing: "0px",
-              color: "#F3F3F8",
-              textTransform: "none",
-              background: "#2C2C2E 0% 0% no-repeat padding-box",
-              borderRadius: "3px",
-              margin: "0 10px",
-            }}
+          <Box
+            display="flex"
+            flexWrap="nowrap"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingTop="10px"
           >
-            Login
-          </Button>
+            <TextField
+              variant="outlined"
+              label="Email"
+              size="small"
+              error={Boolean(validation)}
+              onChange={handleEmailChange}
+              sx={{ margin: "0 10px" }}
+            />
+            <TextField
+              variant="outlined"
+              label="Password"
+              size="small"
+              type="password"
+              error={Boolean(validation)}
+              onChange={handlePasswordChange}
+              sx={{ margin: "0 10px" }}
+            />
+            <Button
+              onClick={handleSubmit}
+              style={{
+                width: "75px",
+                height: "40px",
+                textAlign: "left",
+                font: "normal normal normal 18px/21px SF Pro Display",
+                letterSpacing: "0px",
+                color: "#F3F3F8",
+                textTransform: "none",
+                background: "#2C2C2E 0% 0% no-repeat padding-box",
+                borderRadius: "3px",
+                margin: "0px 10px  0px 10px",
+              }}
+            >
+              Login
+            </Button>
+            <GoogleSignIn
+              email={email}
+              setEmail={setEmail}
+              loggedIn={loggedIn}
+              setLoggedIn={setLoggedIn}
+              accessToken={accessToken}
+              setAccessToken={setAccessToken}
+              userID={userID}
+              setUserID={setUserID}
+            />
+            <Button
+              style={{
+                //borderRadius: '32px',
+                backgroundImage: `url(${Apple})`,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
 
-          <GoogleSignIn
-            email={email}
-            setEmail={setEmail}
-            loggedIn={loggedIn}
-            setLoggedIn={setLoggedIn}
-            accessToken={accessToken}
-            setAccessToken={setAccessToken}
-            userID={userID}
-            setUserID={setUserID}
-          />
-          <Button
-            style={{
-              //borderRadius: '32px',
-              backgroundImage: `url(${Apple})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-
-              height: "42px",
-              //background: `transparent url(${Google}) 0% 0% no-repeat padding-box`,
-            }}
-          ></Button>
+                height: "42px",
+                //background: `transparent url(${Google}) 0% 0% no-repeat padding-box`,
+              }}
+            ></Button>
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <div style={{ fontSize: "10px", color: "red" }}>{validation}</div>
+          </Box>
         </Box>
-
         <Box
           display="flex"
           flexWrap="nowrap"
@@ -206,6 +219,7 @@ export default function Login() {
           </Button>
         </Box>
       </Box>
+
       <Box display="flex" flexDirection="row" alignSelf="center">
         <Typography
           style={{
