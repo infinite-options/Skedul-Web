@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { Row, Col, Container, Form, Modal } from "react-bootstrap";
 import { Box, Typography } from "@mui/material";
 import { Grid } from "@mui/material";
-import { publishTheCalenderEvent } from "./GoogleApiService";
+
 import "../styles/createmeet.css";
 import LoginContext from "../LoginContext";
 import GoogleSignUp from "./Google/GoogleSignUp";
@@ -19,6 +19,7 @@ const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 export default function CreateMeet() {
   const loginContext = useContext(LoginContext);
   const history = useHistory();
+  let gapi = window.gapi;
   const [accessToken, setAccessToken] = useState("");
 
   const [selectedEvent, setSelectedEvent] = useState([]);
@@ -428,7 +429,8 @@ export default function CreateMeet() {
   }
   function createMeet() {
     //console.log(meetDate, meetTime, duration);
-    let start_time = meetDate + "T" + meetTime + "-0800";
+    let start_time = meetDate + "T" + meetTime;
+    start_time = moment(start_time).format();
     //console.log(start_time);
     let d = convert(duration);
     let et = Date.parse(start_time) / 1000 + d;
@@ -470,6 +472,26 @@ export default function CreateMeet() {
     //setMeetTime('');
     setAttendees([{ email: "" }]);
   }
+
+  const publishTheCalenderEvent = (event) => {
+    let calendarId = "primary";
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + accessToken,
+    };
+    axios
+      .post(
+        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${API_KEY}`,
+        event,
+        {
+          headers: headers,
+        }
+      )
+      .then((response) => {
+        console.log(response);
+      });
+  };
 
   function formatTime(date, time) {
     if (time == null) {
