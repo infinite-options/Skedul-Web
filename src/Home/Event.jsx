@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { Row, Col, Modal, Container } from "react-bootstrap";
-import { Typography } from "@mui/material";
+import { Typography, Alert, AlertTitle, Fade } from "@mui/material";
 import Bookmark from "../images/bookmark.svg";
 import Edit from "../images/edit.svg";
 import Copy from "../images/copy.svg";
 import Trash from "../images/Trash.svg";
 import "../styles/event.css";
+
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -39,6 +40,7 @@ export default function Event() {
 
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareEmail, setShareEmail] = useState("");
+    const [showcopyMessage, setshowcopyMessage] = useState(false);
 
     var selectedUser = "";
     if (
@@ -842,6 +844,22 @@ export default function Event() {
 
     return (
         <Container>
+            {showcopyMessage && <Row>
+                <Fade
+                    in={showcopyMessage} //Write the needed condition here to make it appear
+                    timeout={{ enter: 1000, exit: 2000 }} //Edit these two values to change the duration of transition when the element is getting appeared and disappeard
+                    addEndListener={() => {
+                        setTimeout(() => {
+                            setshowcopyMessage(false)
+                        }, 3000);
+                    }}
+                >
+                    <Alert severity="success" variant="standard" className="alert">
+                        <AlertTitle>Success</AlertTitle>
+                        Copied Successfully!!!
+                    </Alert>
+                </Fade>
+            </Row>}
             <Row className={"title"}>
                 <Col xs={2}>ALL VIEWS</Col>
                 <Col>ALL EVENT TYPES</Col>
@@ -1116,7 +1134,8 @@ export default function Event() {
                                                         style={{
                                                             cursor: "pointer",
                                                         }}
-                                                        onClick={() =>
+                                                        onClick={() => {
+
                                                             navigator.clipboard.writeText(
                                                                 document
                                                                     .location
@@ -1124,7 +1143,8 @@ export default function Event() {
                                                                 "/" +
                                                                 `${event.event_unique_id}`
                                                             )
-                                                        }
+                                                            setshowcopyMessage(true)
+                                                        }}
                                                     >
                                                         <img
                                                             src={Copy}
@@ -1164,6 +1184,6 @@ export default function Event() {
             <div>{showCreateNewEventModal && createNewEventModal()}</div>
             <div>{showUpdateEventModal && updateEventModal()}</div>
             <div>{showShareModal && shareModal()}</div>
-        </Container>
+        </Container >
     );
 }
