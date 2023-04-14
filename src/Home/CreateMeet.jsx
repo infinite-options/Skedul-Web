@@ -192,7 +192,7 @@ export default function CreateMeet() {
                       .post(url, {
                         google_auth_token: at,
                       })
-                      .then((response) => {})
+                      .then((response) => { })
                       .catch((err) => {
                         console.log(err);
                       });
@@ -225,14 +225,14 @@ export default function CreateMeet() {
       axios
         .get(
           BASE_URL +
-            "AvailableAppointments/" +
-            dateString +
-            "/" +
-            duration +
-            "/" +
-            startTime +
-            "," +
-            endTime
+          "AvailableAppointments/" +
+          dateString +
+          "/" +
+          duration +
+          "/" +
+          startTime +
+          "," +
+          endTime
         )
         .then((res) => {
           res.data.result.map((r) => {
@@ -437,7 +437,7 @@ export default function CreateMeet() {
     //console.log(d);
     //console.log(et);
     let end_time = moment(new Date(et * 1000)).format();
-    attendees.push({ email: userEmail });
+    attendees.push({ email: googleAuthedEmail });
     console.log(attendees);
     var meet = {
       summary: meetName,
@@ -553,8 +553,8 @@ export default function CreateMeet() {
       timeSlots.length === 0
         ? (result = timeAASlots)
         : timeAASlots.length === 0
-        ? (result = timeSlots)
-        : (result = timeSlots.filter((o1) =>
+          ? (result = timeSlots)
+          : (result = timeSlots.filter((o1) =>
             timeAASlots.some((o2) => o1 === o2)
           ));
     }
@@ -912,15 +912,15 @@ export default function CreateMeet() {
                         {Number(selectedEvent.duration.substring(0, 2)) > 1
                           ? selectedEvent.duration.substring(3, 5) !== "59"
                             ? Number(selectedEvent.duration.substring(0, 2)) +
-                              " hrs " +
-                              Number(selectedEvent.duration.substring(3, 5)) +
-                              " min"
+                            " hrs " +
+                            Number(selectedEvent.duration.substring(3, 5)) +
+                            " min"
                             : Number(selectedEvent.duration.substring(0, 2)) +
-                              1 +
-                              " hrs"
+                            1 +
+                            " hrs"
                           : Number(selectedEvent.duration.substring(0, 2)) == 1
-                          ? "60 min"
-                          : selectedEvent.duration.substring(3, 5) + " min"}
+                            ? "60 min"
+                            : selectedEvent.duration.substring(3, 5) + " min"}
                       </div>
                       <div>
                         Location:{" "}
@@ -1086,13 +1086,13 @@ export default function CreateMeet() {
                         {Number(duration.substring(0, 2)) > "01"
                           ? duration.substring(3, 5) !== "59"
                             ? Number(duration.substring(0, 2)) +
-                              " hours " +
-                              Number(duration.substring(3, 5)) +
-                              " minutes"
+                            " hours " +
+                            Number(duration.substring(3, 5)) +
+                            " minutes"
                             : Number(duration.substring(0, 2)) + 1 + " hours"
                           : Number(duration.substring(0, 2)) == "01"
-                          ? "60 minutes"
-                          : duration.substring(3, 5) + " minutes"}
+                            ? "60 minutes"
+                            : duration.substring(3, 5) + " minutes"}
                         meeting
                       </Row>
 
