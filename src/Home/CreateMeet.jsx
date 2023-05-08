@@ -52,6 +52,7 @@ export default function CreateMeet() {
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [userID, setUserID] = useState("");
+  const [eventDuration, setEventDuration] = useState(null);
 
   const [showCreateNewMeetModal, setShowCreateNewMeetModal] = useState(false);
   const [meetName, setMeetName] = useState("");
@@ -107,13 +108,15 @@ export default function CreateMeet() {
         setSelectedEvent(json.result.result[0]);
         let viewID = json.result.result[0].view_id;
         let userID = json.result.result[0].user_id;
+        let duration = json.result.result[0].duration;
         setUserID(userID);
+        setEventDuration(duration);
         axios
           .get(BASE_URL + `GetView/${viewID}`)
           .then((response) => {
             let schedule = JSON.parse(response.data.result.result[0].schedule);
-
-            setSelectedSchedule(schedule);
+            var editedSchedule = editSchedule(schedule, duration);
+            setSelectedSchedule(editedSchedule);
             setViewID(response.data.result.result[0].view_unique_id);
             setViewColor(response.data.result.result[0].color);
           })
@@ -241,7 +244,6 @@ export default function CreateMeet() {
           setTimeAASlots(timeAASlots);
         });
     }
-
     setTimeSelected(false);
   });
   useEffect(() => {
@@ -334,13 +336,32 @@ export default function CreateMeet() {
     setTimeSelected(false);
   });
 
+  function editSchedule(schedule, duration) {
+    Object.keys(schedule).map(day => {
+      let dailySchedule = schedule[day];
+      if (dailySchedule.length !== 0 && 'end_time' in dailySchedule[0]) {
+        let durationMoment = moment.duration(duration)._data;
+        let duration_hours = durationMoment.hours;
+        let duration_minutes = durationMoment.minutes;
+        // console.log("original end time = ", moment(dailySchedule[0]['end_time'], 'HHmmss').format("HH:mm"));
+        // console.log("duration hours", duration_hours);
+        // console.log("duration minutes", duration_minutes);
+        // console.log("updated end time ", moment(dailySchedule[0]['end_time'],'HHmmss').subtract({hours: duration_hours, minutes: duration_minutes}).format("HH:mm"))
+        
+        // subtracting duration from end
+        dailySchedule[0]['end_time'] = moment(dailySchedule[0]['end_time'], 'HHmmss').subtract({ hours: duration_hours, minutes: duration_minutes }).format("HH:mm");
+      }
+    })
+    return schedule;
+  }
+
   function getView() {
     axios
       .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
         let schedule = JSON.parse(response.data.result.result[0].schedule);
-
-        setSelectedSchedule(schedule);
+        var editedSchedule = editSchedule(schedule, eventDuration);
+        setSelectedSchedule(editedSchedule);
       })
       .catch((error) => {
         console.log(error);
@@ -598,7 +619,7 @@ export default function CreateMeet() {
   //console.log(dateString)
   function showAvailableDays() {
     let dateRange = Last7Days();
-    //console.log(dateRange);
+    // console.log(dateRange);
 
     return (
       <Col>
