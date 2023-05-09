@@ -10,6 +10,7 @@ import { Grid } from "@mui/material";
 import "../styles/createmeet.css";
 import LoginContext from "../LoginContext";
 import GoogleSignUp from "./Google/GoogleSignUp";
+import { current } from "@reduxjs/toolkit";
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -246,6 +247,15 @@ export default function CreateMeet() {
     }
     setTimeSelected(false);
   });
+
+  function getTimezoneOffset() {
+    function z(n){return (n<10? '0' : '') + n}
+    var offset = new Date().getTimezoneOffset();
+    var sign = offset < 0? '+' : '-';
+    offset = Math.abs(offset);
+    return sign + z(offset/60 | 0) + z(offset%60);
+  }
+
   useEffect(() => {
     if (timeSelected) {
       const headers = {
@@ -253,17 +263,23 @@ export default function CreateMeet() {
         Accept: "application/json",
         Authorization: "Bearer " + accessToken,
       };
+
+      let tzOffset = getTimezoneOffset();
       const data = {
-        timeMin: dateString + "T" + startTime + ":00-0800",
-        timeMax: dateString + "T" + endTime + ":00-0800",
+        // timeMin: dateString + "T" + startTime + ":00-0800",
+        // timeMax: dateString + "T" + endTime + ":00-0800",
+        timeMin: dateString + "T" + startTime + ":00" + tzOffset,
+        timeMax: dateString + "T" + endTime + ":00" + tzOffset,
         items: [
           {
             id: "primary",
           },
         ],
       };
-      const timeMin = dateString + "T" + startTime + ":00-0800";
-      const timeMax = dateString + "T" + endTime + ":00-0800";
+      // const timeMin = dateString + "T" + startTime + ":00-0800";
+      // const timeMax = dateString + "T" + endTime + ":00-0800";
+      const timeMin = dateString + "T" + startTime + ":00" + tzOffset;
+      const timeMax = dateString + "T" + endTime + ":00" + tzOffset;
       // timeMin and timeMax reformat the schedule.Sunday[0] startTime and endTime
 
       axios
@@ -296,7 +312,6 @@ export default function CreateMeet() {
             busy.forEach((times) => {
               let this_start = Date.parse(times["start"]) / 1000;
               let this_end = Date.parse(times["end"]) / 1000;
-
               // If the appt start time or appt end time falls on a current appt, slot is taken.
 
               // if (
