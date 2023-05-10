@@ -56,15 +56,15 @@
 }
 
 .activeButtonSelection {
-    color: #2c2c2e;
+    color: #D35400;
     font-weight: bold;
     text-transform: initial;
     font: normal normal bold 18px/23px Helvetica Neue;
 }
 .activeButtonSelection:hover {
-    color: #2c2c2e;
+    color: #D35400;
 }
 
 .activeButtonSelection:focus {
-    color: #2c2c2e;
+    color: #D35400;
 }

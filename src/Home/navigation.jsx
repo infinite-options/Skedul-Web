@@ -86,6 +86,14 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
+                                        if (isActive === "views") {
+                                            const confirmed = window.confirm(
+                                                "Make sure your views are updated! Do you want to proceed?"
+                                                );
+                                            if (!confirmed) {
+                                                return; // Stop navigation if not confirmed
+                                            }
+                                        }
                                         history.push("/event");
                                         setActive("event");
                                     }}
@@ -99,6 +107,14 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
+                                        if (isActive === "views") {
+                                            const confirmed = window.confirm(
+                                                "Make sure your views are updated! Do you want to proceed?"
+                                                );
+                                            if (!confirmed) {
+                                                return; // Stop navigation if not confirmed
+                                            }
+                                        }
                                         history.push("/schedule");
                                         setActive("schedule");
                                     }}
@@ -112,6 +128,14 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
+                                        if (isActive === "views") {
+                                            const confirmed = window.confirm(
+                                                "Make sure your views are updated! Do you want to proceed?"
+                                                );
+                                            if (!confirmed) {
+                                                return; // Stop navigation if not confirmed
+                                            }
+                                        }
                                         history.push("/integration");
                                         setActive("integration");
                                     }}
@@ -125,6 +149,14 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
+                                        if (isActive === "views") {
+                                            const confirmed = window.confirm(
+                                                "Make sure your views are updated! Do you want to proceed?"
+                                                );
+                                            if (!confirmed) {
+                                                return; // Stop navigation if not confirmed
+                                            }
+                                        }
                                         history.push("/help");
                                         setActive("help");
                                     }}
@@ -138,6 +170,14 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
+                                        if (isActive === "views") {
+                                            const confirmed = window.confirm(
+                                                "Make sure your views are updated! Do you want to proceed?"
+                                                );
+                                            if (!confirmed) {
+                                                return; // Stop navigation if not confirmed
+                                            }
+                                        }
                                         history.push("/account");
                                         setActive("account");
                                     }}
@@ -147,6 +187,14 @@ export function Navigation() {
                                 <Button
                                     className={"myButton"}
                                     onClick={(e) => {
+                                        if (isActive === "views") {
+                                            const confirmed = window.confirm(
+                                                "Make sure your views are updated! Do you want to proceed?"
+                                                );
+                                            if (!confirmed) {
+                                                return; // Stop navigation if not confirmed
+                                            }
+                                        }
                                         document.cookie =
                                             "user_uid=1;max-age=0";
                                         document.cookie =

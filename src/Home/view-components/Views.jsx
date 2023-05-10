@@ -28,13 +28,27 @@ function Views() {
     const [showCreateViewDialog, setShowCreateViewDialog] = useState(false);
     const [showUpdateViewDialog, setshowUpdateViewDialog] = useState(false);
     const [showLoadingImg, setshowLoadingImg] = useState(false);
+    const [isActive, setIsActive] = useState(false);
+    const [clicked, setClicked] = useState(false);
+    const handleClick = () => {
+        setClicked(true);
+        setTimeout(() => {
+          setClicked(false);
+        }, 1000);
+      }
 
     const [data, setData] = useState();
     console.log(userID);
 
     useEffect(() => {
         getAllViews(setAllViews, userID, setshowLoadingImg);
-    }, []);
+        const handleBeforeUnload = (event) => {
+            event.preventDefault();
+            event.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    },[]);
     console.log(data);
 
     return (
@@ -80,11 +94,14 @@ function Views() {
                     <Calendar type="selected" setSlotsData={setData} />
                 </Box>
                 <Box m="20px 10px">
+                    
                     <Button
-                        variant="contained"
+                        variant={clicked ? "contained" : "outlined"}
+                        
                         onClick={() => {
                             setAllViews(data);
                             data.forEach((view) => {
+                                handleClick();
                                 updateView(
                                     setAllViews,
                                     userID,
@@ -94,9 +111,11 @@ function Views() {
                                     setshowLoadingImg
                                 );
                             });
+
                         }}
                     >
-                        Update
+                        {clicked ? "Updated" : "Update"}
+                        
                     </Button>
                 </Box>
                 <hr />
