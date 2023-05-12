@@ -10,6 +10,7 @@ import UpdateViewDialog from "./UpdateViewDialog";
 import LoadingView from "./LoadingDialog"
 import { Button } from "@mui/material";
 import "../../styles/views.css";
+import Cookies from "js-cookie";
 
 
 export const PageContext = createContext();
@@ -30,8 +31,10 @@ function Views() {
     const [showLoadingImg, setshowLoadingImg] = useState(false);
     const [isActive, setIsActive] = useState(false);
     const [clicked, setClicked] = useState(false);
+    
     const handleClick = () => {
         setClicked(true);
+        Cookies.set("clicked", true); 
         setTimeout(() => {
           setClicked(false);
         }, 1000);

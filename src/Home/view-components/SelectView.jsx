@@ -4,9 +4,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PageContext } from './Views';
 import { v4 } from 'uuid';
 
+
 const SelectView = () => {
   const { allViews, setAllViews } = useContext(PageContext);
   const [anchorEl, setAnchorEl] = useState(null);
+
 
   // POPOVER OPEN/CLOSE HANDLERS
   const handleClick = (event) => {
@@ -15,6 +17,8 @@ const SelectView = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
 
   // POPOVER LIST + SET SELECTED FUNCTION
   const viewList = () => {

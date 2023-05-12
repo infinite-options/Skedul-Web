@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect} from "react";
 import { Toolbar, Button, AppBar, Box } from "@mui/material";
 import "../styles/navigation.css";
 import { ThemeProvider } from "@mui/material";
@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Logo from "../images/Logo.svg";
 import LoginContext from "../LoginContext";
+import Cookies from "js-cookie";
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -36,6 +37,22 @@ export function Navigation() {
     console.log(loginContext.loginState.user.user_access);
     var selectedUser = loginContext.loginState.user.user_uid;
     var accessT = loginContext.loginState.user.user_access;
+    const handleViewsClick = (e) => {
+        const clicked = Boolean(Cookies.get("clicked")); 
+        
+        if (isActive === "views" && !clicked) {
+            const confirmed = window.confirm(
+              "Not all changes have been saved. Do you want to proceed without saving your changes?"
+            );
+            if (!confirmed) {
+                e.preventDefault();
+                return; 
+            }
+        }
+        Cookies.set("clicked", false, { expires: 5 / (24 * 60 * 60) })
+        history.push("/views");
+    };
+      
 
     return (
         <>
@@ -73,6 +90,7 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
+                                        
                                         history.push("/views");
                                         setActive("views");
                                     }}
@@ -86,16 +104,10 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
-                                        if (isActive === "views") {
-                                            const confirmed = window.confirm(
-                                                "Make sure your views are updated! Do you want to proceed?"
-                                                );
-                                            if (!confirmed) {
-                                                return; // Stop navigation if not confirmed
-                                            }
-                                        }
-                                        history.push("/event");
+                                        handleViewsClick();
+                                        history.push("/event")
                                         setActive("event");
+                                      
                                     }}
                                 >
                                     Event Types
@@ -107,14 +119,7 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
-                                        if (isActive === "views") {
-                                            const confirmed = window.confirm(
-                                                "Make sure your views are updated! Do you want to proceed?"
-                                                );
-                                            if (!confirmed) {
-                                                return; // Stop navigation if not confirmed
-                                            }
-                                        }
+                                        handleViewsClick();
                                         history.push("/schedule");
                                         setActive("schedule");
                                     }}
@@ -128,14 +133,7 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
-                                        if (isActive === "views") {
-                                            const confirmed = window.confirm(
-                                                "Make sure your views are updated! Do you want to proceed?"
-                                                );
-                                            if (!confirmed) {
-                                                return; // Stop navigation if not confirmed
-                                            }
-                                        }
+                                        handleViewsClick();
                                         history.push("/integration");
                                         setActive("integration");
                                     }}
@@ -149,14 +147,8 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
-                                        if (isActive === "views") {
-                                            const confirmed = window.confirm(
-                                                "Make sure your views are updated! Do you want to proceed?"
-                                                );
-                                            if (!confirmed) {
-                                                return; // Stop navigation if not confirmed
-                                            }
-                                        }
+                                
+                                        handleViewsClick();
                                         history.push("/help");
                                         setActive("help");
                                     }}
@@ -170,14 +162,7 @@ export function Navigation() {
                                             : `${"buttonSelection"}`
                                     }
                                     onClick={() => {
-                                        if (isActive === "views") {
-                                            const confirmed = window.confirm(
-                                                "Make sure your views are updated! Do you want to proceed?"
-                                                );
-                                            if (!confirmed) {
-                                                return; // Stop navigation if not confirmed
-                                            }
-                                        }
+                                        handleViewsClick();
                                         history.push("/account");
                                         setActive("account");
                                     }}
@@ -187,14 +172,7 @@ export function Navigation() {
                                 <Button
                                     className={"myButton"}
                                     onClick={(e) => {
-                                        if (isActive === "views") {
-                                            const confirmed = window.confirm(
-                                                "Make sure your views are updated! Do you want to proceed?"
-                                                );
-                                            if (!confirmed) {
-                                                return; // Stop navigation if not confirmed
-                                            }
-                                        }
+                                        handleViewsClick();
                                         document.cookie =
                                             "user_uid=1;max-age=0";
                                         document.cookie =
@@ -211,7 +189,7 @@ export function Navigation() {
                                                 user_access: "",
                                             },
                                         });
-                                        history.push("/");
+                                      
                                     }}
                                 >
                                     Logout
