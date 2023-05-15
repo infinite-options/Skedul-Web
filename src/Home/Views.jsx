@@ -1013,7 +1013,6 @@ function Views() {
         Saturday: saturdayFields,
       },
     };
-
     axios
       .post(BASE_URL + 'AddView', event)
       .then((response) => {
@@ -1049,9 +1048,6 @@ function Views() {
         Saturday: selectedSchedule.Saturday,
       },
     };
-
-    console.log(event);
-
     axios
       .post(BASE_URL + `UpdateView/${view.view_unique_id}`, event)
       .then((response) => {

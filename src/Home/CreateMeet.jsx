@@ -351,9 +351,95 @@ export default function CreateMeet() {
     setTimeSelected(false);
   });
 
-  function editSchedule(schedule, duration) {
+  function convertDateToCurrentTimeZone(date) {
+    let currentTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    console.log("txt ",currentTZ)
+    let localDateString = new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: currentTZ }));
+    console.log("txt localDateString ", localDateString)
+    
+    let localDate = moment(localDateString).format("YYYY-MM-DD");
+    let localTime = moment(localDateString).format("HH:mm");
+    var localDayOfWeek = moment(localDateString, "YYYY-MM-DD HH:mm:ss").format('dddd');
+
+    // let options = {
+    //   weekday: "long",
+    // }
+    // let localDayOfWeek = localDateString.toLocaleString("en-US", options);
+    
+    // console.log("txt : local date ", localDateString, " , formatted date : ", localDate, " , formatted time ", localTime, " , localDayOfWeek ", localDayOfWeek);
+    
+    let dateObj = {
+      'localDate' : localDate,
+      'localTime': localTime,
+      'localDayOfWeek': localDayOfWeek,
+    }
+    console.log("txt : dateObj = ", dateObj, " ** ", localTime);
+    return dateObj ;
+  }
+  function convertScheduleTolocalTimeZone(schedule) {
+    var dates = Last7Days();
+    // console.log("txt :  dates ", dates);
+    let tzOffset = getTimezoneOffset();
+    let localSchedule = {};
+    
     Object.keys(schedule).map(day => {
       let dailySchedule = schedule[day];
+      if (localSchedule[day] === undefined) { 
+        localSchedule[day] = [];
+      }
+      if (dailySchedule.length !== 0) { 
+        dailySchedule[0]['date'] = dates[day];
+
+        let DSEobj = {};
+
+        // convert date and START time to local timezone
+        // change offset to UTC's ********************
+        var dateString_startTime = dailySchedule[0]['date'].toString()+ " " +dailySchedule[0]['start_time'].toString() + ":00-0000";
+        console.log("txt : original dateString_startTime", dateString_startTime);
+        var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
+        DSEobj = { 'date': localStartDateTime.localDate, 'start_time': localStartDateTime.localTime }
+        // console.log("txt : DSEobj", DSEobj);
+
+        // convert date and END time to local timezone
+        // change offset to UTC's ********************
+        var dateString_endTime = dailySchedule[0]['date'].toString()+ " " +dailySchedule[0]['end_time'].toString() + ":00-0000";
+        console.log("txt : original dateString_endTime", dateString_endTime);
+        var localEndDateTime = convertDateToCurrentTimeZone(dateString_endTime);
+
+        if (localEndDateTime.localDate !== localStartDateTime.localDate) {
+          let endTime = localStartDateTime.localDate + " 23:59:00";
+          let end_time = moment(endTime).format("HH:mm");
+          DSEobj = { ...DSEobj, 'end_time' : end_time.toString()};
+          console.log("txt : DSEobj 1", DSEobj);
+          localSchedule[localStartDateTime.localDayOfWeek].push(DSEobj);
+          var endTimeLocal = localEndDateTime.localTime;
+          DSEobj = { 'date': localEndDateTime.localDate, 'start_time': "00:00", 'end_time': endTimeLocal }
+          console.log("txt : DSEobj 2 in if", DSEobj);
+        }
+        else {
+          DSEobj['end_time'] = localEndDateTime.localTime;
+          console.log("txt : DSEobj 3", DSEobj);
+        }
+        if (localSchedule[localEndDateTime.localDayOfWeek] === undefined) {
+          localSchedule[localEndDateTime.localDayOfWeek] = [];
+        }
+        localSchedule[localEndDateTime.localDayOfWeek].push(DSEobj);
+
+        // console.log("txt : DSEobj 3", DSEobj);
+        
+      }
+      
+    })
+    console.log("txt : localSchedule ", localSchedule);
+    console.log("txt : schedule2 ", schedule);
+    return localSchedule;
+  }
+  function editSchedule(schedule, duration) {
+    // console.log("txt : schedule ", schedule);
+    let localSchedulee = convertScheduleTolocalTimeZone(schedule);
+    console.log("txt : localSchedulee ", localSchedulee);
+    Object.keys(localSchedulee).map(day => {
+      let dailySchedule = localSchedulee[day];
       if (dailySchedule.length !== 0 && 'end_time' in dailySchedule[0]) {
         let durationMoment = moment.duration(duration)._data;
         let duration_hours = durationMoment.hours;
@@ -367,7 +453,7 @@ export default function CreateMeet() {
         dailySchedule[0]['end_time'] = moment(dailySchedule[0]['end_time'], 'HHmmss').subtract({ hours: duration_hours, minutes: duration_minutes }).format("HH:mm");
       }
     })
-    return schedule;
+    return localSchedulee;
   }
 
   function getView() {
@@ -579,7 +665,7 @@ export default function CreateMeet() {
       resultDay.push(x);
       date[x] = moment(d).format("YYYY-MM-DD");
     }
-
+    // console.log("txt : 01 ", date);
     return date;
   }
   function renderAvailableApptsVertical() {
