@@ -224,7 +224,7 @@ export default function Schedule(props) {
         fetch(url)
             .then((response) => response.json())
             .then((json) => {
-                //console.log(json);
+                console.log("txt : getschedule", json);
                 if (json.result !== undefined && json.result !== null) {
                     setAllSchedule(json.result);
                 }
@@ -236,6 +236,7 @@ export default function Schedule(props) {
         fetch(url)
             .then((response) => response.json())
             .then((json) => {
+                console.log("txt : GetMeeting", json);
                 // console.log(json);
                 // console.log(json.result.result);
                 setAllMeetings(json.result.result);
