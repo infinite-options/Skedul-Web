@@ -10,7 +10,7 @@ const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 
 let SCOPES =
-  "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile";
+  "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/userinfo.profile";
 
 function GoogleSignUp() {
   const loginContext = useContext(LoginContext);
