@@ -436,10 +436,10 @@ export default function CreateMeet() {
   }
   function editSchedule(schedule, duration) {
     // console.log("txt : schedule ", schedule);
-    let localSchedulee = convertScheduleTolocalTimeZone(schedule);
-    console.log("txt : localSchedulee ", localSchedulee);
-    Object.keys(localSchedulee).map(day => {
-      let dailySchedule = localSchedulee[day];
+    let localSchedule = convertScheduleTolocalTimeZone(schedule);
+    // console.log("txt : localSchedule ", localSchedule);
+    Object.keys(localSchedule).map(day => {
+      let dailySchedule = localSchedule[day];
       if (dailySchedule.length !== 0 && 'end_time' in dailySchedule[0]) {
         let durationMoment = moment.duration(duration)._data;
         let duration_hours = durationMoment.hours;
@@ -453,7 +453,7 @@ export default function CreateMeet() {
         dailySchedule[0]['end_time'] = moment(dailySchedule[0]['end_time'], 'HHmmss').subtract({ hours: duration_hours, minutes: duration_minutes }).format("HH:mm");
       }
     })
-    return localSchedulee;
+    return localSchedule;
   }
 
   function getView() {

@@ -48,6 +48,10 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
     //     newSched.schedule[key].push({ start_time: '00:00', end_time: '00:00' });
     //   }
     // });
+    let selectedID = 0;
+      if (oldViewID.includes('Selected')) {
+      selectedID = oldViewID.replace("Selected", "")
+    }
     const ID = oldViewID.replace("Selected", "");
     console.log("xtx ID : ",ID)
     setshowLoadingImg(true)
@@ -60,10 +64,15 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
         .then(() => {
             API.get(`/GetAllViews/${user}`).then((res) => {
                 // SETS THE FIRST VIEW AS SELECTED
-                let result = res.data.result.result;
 
-                result[result.length - 1].view_unique_id =
-                    result[result.length - 1].view_unique_id.concat("Selected");
+                let result = res.data.result.result;
+                console.log("old selected ViewID ",selectedID)
+                let idx = result.findIndex(view => view.view_unique_id === selectedID);
+                console.log("old selected ViewID in new result ",idx, " & result = ", result[idx].view_unique_id)
+                result[idx].view_unique_id =
+                    result[idx].view_unique_id.concat("Selected");
+                // result[result.length - 2].view_unique_id =
+                //     result[result.length - 2].view_unique_id.concat("Selected");
                 setAllViews(result);
                 setshowLoadingImg(false)
             });
@@ -96,7 +105,7 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
             let tzOffset = getTimezoneOffset();
             let localSchedule = {};
             
-            Object.keys(schedule).map(day => {
+            Object.keys(schedule).forEach((day) => {
               let dailySchedule = schedule[day];
               if (localSchedule[day] === undefined) { 
                 localSchedule[day] = [];
@@ -136,11 +145,11 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
                 localSchedule[localEndDateTime.localDayOfWeek].push(DSEobj);                
               }
               
-            })
+          })
             console.log("txt : localSchedule ", localSchedule);
             console.log("txt : schedule2 ", schedule);
             return localSchedule;
-          }
+            }
           
           function Last7Days() {
             var result = [];
@@ -211,7 +220,7 @@ export const getAllViews = (setAllViews, user, setshowLoadingImg) => {
     API.get(`/GetAllViews/${user}`).then((res) => {
         // SETS THE FIRST VIEW AS SELECTED
         let result = res.data.result.result;
-        if (result != 0)
+        if (result !== 0)
             result[result.length - 1].view_unique_id =
                 result[result.length - 1].view_unique_id.concat("Selected");
         setAllViews(result);
