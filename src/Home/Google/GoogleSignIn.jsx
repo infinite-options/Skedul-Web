@@ -34,7 +34,7 @@ function GoogleSignIn(props) {
       let email = userObject.email;
       setEmail(email);
       let user_id = "";
-      axios.get(BASE_URL + `/UserToken/${email}`).then((response) => {
+      axios.get(BASE_URL + `UserToken/${email}`).then((response) => {
         setAccessToken(response["data"]["google_auth_token"]);
         user_id = response["data"]["user_unique_id"];
         var old_at = response["data"]["google_auth_token"];
@@ -98,7 +98,7 @@ function GoogleSignIn(props) {
                 .then((data) => {
                   let at = data["access_token"];
                   setAccessToken(at);
-                  let url = BASE_URL + `/UpdateAccessToken/${user_id}`;
+                  let url = BASE_URL + `UpdateAccessToken/${user_id}`;
                   axios
                     .post(url, {
                       google_auth_token: at,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import "../styles/signup.css";
 import { Typography } from "@mui/material";
 import { useHistory } from "react-router-dom";
@@ -15,6 +15,7 @@ export default function Login() {
   const history = useHistory();
 
   console.log("In Sign Up page");
+  const [createAccountFlag, setCreateAccountFlag] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newFName, setNewFName] = useState("");
@@ -92,10 +93,33 @@ export default function Login() {
               justifyContent="center"
               style={{ fontWeight: "bold" }}
             >
-              Or continue with Email
+              OR
             </Box>
-
-            <Form as={Container}>
+            <Grid
+      container
+      spacing={3}
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+    >
+      <Grid item xs={4}>
+        <div id="signUpDiv">
+          <Button
+            class="btn btn-outline-dark"
+            onClick={() => {setCreateAccountFlag(true)}}
+            role="button"
+            style={{
+              textTransform: "none",
+              borderRadius: "50px",
+              width: "20rem",
+            }}
+          >
+            Create Account
+          </Button>
+        </div>
+      </Grid>
+      </Grid>
+            {createAccountFlag && <Form as={Container}>
               <div
                 style={{
                   display: "grid",
@@ -202,7 +226,7 @@ export default function Login() {
                   </Button>
                 </div>
               </div>
-            </Form>
+            </Form>}
           </Box>
         </Col>
 

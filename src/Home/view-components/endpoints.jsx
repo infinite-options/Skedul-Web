@@ -220,10 +220,10 @@ export const getAllViews = (setAllViews, user, setshowLoadingImg) => {
     API.get(`/GetAllViews/${user}`).then((res) => {
         // SETS THE FIRST VIEW AS SELECTED
         let result = res.data.result.result;
-        if (result !== 0)
-            result[result.length - 1].view_unique_id =
-                result[result.length - 1].view_unique_id.concat("Selected");
-        setAllViews(result);
         setshowLoadingImg(false)
+        if (result !== 0) 
+          result[result.length - 1].view_unique_id =
+          result[result.length - 1].view_unique_id.concat("Selected");
+          setAllViews(result);
     });
 };
