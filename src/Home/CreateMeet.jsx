@@ -48,6 +48,7 @@ export default function CreateMeet() {
   const [dateString, setDateString] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [viewTimeSlots, setViewTimeSlots] = useState("");
 
   const [selectedUser, setSelectedUser] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -226,24 +227,31 @@ export default function CreateMeet() {
 
   useEffect(() => {
     if (timeSelected) {
-      axios
-        .get(
-          BASE_URL +
-          "AvailableAppointments/" +
-          dateString +
-          "/" +
-          duration +
-          "/" +
-          startTime +
-          "," +
-          endTime
-        )
-        .then((res) => {
-          res.data.result.map((r) => {
-            timeAASlots.push(r["begin_time"]);
+      console.log("GetView result viewTimeSlots", viewTimeSlots);
+      for (let i in viewTimeSlots) {
+        console.log("GetView result viewTimeSlots start and end times ", viewTimeSlots[i]['start_time'], viewTimeSlots[i]['end_time']);
+        let st = viewTimeSlots[i]['start_time'];
+        let et = viewTimeSlots[i]['end_time'];
+
+        axios
+          .get(
+            BASE_URL +
+            "AvailableAppointments/" +
+            dateString +
+            "/" +
+            duration +
+            "/" +
+            st +
+            "," +
+            et
+          )
+          .then((res) => {
+            res.data.result.map((r) => {
+              timeAASlots.push(r["begin_time"]);
+            });
+            setTimeAASlots(timeAASlots);
           });
-          setTimeAASlots(timeAASlots);
-        });
+      }
     }
     setTimeSelected(false);
   });
@@ -265,89 +273,89 @@ export default function CreateMeet() {
       };
 
       let tzOffset = getTimezoneOffset();
-      const data = {
-        // timeMin: dateString + "T" + startTime + ":00-0800",
-        // timeMax: dateString + "T" + endTime + ":00-0800",
-        timeMin: dateString + "T" + startTime + ":00" + tzOffset,
-        timeMax: dateString + "T" + endTime + ":00" + tzOffset,
-        items: [
-          {
-            id: "primary",
-          },
-        ],
-      };
-      // const timeMin = dateString + "T" + startTime + ":00-0800";
-      // const timeMax = dateString + "T" + endTime + ":00-0800";
-      const timeMin = dateString + "T" + startTime + ":00" + tzOffset;
-      const timeMax = dateString + "T" + endTime + ":00" + tzOffset;
-      // timeMin and timeMax reformat the schedule.Sunday[0] startTime and endTime
+      let free = [];
+      console.log("GetView result viewTimeSlots", viewTimeSlots);
+        
+        const data = {
+          // timeMin: dateString + "T" + startTime + ":00-0800",
+          // timeMax: dateString + "T" + endTime + ":00-0800",
+          timeMin: dateString + "T" + "00:00:00" + tzOffset,
+          timeMax: dateString + "T" + "23:59:00" + tzOffset,
+          items: [
+            {
+              id: "primary",
+            },
+          ],
+        };
+        // const timeMin = dateString + "T" + startTime + ":00-0800";
+        // const timeMax = dateString + "T" + endTime + ":00-0800";
+        // const timeMin = dateString + "T" + st + ":00" + tzOffset;
+        // const timeMax = dateString + "T" + et + ":00" + tzOffset;
+        // timeMin and timeMax reformat the schedule.Sunday[0] startTime and endTime
 
-      axios
-        .post(
-          `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`,
-          data,
-          {
-            headers: headers,
-          }
-        )
-        .then((response) => {
-          let busy = response.data.calendars.primary.busy;
-          let start_time = Date.parse(timeMin) / 1000;
-          let end_time = Date.parse(timeMax) / 1000;
-          let appt_start_time = start_time;
-          // start_time and end_time === startTime and endTime
-
-          let free = [];
-          let seconds = convert(duration);
-          // Loop through each appt slot in the search range.
-          while (appt_start_time < end_time) {
-            //console.log('in while');
-            // Add appt duration to the appt start time so we know where the appt will end.
-            let appt_end_time = appt_start_time + seconds;
-
-            // For each appt slot, loop through the current appts to see if it falls
-            // in a slot that is already taken.
-            let slot_available = true;
-            //console.log(busy);
-            busy.forEach((times) => {
-              let this_start = Date.parse(times["start"]) / 1000;
-              let this_end = Date.parse(times["end"]) / 1000;
-              // If the appt start time or appt end time falls on a current appt, slot is taken.
-
-              // if (
-              //   appt_start_time == this_start ||
-              //   appt_end_time == this_end ||
-              //   (appt_start_time < this_start && appt_end_time > this_end) ||
-              //   (appt_start_time < this_start && appt_end_time < this_end) ||
-              //   (appt_start_time > this_start && appt_end_time > this_end)
-              // ) {
-              //   slot_available = false;
-              //   return; // No need to continue if it's taken.
-              // }
-              if (
-                (appt_start_time >= this_start && appt_start_time < this_end) ||
-                (appt_end_time > this_start && appt_end_time <= this_end)
-              ) {
-                slot_available = false;
-                return; // No need to continue if it's taken.
-              }
-            });
-
-            // If we made it through all appts and the slot is still available, it's an open slot.
-            if (slot_available) {
-              free.push(
-                moment(new Date(appt_start_time * 1000)).format("HH:mm:ss")
-              );
+        axios
+          .post(
+            `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`,
+            data,
+            {
+              headers: headers,
             }
-            // + duration minutes
-            appt_start_time += 60 * 30;
-          }
-          setTimeSlots(free);
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
-    }
+          )
+          .then((response) => {
+            let busy = response.data.calendars.primary.busy;
+            for (let i in viewTimeSlots) {
+              let st = viewTimeSlots[i]['start_time'];
+              let et = viewTimeSlots[i]['end_time'];
+              let timeMin = dateString + "T" + st + ":00" + tzOffset;
+              let timeMax = dateString + "T" + et + ":00" + tzOffset;
+            
+              let start_time = Date.parse(timeMin) / 1000;
+              let end_time = Date.parse(timeMax) / 1000;
+              let appt_start_time = start_time;
+              // start_time and end_time === startTime and endTime
+
+              let seconds = convert(duration);
+              // Loop through each appt slot in the search range.
+              while (appt_start_time <= end_time) {
+                //console.log('in while');
+                // Add appt duration to the appt start time so we know where the appt will end.
+                let appt_end_time = appt_start_time + seconds;
+
+                // For each appt slot, loop through the current appts to see if it falls
+                // in a slot that is already taken.
+                let slot_available = true;
+                //console.log(busy);
+                busy.forEach((times) => {
+                  let this_start = Date.parse(times["start"]) / 1000;
+                  let this_end = Date.parse(times["end"]) / 1000;
+
+                  // If the appt start time or appt end time falls on a current appt, slot is taken.
+                  if (
+                    (appt_start_time >= this_start && appt_start_time < this_end) ||
+                    (appt_end_time > this_start && appt_end_time <= this_end)
+                  ) {
+                    slot_available = false;
+                    return; // No need to continue if it's taken.
+                  }
+                });
+
+                // If we made it through all appts and the slot is still available, it's an open slot.
+                if (slot_available) {
+                  free.push(
+                    moment(new Date(appt_start_time * 1000)).format("HH:mm:ss")
+                  );
+                }
+                // + duration minutes
+                appt_start_time += 60 * 30;
+              }
+            }
+            setTimeSlots(free);
+          })
+          .catch((error) => {
+            console.log("error", error);
+          });
+      }
+    // }
     setTimeSelected(false);
   });
 
@@ -387,48 +395,49 @@ export default function CreateMeet() {
       if (localSchedule[day] === undefined) { 
         localSchedule[day] = [];
       }
-      if (dailySchedule.length !== 0) { 
-        dailySchedule[0]['date'] = dates[day];
+      if (dailySchedule.length !== 0) {
+        for (let i in dailySchedule) {
+          dailySchedule[i]['date'] = dates[day];
 
-        let DSEobj = {};
+          let DSEobj = {};
 
-        // convert date and START time to local timezone
-        // change offset to UTC's ********************
-        var dateString_startTime = dailySchedule[0]['date'].toString()+ " " +dailySchedule[0]['start_time'].toString() + ":00-0000";
-        console.log("txt : original dateString_startTime", dateString_startTime);
-        var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
-        DSEobj = { 'date': localStartDateTime.localDate, 'start_time': localStartDateTime.localTime }
-        // console.log("txt : DSEobj", DSEobj);
+          // convert date and START time to local timezone
+          // change offset to UTC's ********************
+          var dateString_startTime = dailySchedule[i]['date'].toString() + " " + dailySchedule[i]['start_time'].toString() + ":00-0000";
+          console.log("txt : original dateString_startTime", dateString_startTime);
+          var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
+          DSEobj = { 'date': localStartDateTime.localDate, 'start_time': localStartDateTime.localTime }
+          // console.log("txt : DSEobj", DSEobj);
 
-        // convert date and END time to local timezone
-        // change offset to UTC's ********************
-        var dateString_endTime = dailySchedule[0]['date'].toString()+ " " +dailySchedule[0]['end_time'].toString() + ":00-0000";
-        console.log("txt : original dateString_endTime", dateString_endTime);
-        var localEndDateTime = convertDateToCurrentTimeZone(dateString_endTime);
+          // convert date and END time to local timezone
+          // change offset to UTC's ********************
+          var dateString_endTime = dailySchedule[i]['date'].toString() + " " + dailySchedule[i]['end_time'].toString() + ":00-0000";
+          console.log("txt : original dateString_endTime", dateString_endTime);
+          var localEndDateTime = convertDateToCurrentTimeZone(dateString_endTime);
 
-        if (localEndDateTime.localDate !== localStartDateTime.localDate) {
-          let endTime = localStartDateTime.localDate + " 23:59:00";
-          let end_time = moment(endTime).format("HH:mm");
-          DSEobj = { ...DSEobj, 'end_time' : end_time.toString()};
-          console.log("txt : DSEobj 1", DSEobj);
-          localSchedule[localStartDateTime.localDayOfWeek].push(DSEobj);
-          var endTimeLocal = localEndDateTime.localTime;
-          DSEobj = { 'date': localEndDateTime.localDate, 'start_time': "00:00", 'end_time': endTimeLocal }
-          console.log("txt : DSEobj 2 in if", DSEobj);
-        }
-        else {
-          DSEobj['end_time'] = localEndDateTime.localTime;
-          console.log("txt : DSEobj 3", DSEobj);
-        }
-        if (localSchedule[localEndDateTime.localDayOfWeek] === undefined) {
-          localSchedule[localEndDateTime.localDayOfWeek] = [];
-        }
-        localSchedule[localEndDateTime.localDayOfWeek].push(DSEobj);
+          if (localEndDateTime.localDate !== localStartDateTime.localDate) {
+            let endTime = localStartDateTime.localDate + " 23:59:00";
+            let end_time = moment(endTime).format("HH:mm");
+            DSEobj = { ...DSEobj, 'end_time': end_time.toString() };
+            console.log("txt : DSEobj 1", DSEobj);
+            localSchedule[localStartDateTime.localDayOfWeek].push(DSEobj);
+            var endTimeLocal = localEndDateTime.localTime;
+            DSEobj = { 'date': localEndDateTime.localDate, 'start_time': "00:00", 'end_time': endTimeLocal }
+            console.log("txt : DSEobj 2 in if", DSEobj);
+          }
+          else {
+            DSEobj['end_time'] = localEndDateTime.localTime;
+            console.log("txt : DSEobj 3", DSEobj);
+          }
+          if (localSchedule[localEndDateTime.localDayOfWeek] === undefined) {
+            localSchedule[localEndDateTime.localDayOfWeek] = [];
+          }
+          localSchedule[localEndDateTime.localDayOfWeek].push(DSEobj);
 
-        // console.log("txt : DSEobj 3", DSEobj);
+          // console.log("txt : DSEobj 3", DSEobj);
         
+        }
       }
-      
     })
     console.log("txt : localSchedule ", localSchedule);
     console.log("txt : schedule2 ", schedule);
@@ -441,16 +450,18 @@ export default function CreateMeet() {
     Object.keys(localSchedule).map(day => {
       let dailySchedule = localSchedule[day];
       if (dailySchedule.length !== 0 && 'end_time' in dailySchedule[0]) {
-        let durationMoment = moment.duration(duration)._data;
-        let duration_hours = durationMoment.hours;
-        let duration_minutes = durationMoment.minutes;
-        // console.log("original end time = ", moment(dailySchedule[0]['end_time'], 'HHmmss').format("HH:mm"));
-        // console.log("duration hours", duration_hours);
-        // console.log("duration minutes", duration_minutes);
-        // console.log("updated end time ", moment(dailySchedule[0]['end_time'],'HHmmss').subtract({hours: duration_hours, minutes: duration_minutes}).format("HH:mm"))
+        for (let i in dailySchedule) {
+          let durationMoment = moment.duration(duration)._data;
+          let duration_hours = durationMoment.hours;
+          let duration_minutes = durationMoment.minutes;
+          // console.log("original end time = ", moment(dailySchedule[0]['end_time'], 'HHmmss').format("HH:mm"));
+          // console.log("duration hours", duration_hours);
+          // console.log("duration minutes", duration_minutes);
+          // console.log("updated end time ", moment(dailySchedule[0]['end_time'],'HHmmss').subtract({hours: duration_hours, minutes: duration_minutes}).format("HH:mm"))
         
-        // subtracting duration from end
-        dailySchedule[0]['end_time'] = moment(dailySchedule[0]['end_time'], 'HHmmss').subtract({ hours: duration_hours, minutes: duration_minutes }).format("HH:mm");
+          // subtracting duration from end
+          dailySchedule[i]['end_time'] = moment(dailySchedule[i]['end_time'], 'HHmmss').subtract({ hours: duration_hours, minutes: duration_minutes }).format("HH:mm");
+        }
       }
     })
     return localSchedule;
@@ -461,7 +472,9 @@ export default function CreateMeet() {
       .get(BASE_URL + `GetView/${viewID}`)
       .then((response) => {
         let schedule = JSON.parse(response.data.result.result[0].schedule);
+        console.log(" GetView result schedule = ", schedule)
         var editedSchedule = editSchedule(schedule, eventDuration);
+        console.log(" GetView result editedSchedule= ", editedSchedule)
         setSelectedSchedule(editedSchedule);
       })
       .catch((error) => {
@@ -671,6 +684,7 @@ export default function CreateMeet() {
   function renderAvailableApptsVertical() {
     Last7Days();
     let result = [];
+    console.log("GetView result times slots ", timeSlots, "AND ", timeAASlots )
     {
       timeSlots.length === 0
         ? (result = timeAASlots)
@@ -744,6 +758,7 @@ export default function CreateMeet() {
                   setDateString(dateRange["Sunday"]);
                   setTimeAASlots([]);
                   setTimeSlots([]);
+                  setViewTimeSlots(selectedSchedule.Sunday)
                   setStartTime(selectedSchedule.Sunday[0].start_time);
                   setEndTime(selectedSchedule.Sunday[0].end_time);
                 }}
@@ -759,30 +774,32 @@ export default function CreateMeet() {
           ""
         ) : (
           <div>
-            {dateRange.hasOwnProperty("Monday") ? (
-              <Col
-                style={{
-                  cursor: "pointer",
-                }}
-                className={
-                  dateString === dateRange["Monday"]
-                    ? `${"activeTimeSlotButton"}`
-                    : `${"timeslotButton"}`
-                }
-                onClick={() => {
-                  setTimeSelected(true);
-                  setShowTimes(true);
-                  setDateString(dateRange["Monday"]);
-                  setTimeAASlots([]);
-                  setTimeSlots([]);
-                  setStartTime(selectedSchedule.Monday[0].start_time);
-                  setEndTime(selectedSchedule.Monday[0].end_time);
-                }}
-              >
-                Monday, {""}
-                {dateRange["Monday"]}
-              </Col>
-            ) : (
+            {dateRange.hasOwnProperty("Monday") ? 
+                (
+                  <Col
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    className={
+                      dateString === dateRange["Monday"]
+                        ? `${"activeTimeSlotButton"}`
+                        : `${"timeslotButton"}`
+                    }
+                    onClick={() => {
+                      setTimeSelected(true);
+                      setShowTimes(true);
+                      setDateString(dateRange["Monday"]);
+                      setTimeAASlots([]);
+                      setTimeSlots([]);
+                      setViewTimeSlots(selectedSchedule.Monday)
+                      setStartTime(selectedSchedule.Monday[0].start_time);
+                      setEndTime(selectedSchedule.Monday[0].end_time);
+                    }}
+                  >
+                    Monday, {""}
+                    {dateRange["Monday"]}
+                  </Col>
+                ) : (
               <div></div>
             )}
           </div>
@@ -808,6 +825,7 @@ export default function CreateMeet() {
                   setDateString(dateRange["Tuesday"]);
                   setTimeAASlots([]);
                   setTimeSlots([]);
+                  setViewTimeSlots(selectedSchedule.Tuesday)
                   setStartTime(selectedSchedule.Tuesday[0].start_time);
                   setEndTime(selectedSchedule.Tuesday[0].end_time);
                 }}
@@ -839,6 +857,7 @@ export default function CreateMeet() {
                   setDateString(dateRange["Wednesday"]);
                   setTimeAASlots([]);
                   setTimeSlots([]);
+                  setViewTimeSlots(selectedSchedule.Wednesday)
                   setStartTime(selectedSchedule.Wednesday[0].start_time);
                   setEndTime(selectedSchedule.Wednesday[0].end_time);
                 }}
@@ -870,6 +889,7 @@ export default function CreateMeet() {
                   setDateString(dateRange["Thursday"]);
                   setTimeAASlots([]);
                   setTimeSlots([]);
+                  setViewTimeSlots(selectedSchedule.Thursday)
                   setStartTime(selectedSchedule.Thursday[0].start_time);
                   setEndTime(selectedSchedule.Thursday[0].end_time);
                 }}
@@ -901,6 +921,7 @@ export default function CreateMeet() {
                   setDateString(dateRange["Friday"]);
                   setTimeAASlots([]);
                   setTimeSlots([]);
+                  setViewTimeSlots(selectedSchedule.Friday)
                   setStartTime(selectedSchedule.Friday[0].start_time);
                   setEndTime(selectedSchedule.Friday[0].end_time);
                 }}
@@ -932,6 +953,7 @@ export default function CreateMeet() {
                   setDateString(dateRange["Saturday"]);
                   setTimeAASlots([]);
                   setTimeSlots([]);
+                  setViewTimeSlots(selectedSchedule.Saturday)
                   setStartTime(selectedSchedule.Saturday[0].start_time);
                   setEndTime(selectedSchedule.Saturday[0].end_time);
                 }}

@@ -40,9 +40,15 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
     }
 
     // CORRECTIONS
-    console.log(newView.schedule)
-    let newSched = { name: newView.view_name, color: newView.color, schedule: JSON.parse(newView.schedule), updateType: type };
-    console.log("xtx newSched : ",newSched)
+  console.log("newView ",newView)
+  console.log("newView.schedule ",newView.schedule)
+  console.log("newView.schedule ", JSON.parse(newView.schedule))
+  let scheduleObj = JSON.parse(newView.schedule);
+  let newSched = { name: newView.view_name, color: newView.color, schedule: scheduleObj, updateType: type };
+  console.log("newSched ", newSched)
+
+    // let newSched = { name: newView.view_name, color: newView.color, schedule: JSON.parse(newView.schedule), updateType: type };
+    console.log(" newSched : ",newSched)
     // Object.keys(newSched.schedule).forEach((key) => {
     //   if (newSched.schedule[key].length <= 0) {
     //     newSched.schedule[key].push({ start_time: '00:00', end_time: '00:00' });
@@ -53,7 +59,7 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
       selectedID = oldViewID.replace("Selected", "")
     }
     const ID = oldViewID.replace("Selected", "");
-    console.log("xtx ID : ",ID)
+    console.log(" ID : ",ID)
     setshowLoadingImg(true)
     let UTCsched = convertScheduleTolocalTimeZone(newSched.schedule);
     console.log("txt : UTC 1", UTCsched);
@@ -100,6 +106,7 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
             return dateObj ;
           }
           function convertScheduleTolocalTimeZone(schedule) {
+            console.log("txt : schedule3 ", schedule);
             var dates = Last7Days();
             // console.log("txt :  dates ", dates);
             let tzOffset = getTimezoneOffset();
@@ -110,42 +117,44 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
               if (localSchedule[day] === undefined) { 
                 localSchedule[day] = [];
               }
-              if (dailySchedule.length !== 0) { 
-                dailySchedule[0]['date'] = dates[day];
+              if (dailySchedule.length !== 0) {
+                for (let i in dailySchedule) {
+                  console.log(" dailySchedule = ", dailySchedule[i]);
+                  dailySchedule[i]['date'] = dates[day];
         
-                let DSEobj = {};
+                  let DSEobj = {};
         
-                // convert date and START time to UTC
-                var dateString_startTime = dailySchedule[0]['date'].toString() + " " + dailySchedule[0]['start_time'].toString() + ":00" + tzOffset;
-                console.log("txt : original dateString_startTime", dateString_startTime);
-                var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
-                DSEobj = { 'start_time': localStartDateTime.localTime }
-                // console.log("txt : DSEobj", DSEobj);
+                  // convert date and START time to UTC
+                  var dateString_startTime = dailySchedule[i]['date'].toString() + " " + dailySchedule[i]['start_time'].toString() + ":00" + tzOffset;
+                  console.log("txt : original dateString_startTime", dateString_startTime);
+                  var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
+                  DSEobj = { 'start_time': localStartDateTime.localTime }
+                  // console.log("txt : DSEobj", DSEobj);
         
-                // convert date and END time to UTC
-                var dateString_endTime = dailySchedule[0]['date'].toString()+ " " +dailySchedule[0]['end_time'].toString() + ":00" + tzOffset;
-                console.log("txt : original dateString_endTime", dateString_endTime);
-                var localEndDateTime = convertDateToCurrentTimeZone(dateString_endTime);
+                  // convert date and END time to UTC
+                  var dateString_endTime = dailySchedule[i]['date'].toString() + " " + dailySchedule[i]['end_time'].toString() + ":00" + tzOffset;
+                  console.log("txt : original dateString_endTime", dateString_endTime);
+                  var localEndDateTime = convertDateToCurrentTimeZone(dateString_endTime);
         
-                if (localEndDateTime.localDate !== localStartDateTime.localDate) {
-                  DSEobj = { ...DSEobj, 'end_time' : "23:59"};
-                  console.log("txt : DSEobj 1", DSEobj);
-                  localSchedule[localStartDateTime.localDayOfWeek].push(DSEobj);
-                  var endTimeLocal = localEndDateTime.localTime;
-                  DSEobj = { 'start_time': "00:00", 'end_time': endTimeLocal }
-                  console.log("txt : DSEobj 2 in if", DSEobj);
+                  if (localEndDateTime.localDate !== localStartDateTime.localDate) {
+                    DSEobj = { ...DSEobj, 'end_time': "23:59" };
+                    console.log("txt : DSEobj 1", DSEobj);
+                    localSchedule[localStartDateTime.localDayOfWeek].push(DSEobj);
+                    var endTimeLocal = localEndDateTime.localTime;
+                    DSEobj = { 'start_time': "00:00", 'end_time': endTimeLocal }
+                    console.log("txt : DSEobj 2 in if", DSEobj);
+                  }
+                  else {
+                    DSEobj['end_time'] = localEndDateTime.localTime;
+                    console.log("txt : DSEobj 3", DSEobj);
+                  }
+                  if (localSchedule[localEndDateTime.localDayOfWeek] === undefined) {
+                    localSchedule[localEndDateTime.localDayOfWeek] = [];
+                  }
+                  localSchedule[localEndDateTime.localDayOfWeek].push(DSEobj);
                 }
-                else {
-                  DSEobj['end_time'] = localEndDateTime.localTime;
-                  console.log("txt : DSEobj 3", DSEobj);
-                }
-                if (localSchedule[localEndDateTime.localDayOfWeek] === undefined) {
-                  localSchedule[localEndDateTime.localDayOfWeek] = [];
-                }
-                localSchedule[localEndDateTime.localDayOfWeek].push(DSEobj);                
               }
-              
-          })
+            })
             console.log("txt : localSchedule ", localSchedule);
             console.log("txt : schedule2 ", schedule);
             return localSchedule;
