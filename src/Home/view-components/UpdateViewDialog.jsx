@@ -106,6 +106,7 @@ const UpdateViewDialog = (props) => {
         }
         console.log(view.schedule)
         updateView(setAllViews, userID, view, view_unique_id.current, "view", props.setshowLoadingImg);
+        
         return true;
     };
     useEffect(() => {
