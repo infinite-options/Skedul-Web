@@ -27,7 +27,7 @@ const Legend = () => {
             console.log(views[0].color);
         })
         .catch((error) => console.log(error));
-    },[views]);
+    },[]);
 
     return (
         <div id="legend">
