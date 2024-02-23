@@ -63,6 +63,8 @@ export default function CreateMeet() {
   const [meetTime, setMeetTime] = useState("");
   const [attendees, setAttendees] = useState([{ email: "" }]);
 
+
+
   const client_id = CLIENT_ID;
   const client_secret = CLIENT_SECRET;
 
@@ -225,36 +227,27 @@ export default function CreateMeet() {
     }
   }, [selectedEvent, selectedSchedule, refreshKey]);
 
+
   useEffect(() => {
     if (timeSelected) {
-      console.log("GetView result viewTimeSlots", viewTimeSlots);
-      for (let i in viewTimeSlots) {
-        console.log("GetView result viewTimeSlots start and end times ", viewTimeSlots[i]['start_time'], viewTimeSlots[i]['end_time']);
-        let st = viewTimeSlots[i]['start_time'];
-        let et = viewTimeSlots[i]['end_time'];
-
-        axios
-          .get(
-            BASE_URL +
-            "AvailableAppointments/" +
-            dateString +
-            "/" +
-            duration +
-            "/" +
-            st +
-            "," +
-            et
-          )
+      let allTimeAASlots = [];
+      Promise.all(viewTimeSlots.map((slot) => {
+        let st = slot['start_time'];
+        let et = slot['end_time'];
+        return axios.get(BASE_URL + "AvailableAppointments/" + dateString + "/" + duration + "/" + st + "," + et)
           .then((res) => {
-            res.data.result.map((r) => {
-              timeAASlots.push(r["begin_time"]);
+            res.data.result.forEach((r) => {
+              allTimeAASlots.push(r["begin_time"]);
             });
-            setTimeAASlots(timeAASlots);
           });
-      }
+      })).then(() => {
+        setTimeAASlots(allTimeAASlots);
+        setTimeSelected(false); 
+      }).catch((error) => {
+        console.error("Error fetching slots:", error);
+      });
     }
-    setTimeSelected(false);
-  });
+  },);
 
   function getTimezoneOffset() {
     function z(n){return (n<10? '0' : '') + n}
@@ -694,9 +687,10 @@ export default function CreateMeet() {
             timeAASlots.some((o2) => o1 === o2)
           ));
     }
-
+    console.log(timeAASlots)
     return (
       <div>
+        
         <div style={{ height: "10rem" }}>
           <Grid
             container
