@@ -609,11 +609,13 @@ export default function Event() {
             buffer_time: {
                 before: {
                     is_enabled: beforeBuffer,
-                    time: bt,
+                    // time: bt,
+                    time: beforeBufferTime,
                 },
                 after: {
                     is_enabled: afterBuffer,
-                    time: at,
+                    // time: at,
+                    time: afterBufferTime
                 },
             },
         };
@@ -770,7 +772,7 @@ export default function Event() {
                             borderRadius: "3px",
                         }}
                         value={beforeBufferTime}
-                        placeholder="00:00:00"
+                        placeholder="00:10:00"
                         onChange={(e) => {
                             if (e.target.value < 0) return;
                             setBeforeBufferTime(e.target.value)
@@ -799,7 +801,7 @@ export default function Event() {
                             border: "2px solid #636366",
                             borderRadius: "3px",
                         }}
-                        placeholder="00:00:00"
+                        placeholder="00:05:00"
                         value={afterBufferTime}
                         onChange={(e) => {
                             if (e.target.value < 0) return;
@@ -970,7 +972,7 @@ export default function Event() {
                                                         }}
                                                     >
                                                         <div>
-                                                            {Number(
+                                                            {/* {Number(
                                                                 event.duration.substring(
                                                                     0,
                                                                     2
@@ -1012,7 +1014,20 @@ export default function Event() {
                                                                     : event.duration.substring(
                                                                         3,
                                                                         5
-                                                                    ) + " min"}
+                                                                    ) + " min"} */}
+                                                                    {/* {Number(event.duration.substring(0, 2)) > 1
+                                                                        ? `${Number(event.duration.substring(0, 2))} hrs ${Number(event.duration.substring(3, 5))} min`
+                                                                        : Number(event.duration.substring(0, 2)) === 1
+                                                                        ? '60 min'
+                                                                        : `${Number(event.duration.substring(0, 2)) * 60 + Number(event.duration.substring(3, 5))} min`} */}
+                                                                    
+                                                                {/* {Number(event.duration.substring(0, 2)) > "01"? Number(event.duration.substring(0, 2)) +" hrs" + Number(event.duration.substring(3, 5)) +" min": Number(event.duration.substring(0, 2)) === "01"? '60 min': Number(event.duration.substring(0, 2)) * 60 + Number(event.duration.substring(3, 5)) +" min"} */}
+                                                                
+                                                                {Number(event.duration.substring(0, 2)) > 1
+                                                                ? `${Number(event.duration.substring(0, 2))} hrs ${String(event.duration.substring(3, 5)).padStart(2, '0')} min`
+                                                                : Number(event.duration.substring(0, 2)) === 1
+                                                                ? '60 min'
+                                                                : `${String(event.duration.substring(0, 2)).padStart(2, '0')} min`}
                                                         </div>
                                                         <div>
                                                             Location:{" "}
