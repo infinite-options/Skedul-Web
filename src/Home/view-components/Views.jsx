@@ -11,6 +11,7 @@ import LoadingView from "./LoadingDialog"
 import { Button } from "@mui/material";
 import "../../styles/views.css";
 import Cookies from "js-cookie";
+import Legend from "./Legend";
 
 
 export const PageContext = createContext();
@@ -31,7 +32,7 @@ function Views() {
     const [showLoadingImg, setshowLoadingImg] = useState(false);
     const [isActive, setIsActive] = useState(false);
     const [clicked, setClicked] = useState(false);
-    
+
     const handleClick = () => {
         setClicked(true);
         Cookies.set("clicked", true); 
@@ -122,9 +123,13 @@ function Views() {
                     </Button>
                 </Box>
                 <hr />
-                <Box height="300px">
-                    <Calendar type="all" />
-                </Box>{" "}
+                <p class="title">COMBINED VIEWS</p>
+                <div id="combined">
+                    <Box height="300px">
+                        <Calendar type="all" />
+                    </Box>{" "}
+                    <Legend />
+                </div>
             </Box>
         </PageContext.Provider>
     );

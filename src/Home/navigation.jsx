@@ -173,6 +173,7 @@ export function Navigation() {
                                     className={"myButton"}
                                     onClick={(e) => {
                                         handleViewsClick();
+                                        history.push("/")
                                         document.cookie =
                                             "user_uid=1;max-age=0";
                                         document.cookie =

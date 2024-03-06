@@ -6,6 +6,7 @@ import { Grid, Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import * as ReactBootStrap from "react-bootstrap";
 import LoginContext from "../../LoginContext";
+const moment = require("moment-timezone");
 
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
@@ -25,6 +26,7 @@ function GoogleSignIn(props) {
   const history = useHistory();
   const [socialSignUpModalShow, setSocialSignUpModalShow] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
+  const [id, setId] = useState("")
 
   const loginContext = useContext(LoginContext);
   // gets back ID token, decoded to get email and other account info, used to sign in
@@ -126,6 +128,8 @@ function GoogleSignIn(props) {
   const socialGoogle = async (email) => {
     setShowSpinner(true);
 
+    let userId;
+
     axios
       .get(BASE_URL + "UserSocialLogin/" + email)
       .then((res) => {
@@ -153,6 +157,18 @@ function GoogleSignIn(props) {
             },
           });
           setShowSpinner(false);
+          userId=res.data.result[0]
+          const formData = new FormData();
+          formData.append("user_unique_id",userId);
+          formData.append("time_zone", moment.tz.guess())
+          axios
+            .put(BASE_URL + `UserDetails`, formData)
+            .then((res) => {
+              console.log("updated timezone")
+            })
+            .catch((err) => {
+              console.log("Error updating timezones");
+            })
           // Successful log in, Try to update tokens, then continue to next page based on role
         } else {
           setSocialSignUpModalShow(true);

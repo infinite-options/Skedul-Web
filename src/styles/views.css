@@ -11,5 +11,31 @@
     font: normal normal normal 18px/21px SF Pro Display;
 }
 
-  
+#combined {
+    display:flex;
+}
+
+#legend {
+    display:flex;
+    flex-direction:column;
+    justify-content: space-around;
+}
+
+.color {
+    border-radius:5px;
+}
+
+.key {
+    display:flex;
+    align-items:center;
+}
+
+.viewName {
+    margin-left:10px;
+    font: normal normal normal 18px/21px SF Pro Display;    
+}
+
+.#DCEDC8 {
+    background-color:black;
+}
   
