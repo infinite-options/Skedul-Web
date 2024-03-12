@@ -271,10 +271,21 @@ export default function Event() {
         }
         return isValid;
     }
+    function validateDuration(value, fieldname) {
+        var noHours =  /^00:/.test(value);
+        var lessThan10Min = /:0[0-9]:/.test(value);
+        var isNotValid = noHours && lessThan10Min
+        if(isNotValid) {
+            alert(fieldname + " is invalid. Duration must be at least 10 minutes")
+        }
+        return !isNotValid
+    }
+    
     function updateEvent(event_id) {
         if (!validatetime(selectedEvent.duration, "duration")
             || !validatetime(selectedEventBuffer.before.time, "before time")
-            || !validatetime(selectedEventBuffer.after.time, "after time")) {
+            || !validatetime(selectedEventBuffer.after.time, "after time")
+            || !validateDuration(selectedEventBuffer.duration, "duration")){
             return
         }
         var event = {
@@ -597,7 +608,8 @@ export default function Event() {
         console.log(eventDuration, beforeBufferTime, afterBufferTime)
         if (!validatetime(eventDuration, "duration")
             || !validatetime(beforeBufferTime, "before time")
-            || !validatetime(afterBufferTime, "after time")) {
+            || !validatetime(afterBufferTime, "after time")
+            || !validateDuration(eventDuration, "duration")) {
             return
         }
         var event = {
