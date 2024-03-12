@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { Grid, Button } from "@mui/material";
 import LoginContext from "../../LoginContext";
+import googleLogo from "../Google/GoogleLogo.png";
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -451,7 +452,7 @@ function GoogleSignUp() {
                 marginRight: "5px",
               }}
               alt="Google sign-up"
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+              src={googleLogo}
             />
             Sign Up with Google
           </Button>
