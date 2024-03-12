@@ -1023,11 +1023,11 @@ export default function Event() {
                                                                     
                                                                 {/* {Number(event.duration.substring(0, 2)) > "01"? Number(event.duration.substring(0, 2)) +" hrs" + Number(event.duration.substring(3, 5)) +" min": Number(event.duration.substring(0, 2)) === "01"? '60 min': Number(event.duration.substring(0, 2)) * 60 + Number(event.duration.substring(3, 5)) +" min"} */}
                                                                 
-                                                                {Number(event.duration.substring(0, 2)) > 1
-                                                                ? `${Number(event.duration.substring(0, 2))} hrs ${String(event.duration.substring(3, 5)).padStart(2, '0')} min`
-                                                                : Number(event.duration.substring(0, 2)) === 1
-                                                                ? '60 min'
-                                                                : `${String(event.duration.substring(0, 2)).padStart(2, '0')} min`}
+
+                                                                {Number(event.duration.substring(0, 2)) > 0
+                                                                    ? `${Number(event.duration.substring(0, 2))} hrs ${String(event.duration.substring(3, 5)).padStart(2, '0')} min`
+                                                                    : `${String(event.duration.substring(3, 5)).padStart(2, '0')} min`}
+
                                                         </div>
                                                         <div>
                                                             Location:{" "}
