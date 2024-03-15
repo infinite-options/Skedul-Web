@@ -34,12 +34,13 @@ export function Navigation() {
     const history = useHistory();
     const [isActive, setActive] = useState("schedule");
     const loginContext = useContext(LoginContext);
+    // const location = useLocation();
+// const isActive = location.state.isActive;
     console.log(loginContext.loginState.user.user_access);
     var selectedUser = loginContext.loginState.user.user_uid;
     var accessT = loginContext.loginState.user.user_access;
     const handleViewsClick = (e) => {
         const clicked = Boolean(Cookies.get("clicked")); 
-        
         if (isActive === "views" && !clicked) {
             const confirmed = window.confirm(
               "Not all changes have been saved. Do you want to proceed without saving your changes?"
@@ -49,7 +50,7 @@ export function Navigation() {
                 return; 
             }
         }
-        Cookies.set("clicked", false, { expires: 5 / (24 * 60 * 60) })
+        Cookies.set("clicked", true, { expires: 5 / (24 * 60 * 60) })
         history.push("/views");
     };
       
