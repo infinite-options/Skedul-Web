@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
-const Legend = () => {
+const Legend = (props) => {
     const [views, setViews] = useState([]);
+    props.setUpdateClicked(false);
     var selectedUser = "";
     if (
         document.cookie
@@ -27,7 +28,7 @@ const Legend = () => {
             console.log(views[0].color);
         })
         .catch((error) => console.log(error));
-    },[]);
+    },[props.updateClicked]);
 
     return (
         <div id="legend">

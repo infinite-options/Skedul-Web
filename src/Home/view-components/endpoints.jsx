@@ -127,6 +127,7 @@ export const updateView = (setAllViews, user, newView, oldViewID, type, setshowL
                   // convert date and START time to UTC
                   var dateString_startTime = dailySchedule[i]['date'].toString() + " " + dailySchedule[i]['start_time'].toString() + ":00" + tzOffset;
                   console.log("txt : original dateString_startTime", dateString_startTime);
+                  console.log("HERE1")
                   var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
                   DSEobj = { 'start_time': localStartDateTime.localTime }
                   // console.log("txt : DSEobj", DSEobj);

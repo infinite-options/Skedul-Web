@@ -398,6 +398,7 @@ export default function CreateMeet() {
           // change offset to UTC's ********************
           var dateString_startTime = dailySchedule[i]['date'].toString() + " " + dailySchedule[i]['start_time'].toString() + ":00-0000";
           console.log("txt : original dateString_startTime", dateString_startTime);
+
           var localStartDateTime = convertDateToCurrentTimeZone(dateString_startTime);
           DSEobj = { 'date': localStartDateTime.localDate, 'start_time': localStartDateTime.localTime }
           // console.log("txt : DSEobj", DSEobj);

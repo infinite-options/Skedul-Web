@@ -32,6 +32,7 @@ function Views() {
     const [showLoadingImg, setshowLoadingImg] = useState(false);
     const [isActive, setIsActive] = useState(false);
     const [clicked, setClicked] = useState(false);
+    const [updateClicked, setUpdateClicked] = useState(false);
 
     const handleClick = () => {
         setClicked(true);
@@ -104,6 +105,7 @@ function Views() {
                         
                         onClick={() => {
                             setAllViews(data);
+                            setUpdateClicked(true);
                             data.forEach((view) => {
                                 handleClick();
                                 updateView(
@@ -128,7 +130,7 @@ function Views() {
                     <Box height="300px">
                         <Calendar type="all" />
                     </Box>{" "}
-                    <Legend />
+                    <Legend updateClicked={updateClicked} setUpdateClicked={setUpdateClicked}/>
                 </div>
             </Box>
         </PageContext.Provider>
