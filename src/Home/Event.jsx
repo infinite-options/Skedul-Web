@@ -912,52 +912,57 @@ export default function Event() {
                 margin: "0 30px",
               }}
             >
-              {allEvents.map((event) => {
-                return (
-                  <div>
-                    {event.view_id === view.view_unique_id ? (
-                      <div>
-                        <div
-                          style={{
-                            marginTop: "20px",
-                            marginLeft: "10px",
-                            width: "213px",
-                            height: "148px",
-                            backgroundColor: `${view.color}`,
-                            padding: "0px 10px",
-                          }}
-                        >
-                          <Row>
-                            <Col
-                              style={{
-                                paddingLeft: "7px",
-                              }}
-                            >
-                              <Typography
-                                style={{
-                                  textTransform: "uppercase",
-                                  fontSize: "24px",
-                                  color: "#2C2C2E",
-                                  padding: "0",
-                                  font: "normal normal normal 24px/30px Prohibition",
-                                }}
-                              >
-                                {event.event_name}
-                              </Typography>
-                            </Col>
-                            <Col xs={2}>
-                              <img src={Bookmark} alt="bookmark" />
-                            </Col>
-                          </Row>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {" "}
+                {/* Parent container */}
+                {allEvents.map((event) => {
+                  return (
+                    <div>
+                      {event.view_id === view.view_unique_id ? (
+                        <div>
                           <div
                             style={{
-                              fontSize: "14px",
-                              fontWeight: "normal",
-                              font: "normal normal normal 14px/16px SF Pro Display",
+                              marginTop: "20px",
+                              marginLeft: "10px",
+                              width: "213px",
+                              height: "148px",
+                              backgroundColor: `${view.color}`,
+                              padding: "0px 10px",
+                              //display: "flex",
+                              //flexWrap: "wrap",
                             }}
                           >
-                            <div>
-                              {/* {Number(
+                            <Row>
+                              <Col
+                                style={{
+                                  paddingLeft: "7px",
+                                }}
+                              >
+                                <Typography
+                                  style={{
+                                    textTransform: "uppercase",
+                                    fontSize: "24px",
+                                    color: "#2C2C2E",
+                                    padding: "0",
+                                    font: "normal normal normal 24px/30px Prohibition",
+                                  }}
+                                >
+                                  {event.event_name}
+                                </Typography>
+                              </Col>
+                              <Col xs={2}>
+                                <img src={Bookmark} alt="bookmark" />
+                              </Col>
+                            </Row>
+                            <div
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "normal",
+                                font: "normal normal normal 14px/16px SF Pro Display",
+                              }}
+                            >
+                              <div>
+                                {/* {Number(
                                                                 event.duration.substring(
                                                                     0,
                                                                     2
@@ -1000,155 +1005,156 @@ export default function Event() {
                                                                         3,
                                                                         5
                                                                     ) + " min"} */}
-                              {/* {Number(event.duration.substring(0, 2)) > 1
+                                {/* {Number(event.duration.substring(0, 2)) > 1
                                                                         ? `${Number(event.duration.substring(0, 2))} hrs ${Number(event.duration.substring(3, 5))} min`
                                                                         : Number(event.duration.substring(0, 2)) === 1
                                                                         ? '60 min'
                                                                         : `${Number(event.duration.substring(0, 2)) * 60 + Number(event.duration.substring(3, 5))} min`} */}
 
-                              {/* {Number(event.duration.substring(0, 2)) > "01"? Number(event.duration.substring(0, 2)) +" hrs" + Number(event.duration.substring(3, 5)) +" min": Number(event.duration.substring(0, 2)) === "01"? '60 min': Number(event.duration.substring(0, 2)) * 60 + Number(event.duration.substring(3, 5)) +" min"} */}
+                                {/* {Number(event.duration.substring(0, 2)) > "01"? Number(event.duration.substring(0, 2)) +" hrs" + Number(event.duration.substring(3, 5)) +" min": Number(event.duration.substring(0, 2)) === "01"? '60 min': Number(event.duration.substring(0, 2)) * 60 + Number(event.duration.substring(3, 5)) +" min"} */}
 
-                              {Number(event.duration.substring(0, 2)) > 0
-                                ? `${Number(
-                                    event.duration.substring(0, 2)
-                                  )} hrs ${String(
-                                    event.duration.substring(3, 5)
-                                  ).padStart(2, "0")} min`
-                                : `${String(
-                                    event.duration.substring(3, 5)
-                                  ).padStart(2, "0")} min`}
+                                {Number(event.duration.substring(0, 2)) > 0
+                                  ? `${Number(
+                                      event.duration.substring(0, 2)
+                                    )} hrs ${String(
+                                      event.duration.substring(3, 5)
+                                    ).padStart(2, "0")} min`
+                                  : `${String(
+                                      event.duration.substring(3, 5)
+                                    ).padStart(2, "0")} min`}
+                              </div>
+                              <div>
+                                Location:{" "}
+                                {event.location === ""
+                                  ? "None Specified"
+                                  : event.location}
+                              </div>
+                              <div>
+                                -
+                                {JSON.parse(
+                                  event.buffer_time
+                                ).before.time.substring(3, 5)}{" "}
+                                / +
+                                {JSON.parse(
+                                  event.buffer_time
+                                ).after.time.substring(3, 5)}
+                              </div>
                             </div>
-                            <div>
-                              Location:{" "}
-                              {event.location === ""
-                                ? "None Specified"
-                                : event.location}
-                            </div>
-                            <div>
-                              -
-                              {JSON.parse(
-                                event.buffer_time
-                              ).before.time.substring(3, 5)}{" "}
-                              / +
-                              {JSON.parse(
-                                event.buffer_time
-                              ).after.time.substring(3, 5)}
-                            </div>
+                            <Row
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: "normal",
+                                paddingTop: "20px",
+                                paddingBottom: "10px",
+                                font: "normal normal bold 12px/14px SF Pro Display",
+                                textDecoration: "underline",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <Col
+                                onClick={() => {
+                                  history.push("/schedule");
+                                }}
+                              >
+                                View booking page
+                              </Col>
+                              <Col
+                                xs={3}
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "flex-start",
+                                }}
+                              >
+                                <img
+                                  src={Edit}
+                                  style={{
+                                    width: "13px",
+                                    height: "13px",
+                                    cursor: "pointer",
+                                    marginRight: "5px",
+                                  }}
+                                  onClick={() => {
+                                    openUpdateEventModal();
+                                    setEventID(event.event_unique_id);
+                                    getEvent(event.event_unique_id);
+                                    setViewColor(view.color);
+                                    setViewName(view.view_name);
+                                  }}
+                                  alt="edit event"
+                                />
+
+                                <img
+                                  src={Trash}
+                                  style={{
+                                    width: "13px",
+                                    height: "13px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    if (
+                                      window.confirm(
+                                        "Are you sure You want to delete this Event"
+                                      )
+                                    ) {
+                                      deleteEvent(event.event_unique_id);
+                                    }
+                                  }}
+                                  alt="edit event"
+                                />
+                              </Col>
+                            </Row>
                           </div>
                           <Row
                             style={{
+                              marginLeft: "10px",
+                              padding: "13px 0px",
+                              width: "213px",
+                              height: "48px",
                               fontSize: "12px",
                               fontWeight: "normal",
-                              paddingTop: "20px",
-                              paddingBottom: "10px",
-                              font: "normal normal bold 12px/14px SF Pro Display",
-                              textDecoration: "underline",
-                              cursor: "pointer",
+                              background: "#E5E5EB",
+                              border: "1px solid #2C2C2E",
+                              font: "normal normal normal 14px/16px Helvetica Neue",
                             }}
                           >
                             <Col
+                              style={{
+                                cursor: "pointer",
+                              }}
                               onClick={() => {
-                                history.push("/schedule");
+                                navigator.clipboard.writeText(
+                                  document.location.href +
+                                    "/" +
+                                    `${event.event_unique_id}`
+                                );
+                                setshowcopyMessage(true);
                               }}
                             >
-                              View booking page
+                              <img src={Copy} alt="copy event" /> Copy Link
                             </Col>
                             <Col
-                              xs={3}
+                              xs={4}
                               style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "flex-start",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                openShareModal();
+                                setViewColor(view.color);
+                                setEventID(event.event_unique_id);
                               }}
                             >
-                              <img
-                                src={Edit}
-                                style={{
-                                  width: "13px",
-                                  height: "13px",
-                                  cursor: "pointer",
-                                  marginRight: "5px",
-                                }}
-                                onClick={() => {
-                                  openUpdateEventModal();
-                                  setEventID(event.event_unique_id);
-                                  getEvent(event.event_unique_id);
-                                  setViewColor(view.color);
-                                  setViewName(view.view_name);
-                                }}
-                                alt="edit event"
-                              />
-
-                              <img
-                                src={Trash}
-                                style={{
-                                  width: "13px",
-                                  height: "13px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  if (
-                                    window.confirm(
-                                      "Are you sure You want to delete this Event"
-                                    )
-                                  ) {
-                                    deleteEvent(event.event_unique_id);
-                                  }
-                                }}
-                                alt="edit event"
-                              />
+                              Share
                             </Col>
                           </Row>
                         </div>
-                        <Row
-                          style={{
-                            marginLeft: "10px",
-                            padding: "13px 0px",
-                            width: "213px",
-                            height: "48px",
-                            fontSize: "12px",
-                            fontWeight: "normal",
-                            background: "#E5E5EB",
-                            border: "1px solid #2C2C2E",
-                            font: "normal normal normal 14px/16px Helvetica Neue",
-                          }}
-                        >
-                          <Col
-                            style={{
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              navigator.clipboard.writeText(
-                                document.location.href +
-                                  "/" +
-                                  `${event.event_unique_id}`
-                              );
-                              setshowcopyMessage(true);
-                            }}
-                          >
-                            <img src={Copy} alt="copy event" /> Copy Link
-                          </Col>
-                          <Col
-                            xs={4}
-                            style={{
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              openShareModal();
-                              setViewColor(view.color);
-                              setEventID(event.event_unique_id);
-                            }}
-                          >
-                            Share
-                          </Col>
-                        </Row>
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-                  </div>
-                );
-              })}
+                      ) : (
+                        <div></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </Col>
           </Row>
         );
