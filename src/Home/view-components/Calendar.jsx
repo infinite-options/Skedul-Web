@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useRef, useCallback } from "react";
+import React, { useState, useContext, useEffect, useRef, useCallback } from "react";
 import {
     Box,
     TextField,
@@ -14,6 +14,15 @@ import { ClickAwayListener } from "@mui/material";
 import { PageContext } from "./Views";
 import { addView } from "./endpoints";
 import TimeLine from "./TimeLine";
+import Cookies from "js-cookie";
+
+// const Child = (props) => {
+//     return <h3> {props.data} </h3>;
+// };
+ 
+// let conditionMet = false;
+
+const GlobalContext = React.createContext();
 
 // REQUEST API:
 // addView(setAllViews, {view})
@@ -22,6 +31,7 @@ import TimeLine from "./TimeLine";
 // getAllViews(setAllViews, userID);
 
 const Calendar = (props) => {
+    // console.log("inside calendar,,,.....")
     const userID = document.cookie
         .split(";")
         .some((item) => item.trim().startsWith("user_uid="))
@@ -35,13 +45,43 @@ const Calendar = (props) => {
         type = "all",
         pixelSize = 750,
         setSlotsData,
+        // conditionMet = false,
     } = props;
+    const someString = "Testing";
+    const [globalValue, setGlobalValue] = useState(type === "selected");
+    // console.log("Calender typeof globalValue>>",typeof(globalValue));
+    // console.log("Calender globalValue>>",globalValue);
     const [data, setData] = useState();
     useEffect(() => {
+        // console.log("inside use effffffffffect")
         if (type === "selected") {
+            // console.log("Calendar Cookies 1>>",Cookies.get("clicked"));
+            // Cookies.set("clicked",false);
+            // console.log("Calendar Cookies 2>>",Cookies.get("clicked"));
+            // setGlobalValue(type === "selected");
+            // setGlobalValue(true);
+            // console.log("Calender useEffect globalValue>>",globalValue);
+            // console.log("calender type>>",type);
+            // console.log("calender slots data", data)
             setSlotsData(data);
+    //         conditionMet = true;
+    // } else {
+    //     setGlobalValue(false);
         }
+
+
     }, [data]);
+    // }, [type]);
+    // }, []);
+    // if (type === "selected") {
+    //     console.log("Calender globalValue>>",globalValue);
+    //     setGlobalValue(true);
+    //     console.log("Calender typeof globalValue>>",typeof(globalValue));
+    //     // console.log("Calender globalValue>>",globalValue);
+    // } else {
+    //     setGlobalValue(false);
+    //     }
+
 
     const dividers = [];
     for (let i = 0; i < 24; i++) {
@@ -77,8 +117,11 @@ const Calendar = (props) => {
     }
 
     return (
+        <GlobalContext.Provider value={globalValue}>
+
         <div
             style={{
+                // backgroundColor:"red",
                 position: "relative",
                 width:
                     direction === "horizontal"
@@ -93,6 +136,7 @@ const Calendar = (props) => {
         >
             <div
                 style={{
+                    // backgroundColor:"blue",
                     position: "absolute",
                     bottom: direction === "vertical" ? "40px" : "0",
                     right: direction === "horizontal" ? "40px" : "0",
@@ -106,10 +150,12 @@ const Calendar = (props) => {
                 }}
             >
                 {dividers}
+
             </div>
 
             <div
                 style={{
+                    // backgroundColor:"green",
                     position: "absolute",
                     display: "flex",
                     flexDirection: direction === "vertical" ? "row" : "column",
@@ -171,7 +217,10 @@ const Calendar = (props) => {
                 />
             </div>
         </div>
+        </GlobalContext.Provider>
     );
 };
 
 export default Calendar;
+
+export { GlobalContext };
