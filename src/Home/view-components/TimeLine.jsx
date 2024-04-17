@@ -6,6 +6,7 @@ import { PageContext } from "./Views";
 import { getTime, getPosAndSize } from "./getTime";
 import { v4 } from "uuid";
 import "../../styles/timeline.css";
+import Cookies from "js-cookie";
 
 const TimeLine = (props) => {
     // DEFAULT PROPS
@@ -426,6 +427,7 @@ const TimeLine = (props) => {
         direction,
         label
     ) => {
+        console.log("TimeLine.jsx handleOnMouseDown>>>>>>")
         // Set new timeSlot
         let color = null;
         let data = timeSlotsData.current;
@@ -451,10 +453,14 @@ const TimeLine = (props) => {
 
         // Adds a listener for dragging out a new timeslot
         cell.current.addEventListener("mousemove", getMouseMoveEvent, true);
+        console.log("Timeline Cookies 1>>",Cookies.get("clicked"));
+        Cookies.set("clicked",true);
+        console.log("Timeline Cookies 2>>",Cookies.get("clicked"));
 
         return data;
     };
     const getMouseMoveEvent = useCallback((e) => {
+        console.log("TimeLine.jsx getMouseMoveEvent>>>>>>")
         timeSlotsData.current = handleOnMouseMove(e, timeSlotsData);
         setTimeSlots([
             ...timeSlotsData.current.map((timeSlot, idx) => (
@@ -471,6 +477,7 @@ const TimeLine = (props) => {
         ]);
     }, []);
     const handleOnMouseMove = (e, timeSlotsData) => {
+        console.log("TimeLine.jsx handleOnMouseMove>>>>>>")
         let data = timeSlotsData.current;
 
         setCursor("grabbing");
@@ -767,6 +774,7 @@ const TimeLine = (props) => {
                 }}
                 ref={cell}
                 onMouseDownCapture={(e) => {
+                    console.log("TimeLine.jsx onMouseDownCapture>>>>>>")
                     if (type === "selected" && allViews.length > 0) {
                         e.persist();
                         timeSlotsData.current = handleOnMouseDown(
@@ -793,6 +801,7 @@ const TimeLine = (props) => {
                     ]);
                 }}
                 onMouseUpCapture={() => {
+                    console.log("TimeLine.jsx onMouseUpCapture>>>>>>")
                     if (type === "selected" && allViews.length > 0) {
                         timeSlotsData.current =
                             handleOnMouseUpOnMouseLeaveOnPopoverClose(
@@ -814,6 +823,7 @@ const TimeLine = (props) => {
                     ]);
                 }}
                 onMouseLeave={() => {
+                    console.log("TimeLine.jsx mouseLeave>>>>>>")
                     if (type === "selected" && allViews.length > 0) {
                         timeSlotsData.current =
                             handleOnMouseUpOnMouseLeaveOnPopoverClose(

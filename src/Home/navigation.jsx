@@ -3,11 +3,14 @@ import { Toolbar, Button, AppBar, Box } from "@mui/material";
 import "../styles/navigation.css";
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Logo from "../images/Logo.svg";
 import LoginContext from "../LoginContext";
 import Cookies from "js-cookie";
+// import conditionMet from "./view-components/Calendar.jsx";
+import { GlobalContext } from "./view-components/Calendar";
+
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -34,13 +37,37 @@ export function Navigation() {
     const history = useHistory();
     const [isActive, setActive] = useState("schedule");
     const loginContext = useContext(LoginContext);
+    // const location = useLocation();
+    //// const [globalValue, setGlobalValue] = useContext(GlobalContext);
+
+    // const globalValue = useContext(GlobalContext);
+    // console.log("Navigation Global Value from Calendar:", globalValue);
+    // const { state } = useLocation();
+    // const propertyData = location.state.item
+// const isActive = location.state.isActive;
     console.log(loginContext.loginState.user.user_access);
     var selectedUser = loginContext.loginState.user.user_uid;
     var accessT = loginContext.loginState.user.user_access;
     const handleViewsClick = (e) => {
-        const clicked = Boolean(Cookies.get("clicked")); 
+        // console.log("in navigation.jsx in handleViewsClick");
+
+        // console.log("navigation Global Value from Calendar:", globalValue);
+        // console.log("navigation typeof globalValue>>",typeof(globalValue));
+        // console.log("Navigation Cookies>>>>",Cookies)
+        // console.log("Navigation Cookies>>>>",Cookies.get("clicked"))
+
+        // const clicked = Boolean(Cookies.get("clicked")); 
+        const clicked = Cookies.get("clicked");
+
+        // console.log("Navigation updated button clicked>>",clicked)
+        // console.log("Navigation Cookies>>>>",Cookies.get("clicked"))
+
+        // console.log("navigation isActive>>",isActive)
+        // console.log("navigation typeOf clicked??",typeof(clicked))
         
-        if (isActive === "views" && !clicked) {
+        // if (isActive === "views" && !clicked) {
+        
+        if (isActive === "views" && clicked === "true") {
             const confirmed = window.confirm(
               "Not all changes have been saved. Do you want to proceed without saving your changes?"
             );
@@ -49,8 +76,40 @@ export function Navigation() {
                 return; 
             }
         }
-        Cookies.set("clicked", false, { expires: 5 / (24 * 60 * 60) })
+        // Cookies.set("clicked", false, { expires: 5 / (24 * 60 * 60) })
+        Cookies.set("clicked", false, { expires: 1})
         history.push("/views");
+
+
+
+        // // var conditionMet = require('./Calendar.jsx');
+        // console.log("navigation Global Value from Calendar:", globalValue);
+        // console.log("navigation typeof globalValue>>",typeof(globalValue));
+        // // console.log("navigation conditionMet>>>",conditionMet.value)
+        // console.log("Navigation Cookies>>>>",Cookies)
+        // console.log("Navigation Cookies>>>>",Cookies.get("clicked"))
+        // // const clicked = Cookies.get("clicked"); 
+        // const clicked = Boolean(Cookies.get("clicked")); 
+        // console.log("Navigation updated button clicked>>",clicked)
+        // console.log("navigation isActive>>",isActive)
+        // console.log("navigation typeOf clicked??",typeof(clicked))
+        // if (isActive === "views" && !clicked) {
+        // // if (isActive === "views" && clicked === "false") {
+        //     console.log("inside NavigationIF>>")
+        //     const confirmed = window.confirm(
+        //       "Not all changes have been saved. Do you want to proceed without saving your changes?"
+        //     );
+        //     console.log("confirmed>>>",confirmed)
+        //     if (!confirmed) {
+        //         e.preventDefault();
+        //         return; 
+        //     }
+        // }
+        // // Cookies.set("clicked", false)
+        // // Cookies.set("clicked", false, { expires: 5 / (24 * 60 * 60) })
+        // Cookies.set("clicked", true)
+        // history.push("/views");
+
     };
       
 

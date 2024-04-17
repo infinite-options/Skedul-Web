@@ -31,13 +31,21 @@ function Views() {
     const [showUpdateViewDialog, setshowUpdateViewDialog] = useState(false);
     const [showLoadingImg, setshowLoadingImg] = useState(false);
     const [isActive, setIsActive] = useState(false);
-    const [clicked, setClicked] = useState(false);
+    const [updateClicked, setUpdateClicked] = useState(false);
+
+    // Cookies.set("clicked", true); 
+    console.log("Views Initial Cookies>>",Cookies.get("clicked"));
 
     const handleClick = () => {
-        setClicked(true);
-        Cookies.set("clicked", true); 
+        // console.log("inside handle click for Update");
+        setUpdateClicked(true);
+        // console.log("Views Cookies>>>", Cookies);
+        // console.log("Views clicked>>>", Cookies.get("clicked"));
+        Cookies.set("clicked", false); 
+        // console.log("Views cookies>>>", Cookies);
+        // console.log("Views clicked>>>", Cookies.get("clicked"));
         setTimeout(() => {
-          setClicked(false);
+            setUpdateClicked(false);
         }, 1000);
       }
 
@@ -100,7 +108,7 @@ function Views() {
                 <Box m="20px 10px">
                     
                     <Button
-                        variant={clicked ? "contained" : "outlined"}
+                        variant={updateClicked ? "contained" : "outlined"}
                         
                         onClick={() => {
                             setAllViews(data);
@@ -118,7 +126,7 @@ function Views() {
 
                         }}
                     >
-                        {clicked ? "Updated" : "Update"}
+                        {updateClicked ? "Updated" : "Update"}
                         
                     </Button>
                 </Box>

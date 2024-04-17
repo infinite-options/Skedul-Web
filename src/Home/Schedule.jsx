@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import "../styles/schedule.css";
 import { Container, Row, Col, Modal } from "react-bootstrap";
-import { Typography } from "@mui/material";
+import { Typography, Alert, AlertTitle, Fade } from "@mui/material";
 import moment from "moment";
 import LoginContext from "../LoginContext";
 import Bookmark from "../images/bookmark.svg";
@@ -33,6 +33,7 @@ export default function Schedule(props) {
     const [selectedMeetingTime, setSelectedMeetingTime] = useState("");
     const [selectedMeetingDuration, setSelectedMeetingDuration] = useState("");
     const [responseStatus, setResponseStatus] = useState("");
+    const [showcopyMessage, setshowcopyMessage] = useState(false);
     console.log(
         "selecteduser",
 
@@ -1355,6 +1356,22 @@ export default function Schedule(props) {
     return (
         <div>
             <Container>
+            {showcopyMessage && <Row>
+                    <Fade
+                        in={showcopyMessage} //Write the needed condition here to make it appear
+                        timeout={{ enter: 1000, exit: 2000 }} //Edit these two values to change the duration of transition when the element is getting appeared and disappeard
+                        addEndListener={() => {
+                            setTimeout(() => {
+                                setshowcopyMessage(false)
+                            }, 3000);
+                        }}
+                    >
+                        <Alert severity="success" variant="standard" className="alert">
+                            <AlertTitle>Success</AlertTitle>
+                            Copied Successfully!!!
+                        </Alert>
+                    </Fade>
+                </Row>}
                 {isLoading ? (
                     <h1>No Views</h1>
                 ) : (
@@ -1508,7 +1525,7 @@ export default function Schedule(props) {
                                                                             )}
                                                                         </div>
                                                                         <div
-                                                                            onClick={() =>
+                                                                            onClick={() => {
                                                                                 navigator.clipboard.writeText(
                                                                                     document.location.href.substring(
                                                                                         0,
@@ -1522,6 +1539,8 @@ export default function Schedule(props) {
                                                                                         "event/" +
                                                                                         `${event.event_unique_id}`
                                                                                 )
+                                                                                setshowcopyMessage(true)
+                                                                                    }
                                                                             }
                                                                         >
                                                                             <img
