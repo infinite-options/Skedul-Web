@@ -48,6 +48,7 @@ function Views() {
     { start_time: '', end_time: '' },
   ]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [legendRefreshKey, setLegendRefreshKey] = useState(0);
   const [border, setBorder] = useState([false, false, false, false, false]);
   var selectedUser = '';
   if (
@@ -120,19 +121,27 @@ function Views() {
         console.log(error);
       });
   }
-  function deleteView(viewID) {
-    var deleteV = {
-      view_id: viewID,
-    };
-    axios
-      .post(BASE_URL + 'DeleteView', deleteV)
-      .then((response) => {
-        setRefreshKey((oldKey) => oldKey + 1);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+ function deleteView(viewID) {
+  var deleteV = { view_id: viewID };
+  axios
+    .post(BASE_URL + 'DeleteView', deleteV)
+    .then(() => {
+      const url = BASE_URL + `GetAllViews/${selectedUser}`;
+      fetch(url)
+        .then((response) => response.json())
+        .then((json) => {
+          const newViews = json.result.result;
+          setAllViews(newViews); //  Critical: refreshes legend + calendar
+          setLegendRefreshKey((prev) => prev + 1);
+          setSelectedView(newViews[newViews.length - 1] || {});
+        });
+    })
+    .catch((error) => {
+      console.log('Delete error:', error);
+    });
+}
+
+
 
   const timeDisplay = () => {
     //this essentially creates the time row
@@ -331,7 +340,8 @@ function Views() {
     );
   };
 
-  const timeDisplayAll = () => {
+  const timeDisplayAll = (key) => {
+    console.log("Recomputing combined view for key:", key);
     //this essentially creates the time row
     let arr = [];
 
@@ -349,8 +359,9 @@ function Views() {
 
     let schedule = JSON.parse(allViews[0].schedule);
     let colors = [allViews[0].color];
-    for (let i = 1; i < allViews.length; i++) {
-      let tempSched = JSON.parse(allViews[i].schedule);
+    const freshViews = [...allViews]; // clone it to guarantee change
+    for (let i = 1; i < freshViews.length; i++) {
+      let tempSched = JSON.parse(freshViews[i].schedule);
       let tempCol = allViews[i].color;
       colors.push(tempCol);
       for (const day in schedule) {
@@ -998,65 +1009,76 @@ function Views() {
     });
   }
 
-  function createNewView() {
-    var event = {
-      user_id: `${selectedUser}`,
-      view_name: viewName,
-      color: viewColor,
-      schedule: {
-        Sunday: sundayFields,
-        Monday: mondayFields,
-        Tuesday: tuesdayFields,
-        Wednesday: wednesdayFields,
-        Thursday: thursdayFields,
-        Friday: fridayFields,
-        Saturday: saturdayFields,
-      },
-    };
-    axios
-      .post(BASE_URL + 'AddView', event)
-      .then((response) => {
-        console.log(response);
-        setRefreshKey((oldKey) => oldKey + 1);
-        setBusy(true);
-        setViewName('');
-        setViewColor('');
-        setShowUpdateButton(true);
-      })
-      .catch((error) => {
-        console.log('error', error);
-      })
-      .then(() => {
-        const url = BASE_URL + `GetAllViews/${selectedUser}`;
-        fetch(url)
-          .then((response) => response.json())
-          .then((json) => {
-            setSelectedView(json.result.result[json.result.result.length - 1]);
-          });
-      });
-  }
+ async function createNewView() {
+  const event = {
+    user_id: `${selectedUser}`,
+    view_name: viewName,
+    color: viewColor,
+    schedule: {
+      Sunday: sundayFields,
+      Monday: mondayFields,
+      Tuesday: tuesdayFields,
+      Wednesday: wednesdayFields,
+      Thursday: thursdayFields,
+      Friday: fridayFields,
+      Saturday: saturdayFields,
+    },
+  };
 
-  function updateView(view) {
-    var event = {
-      schedule: {
-        Sunday: selectedSchedule.Sunday,
-        Monday: selectedSchedule.Monday,
-        Tuesday: selectedSchedule.Tuesday,
-        Wednesday: selectedSchedule.Wednesday,
-        Thursday: selectedSchedule.Thursday,
-        Friday: selectedSchedule.Friday,
-        Saturday: selectedSchedule.Saturday,
-      },
-    };
-    axios
-      .post(BASE_URL + `UpdateView/${view.view_unique_id}`, event)
-      .then((response) => {
-        setRefreshKey((oldKey) => oldKey + 1);
-      })
-      .catch((error) => {
-        console.log('error', error);
-      });
+  try {
+    await axios.post(BASE_URL + 'AddView', event); // Wait for backend to save
+
+    const response = await fetch(BASE_URL + `GetAllViews/${selectedUser}`); // ✅ Refetch updated views
+    const json = await response.json();
+    const newViews = json.result.result;
+
+    setAllViews(newViews);                         //  Updates legend + schedule
+    setLegendRefreshKey((prev) => prev + 1);
+    setSelectedView(newViews[newViews.length - 1]);
+    setRefreshKey((oldKey) => oldKey + 1);
+    setLegendRefreshKey((prev) => prev + 1);
+    setViewName('');
+    setViewColor('');
+    setShowUpdateButton(true);
+  } catch (error) {
+    console.log('Error creating new view:', error);
   }
+}
+
+
+function updateView(view) {
+  const event = {
+    schedule: {
+      Sunday: selectedSchedule.Sunday,
+      Monday: selectedSchedule.Monday,
+      Tuesday: selectedSchedule.Tuesday,
+      Wednesday: selectedSchedule.Wednesday,
+      Thursday: selectedSchedule.Thursday,
+      Friday: selectedSchedule.Friday,
+      Saturday: selectedSchedule.Saturday,
+    },
+  };
+
+  axios
+    .post(BASE_URL + `UpdateView/${view.view_unique_id}`, event)
+    .then(() => {
+      // Now manually fetch latest views on update click
+      fetch(BASE_URL + `GetAllViews/${selectedUser}`)
+        .then((response) => response.json())
+        .then((json) => {
+          const updatedViews = json.result.result;
+          setAllViews(updatedViews); // ✅ updates Combined View
+          setSelectedView(updatedViews.find(v => v.view_unique_id === view.view_unique_id));
+          setRefreshKey((oldKey) => oldKey + 1);
+          setLegendRefreshKey((prev) => prev + 1); // 🔁 added this!
+          setUpdated(true);
+        });
+    })
+    .catch((error) => {
+      console.log("Error updating view:", error);
+    });
+}
+
 
   const createNewViewModal = () => {
     const modalStyle = {
@@ -2872,10 +2894,33 @@ function Views() {
                   overflow: 'scroll',
                 }}
               >
-                {timeDisplayAll()}
+                {refreshKey !== null && timeDisplayAll(refreshKey)}
+
+
               </Col>
             </Row>
           </div>
+         <div key={legendRefreshKey} style={{ marginTop: "20px", paddingLeft: "20px" }}>
+         <h4 style={{ fontWeight: "bold", marginBottom: "10px" }}>Legend</h4>
+         {allViews.map((view, idx) => (
+          <div
+            key={view.view_unique_id || idx}
+            style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
+    >
+      <div
+        style={{
+          width: "20px",
+          height: "20px",
+          borderRadius: "4px",
+          backgroundColor: view.color,
+          marginRight: "10px",
+        }}
+      />
+      <span>{view.view_name}</span>
+    </div>
+   ))}
+        </div>
+
         </div>
       )}
     </div>

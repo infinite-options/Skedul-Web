@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import "../styles/signup.css";
 import { Typography } from "@mui/material";
@@ -6,13 +6,17 @@ import { useHistory } from "react-router-dom";
 import { Col, Container, Form, Modal, Row } from "react-bootstrap";
 import axios from "axios";
 import GoogleSignUp from "./Google/GoogleSignUp";
+import LoginContext from "../LoginContext"; // ✅ Move here
 const moment = require("moment-timezone");
+
+
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 /* Navigation Bar component function */
 export default function Login() {
   const history = useHistory();
+  const loginContext = useContext(LoginContext); 
 
   console.log("In Sign Up page");
   const [createAccountFlag, setCreateAccountFlag] = useState(false);
@@ -46,24 +50,56 @@ export default function Login() {
     setNewLName(event.target.value);
   };
 
-  const handleSignUpDone = () => {
-    axios
-      .post(BASE_URL + "UserSignUp", {
-        email_id: newEmail,
-        password: newPassword,
-        first_name: newFName,
-        last_name: newLName,
-        time_zone: moment.tz.guess(),
-      })
-      .then((response) => {
-        console.log(response.data);
-        hideSignUp();
-      })
-      .catch((error) => {
-        console.log("its in landing page");
-        console.log(error);
-      });
-  };
+ const handleSignUpDone = () => {
+  axios
+    .post(BASE_URL + "UserSignUp", {
+      email_id: newEmail,
+      password: newPassword,
+      first_name: newFName,
+      last_name: newLName,
+      time_zone: moment.tz.guess(),
+    })
+    .then((response) => {
+      console.log("Signup response:", response.data);
+
+      // Auto-login after signup
+      axios
+        .get(BASE_URL + "UserLogin/" + newEmail + "," + newPassword)
+        .then((loginRes) => {
+          console.log("Auto-login response:", loginRes.data);
+          if (loginRes.data.result !== false) {
+            document.cookie = "user_uid=" + loginRes.data.result;
+            document.cookie = "user_email=" + newEmail;
+
+            loginContext.setLoginState({
+              ...loginContext.loginState,
+              loggedIn: true,
+              user: {
+                ...loginContext.loginState.user,
+                id: loginRes.data.result.toString(),
+                email: newEmail.toString(),
+                user_access: "",
+              },
+            });
+
+            history.push({
+              pathname: "/schedule",
+              state: {
+                email: newEmail.toString(),
+                accessToken: "",
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("Auto-login failed:", err);
+        });
+    })
+    .catch((error) => {
+      console.log("Signup error:", error);
+    });
+};
+
   return (
     <Container
       style={{

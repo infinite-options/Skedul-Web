@@ -12,6 +12,7 @@ import LoginContext from "../LoginContext";
 import GoogleSignUp from "./Google/GoogleSignUp";
 import { current } from "@reduxjs/toolkit";
 
+
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -629,7 +630,9 @@ export default function CreateMeet() {
     attendees.push({ email: googleAuthedEmail });
     console.log(attendees);
     var meet = {
-      summary: meetName,
+      summary: meetName || selectedEvent.event_name || "Scheduled Meeting",
+
+
 
       location: meetLocation,
       creator: {

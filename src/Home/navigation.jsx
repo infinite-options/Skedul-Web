@@ -130,8 +130,9 @@ export function Navigation() {
                                     src={Logo}
                                     alt="logo"
                                     onClick={() => {
-                                        history.push("/schedule");
+                                        history.push("/");
                                     }}
+                                    style={{ cursor:"pointer"}}
                                 />
                             </Box>
                         </div>
