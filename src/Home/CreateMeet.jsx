@@ -46,6 +46,11 @@ export default function CreateMeet() {
   const [timeAASlots, setTimeAASlots] = useState([]);
   // true once the Google freeBusy check succeeded for the selected date
   const [freeBusyChecked, setFreeBusyChecked] = useState(false);
+  // true if the freeBusy check failed (e.g. expired Google token)
+  const [freeBusyError, setFreeBusyError] = useState(false);
+  // Visitor's own token (calendar.freebusy only) so we can hide times they're busy
+  const [visitorAccessToken, setVisitorAccessToken] = useState("");
+  const [visitorAccessError, setVisitorAccessError] = useState("");
   const [duration, setDuration] = useState(null);
   const [dateString, setDateString] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -83,6 +88,35 @@ export default function CreateMeet() {
       setSignedIn(true);
     }
   }
+  // Ask the visitor (via Google popup) to let us see when they're busy.
+  // Must be called from a click so the browser doesn't block the popup.
+  function requestVisitorCalendarAccess() {
+    if (!window.google || !window.google.accounts) return;
+    setVisitorAccessError("");
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: "https://www.googleapis.com/auth/calendar.freebusy",
+      login_hint: googleAuthedEmail,
+      callback: (response) => {
+        if (response && response.access_token) {
+          setVisitorAccessToken(response.access_token);
+        } else {
+          console.error("Visitor calendar access denied", response);
+          setVisitorAccessError(
+            "We need access to your calendar to show times that work for you."
+          );
+        }
+      },
+      error_callback: (error) => {
+        console.error("Visitor calendar access popup closed", error);
+        setVisitorAccessError(
+          "We need access to your calendar to show times that work for you."
+        );
+      },
+    });
+    tokenClient.requestAccessToken();
+  }
+
   useEffect(() => {
     /* global google */
     console.log("in useeffect google", window.google);
@@ -326,19 +360,25 @@ export default function CreateMeet() {
       // const timeMax = dateString + "T" + et + ":00" + tzOffset;
       // timeMin and timeMax reformat the schedule.Sunday[0] startTime and endTime
 
-      // Google freeBusy check temporarily disabled; slots come from
-      // AvailableAppointments only (see renderAvailableApptsVertical).
-      /*
-      axios
-        .post(
-          `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`,
-          data,
-          {
-            headers: headers,
-          }
-        )
-        .then((response) => {
-          let busy = response.data.calendars.primary.busy;
+      setFreeBusyError(false);
+      // Ask Google which times are already busy on the owner's calendar.
+      // Check both the owner's and the visitor's calendars; a time is only
+      // offered if it is free on both.
+      const freeBusyURL = `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`;
+      const ownerRequest = axios.post(freeBusyURL, data, { headers: headers });
+      const visitorRequest = visitorAccessToken
+        ? axios.post(freeBusyURL, data, {
+            headers: {
+              ...headers,
+              Authorization: "Bearer " + visitorAccessToken,
+            },
+          })
+        : Promise.reject(new Error("Visitor calendar access not granted"));
+      Promise.all([ownerRequest, visitorRequest])
+        .then(([ownerResponse, visitorResponse]) => {
+          let busy = ownerResponse.data.calendars.primary.busy.concat(
+            visitorResponse.data.calendars.primary.busy
+          );
           for (let i in viewTimeSlots) {
             let st = viewTimeSlots[i]["start_time"];
             let et = viewTimeSlots[i]["end_time"];
@@ -386,9 +426,11 @@ export default function CreateMeet() {
           setFreeBusyChecked(true);
         })
         .catch((error) => {
-          console.log("error", error);
+          // Without Google's answer we can't tell which times are busy, so
+          // show no times rather than risk double-booking.
+          console.error("Google freeBusy check failed", error);
+          setFreeBusyError(true);
         });
-      */
     }
     // }
     setTimeSelected(false);
@@ -755,11 +797,21 @@ export default function CreateMeet() {
     Last7Days();
     let result = [];
     console.log("GetView result times slots ", timeSlots, "AND ", timeAASlots);
-    // Once Google freeBusy has answered, its result is authoritative: an empty
-    // timeSlots means the calendar is fully busy, not "fall back to timeAASlots".
+    // Only offer times once Google freeBusy has answered, so times that are
+    // busy on the owner's Google Calendar can never be booked. An empty
+    // timeSlots means the calendar is fully busy.
+    if (freeBusyError) {
+      return (
+        <Typography style={{ color: "#c62828" }}>
+          We couldn't check this calendar's availability right now. Please try
+          again later.
+        </Typography>
+      );
+    }
     if (!freeBusyChecked) {
-      result = timeAASlots;
-    } else if (timeAASlots.length === 0) {
+      return <Typography>Checking availability…</Typography>;
+    }
+    if (timeAASlots.length === 0) {
       result = timeSlots;
     } else {
       result = timeSlots.filter((o1) => timeAASlots.some((o2) => o1 === o2));
@@ -1088,6 +1140,9 @@ export default function CreateMeet() {
                     onClick={() => {
                       // getAuthToGoogle();
                       // setSignedIn(true);
+                      if (!visitorAccessToken) {
+                        requestVisitorCalendarAccess();
+                      }
                       setShowDays(true);
                       setMeetingConfirmed(false);
                       setTimeSelected(false);
@@ -1182,7 +1237,30 @@ export default function CreateMeet() {
                   hidden={showCreateNewMeetModal || meetingConfirmed}
                 >
                   {" "}
-                  {showDays === true && googleAuthedEmail.length != 0 ? (
+                  {showDays === true &&
+                  googleAuthedEmail.length != 0 &&
+                  !visitorAccessToken ? (
+                    <div>
+                      <Typography style={{ marginBottom: "10px" }}>
+                        {visitorAccessError ||
+                          "Allow access to your Google Calendar so we only show times you're free."}
+                      </Typography>
+                      <button
+                        style={{
+                          background: "#2C2C2E 0% 0% no-repeat padding-box",
+                          border: "2px solid #2C2C2E",
+                          borderRadius: "3px",
+                          color: " #F3F3F8",
+                        }}
+                        onClick={requestVisitorCalendarAccess}
+                      >
+                        Check my calendar
+                      </button>
+                    </div>
+                  ) : null}
+                  {showDays === true &&
+                  googleAuthedEmail.length != 0 &&
+                  visitorAccessToken ? (
                     <div>
                       <Typography
                         style={{
