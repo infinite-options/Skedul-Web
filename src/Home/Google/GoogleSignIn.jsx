@@ -99,6 +99,11 @@ function GoogleSignIn(props) {
                 })
                 .then((data) => {
                   let at = data["access_token"];
+                  if (!at) {
+                    // Don't overwrite the stored token with undefined
+                    console.error("Google token refresh failed", data);
+                    return;
+                  }
                   setAccessToken(at);
                   let url = BASE_URL + `UpdateAccessToken/${user_id}`;
                   axios

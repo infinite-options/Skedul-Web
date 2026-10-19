@@ -165,6 +165,14 @@ export default function Schedule(props) {
                             .then((data) => {
                                 //console.log(data);
                                 let at = data["access_token"];
+                                if (!at) {
+                                    // Don't overwrite the stored token with undefined
+                                    console.error(
+                                        "Google token refresh failed",
+                                        data
+                                    );
+                                    return;
+                                }
                                 const headers = {
                                     Accept: "application/json",
                                     Authorization: "Bearer " + at,

@@ -5,13 +5,14 @@ import { Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { Grid, Button } from "@mui/material";
 import LoginContext from "../../LoginContext";
 import googleLogo from "../Google/GoogleLogo.png";
+import { GOOGLE_SCOPES } from "./googleScopes";
+const moment = require("moment-timezone");
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
 
-let SCOPES =
-  "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/userinfo.profile";
+const SCOPES = GOOGLE_SCOPES;
 
 function GoogleSignUp() {
   const loginContext = useContext(LoginContext);
@@ -161,7 +162,7 @@ function GoogleSignUp() {
         email_id: newEmail,
         first_name: newFName,
         last_name: newLName,
-        time_zone: "",
+        time_zone: moment.tz.guess(),
         google_auth_token: accessToken,
         google_refresh_token: refreshToken,
         social_id: socialId,

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import moment from "moment";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { Row, Col, Container, Form, Modal } from "react-bootstrap";
 import { Box, Typography } from "@mui/material";
 import { Grid } from "@mui/material";
@@ -44,6 +44,8 @@ export default function CreateMeet() {
 
   const [timeSlots, setTimeSlots] = useState([]);
   const [timeAASlots, setTimeAASlots] = useState([]);
+  // true once the Google freeBusy check succeeded for the selected date
+  const [freeBusyChecked, setFreeBusyChecked] = useState(false);
   const [duration, setDuration] = useState(null);
   const [dateString, setDateString] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -66,8 +68,9 @@ export default function CreateMeet() {
   const client_id = CLIENT_ID;
   const client_secret = CLIENT_SECRET;
 
-  let curURL = window.location.href;
-  const eventID = curURL.substring(curURL.length - 10);
+  // From the /event/:eventID route (App.js); slicing the URL broke on
+  // trailing slashes, query strings and in-app navigation.
+  const { eventID } = useParams();
 
   function handleCallBackResponse(response) {
     var userObject = jwt_decode(response.credential);
@@ -190,6 +193,11 @@ export default function CreateMeet() {
                   .then((data) => {
                     //console.log(data);
                     let at = data["access_token"];
+                    if (!at) {
+                      // Don't overwrite the stored token with undefined
+                      console.error("Google token refresh failed", data);
+                      return;
+                    }
                     setAccessToken(at);
                     //console.log('in events', at);
                     let url = BASE_URL + `UpdateAccessToken/${userID}`;
@@ -284,7 +292,8 @@ export default function CreateMeet() {
     var offset = new Date().getTimezoneOffset();
     var sign = offset < 0 ? "+" : "-";
     offset = Math.abs(offset);
-    return sign + z((offset / 60) | 0) + z(offset % 60);
+    // RFC 3339 offset (e.g. -07:00), as required by the Google Calendar API
+    return sign + z((offset / 60) | 0) + ":" + z(offset % 60);
   }
 
   useEffect(() => {
@@ -297,6 +306,7 @@ export default function CreateMeet() {
 
       let tzOffset = getTimezoneOffset();
       let free = [];
+      setFreeBusyChecked(false);
       console.log("GetView result viewTimeSlots", viewTimeSlots);
 
       const data = {
@@ -316,6 +326,9 @@ export default function CreateMeet() {
       // const timeMax = dateString + "T" + et + ":00" + tzOffset;
       // timeMin and timeMax reformat the schedule.Sunday[0] startTime and endTime
 
+      // Google freeBusy check temporarily disabled; slots come from
+      // AvailableAppointments only (see renderAvailableApptsVertical).
+      /*
       axios
         .post(
           `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`,
@@ -352,12 +365,8 @@ export default function CreateMeet() {
                 let this_start = Date.parse(times["start"]) / 1000;
                 let this_end = Date.parse(times["end"]) / 1000;
 
-                // If the appt start time or appt end time falls on a current appt, slot is taken.
-                if (
-                  (appt_start_time >= this_start &&
-                    appt_start_time < this_end) ||
-                  (appt_end_time > this_start && appt_end_time <= this_end)
-                ) {
+                // If the appt overlaps a current appt at all, slot is taken.
+                if (appt_start_time < this_end && appt_end_time > this_start) {
                   slot_available = false;
                   return; // No need to continue if it's taken.
                 }
@@ -374,10 +383,12 @@ export default function CreateMeet() {
             }
           }
           setTimeSlots(free);
+          setFreeBusyChecked(true);
         })
         .catch((error) => {
           console.log("error", error);
         });
+      */
     }
     // }
     setTimeSelected(false);
@@ -669,9 +680,11 @@ export default function CreateMeet() {
       Accept: "application/json",
       Authorization: "Bearer " + accessToken,
     };
+    // sendUpdates=all makes Google email the invite to the attendees;
+    // without it the API creates the event silently.
     axios
       .post(
-        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${API_KEY}`,
+        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?sendUpdates=all&key=${API_KEY}`,
         event,
         {
           headers: headers,
@@ -679,6 +692,9 @@ export default function CreateMeet() {
       )
       .then((response) => {
         console.log(response);
+      })
+      .catch((error) => {
+        console.error("Google Calendar event insert failed", error);
       });
   };
 
@@ -739,14 +755,14 @@ export default function CreateMeet() {
     Last7Days();
     let result = [];
     console.log("GetView result times slots ", timeSlots, "AND ", timeAASlots);
-    {
-      timeSlots.length === 0
-        ? (result = timeAASlots)
-        : timeAASlots.length === 0
-        ? (result = timeSlots)
-        : (result = timeSlots.filter((o1) =>
-            timeAASlots.some((o2) => o1 === o2)
-          ));
+    // Once Google freeBusy has answered, its result is authoritative: an empty
+    // timeSlots means the calendar is fully busy, not "fall back to timeAASlots".
+    if (!freeBusyChecked) {
+      result = timeAASlots;
+    } else if (timeAASlots.length === 0) {
+      result = timeSlots;
+    } else {
+      result = timeSlots.filter((o1) => timeAASlots.some((o2) => o1 === o2));
     }
     console.log(timeAASlots);
     return (
