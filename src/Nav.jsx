@@ -8,6 +8,7 @@ import Integration from "../src/Home/Integration";
 import Help from "../src/Home/Help";
 import Account from "./Home/Account";
 import Views from "./Home/view-components/Views";
+import EveryCircleLogin from "./Home/EveryCircleLogin";
 
 // Nav here will take all the adress from children page to this and give
 // it to the switch route
@@ -23,6 +24,7 @@ function Nav(authLevel, isAuth) {
             <Route exact path="/help" component={Help} />
             <Route exact path="/account" component={Account} />
             <Route exact path="/signup" component={SignUp} />
+            <Route exact path="/everycircle" component={EveryCircleLogin} />
         </Switch>
     );
 }
