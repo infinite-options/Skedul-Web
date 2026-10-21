@@ -1,3 +1,23 @@
+# Skedul Web
+
+## Publish to Netlify
+
+Put real values in `.env` (copy `.env.example`). Leave that file local — it is gitignored. Install the [Netlify CLI](https://docs.netlify.com/cli/get-started/) once (`npm install -g netlify-cli`) and run `netlify login`.
+
+Deploys always go to the existing Netlify site `skedul` (`fab0aecc-92b3-40b4-a9c2-155af2607277`). That site’s custom domain is already **https://skedul.online**, so you do not pick a site on the first deploy.
+
+```text
+Goal                         Command
+---------------------------  -------------------------------------------------
+Preview on the skedul site   npm run deploy:draft
+Publish https://skedul.online  npm run deploy
+                             (same as npm run deploy:prod / deploy:production)
+```
+
+Use `npm run …`. Bare `npm deploy` is not an npm command.
+
+These commands build from your local `.env`, then upload `build/` with `netlify deploy --no-build`. A draft deploy does not replace skedul.online. `npm run deploy` does. Avoid `netlify deploy` without `--no-build`: Netlify can inject private site env as `****`, and Create React App lets that override `.env`.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
