@@ -1,0 +1,19 @@
+[build]
+  # Loads local .env into the build (Netlify **** site vars must not win),
+  # then runs `npm run build`. Output is Create React App's `build/` folder.
+  # Live domain https://skedul.online is the custom domain on Netlify site
+  # "skedul" (fab0aecc-92b3-40b4-a9c2-155af2607277). npm scripts pass --site so
+  # deploys hit that site every time; `netlify link` is not required.
+  command = "node scripts/netlify-build.js"
+  publish = "build"
+
+  [build.environment]
+    # Create React App treats warnings as errors when CI=true. Netlify sets CI.
+    CI = "false"
+
+# SPA fallback: same rule is in public/_redirects (copied into build/ by react-scripts).
+# Any path (/schedule, /signup, …) serves the app shell so client routes work.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
