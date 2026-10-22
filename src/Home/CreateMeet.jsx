@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import moment from "moment";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { Row, Col, Container, Form, Modal } from "react-bootstrap";
 import { Box, Typography } from "@mui/material";
 import { Grid } from "@mui/material";
@@ -76,6 +76,26 @@ export default function CreateMeet() {
   // From the /event/:eventID route (App.js); slicing the URL broke on
   // trailing slashes, query strings and in-app navigation.
   const { eventID } = useParams();
+  // Every Circle purchases link here with ?booking=<signed token>; Skedul limits
+  // bookings to the units purchased.
+  const bookingToken = new URLSearchParams(useLocation().search).get("booking");
+  const [bookingStatus, setBookingStatus] = useState(null);
+  const [bookingError, setBookingError] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
+
+  useEffect(() => {
+    if (!bookingToken) return;
+    axios
+      .post(BASE_URL + "BookingStatus", { booking_token: bookingToken, event_id: eventID })
+      .then((res) => setBookingStatus(res.data.result))
+      .catch((err) =>
+        setBookingError(
+          err.response?.data?.message ||
+            "This booking link is invalid or expired. Open it again from Every Circle."
+        )
+      );
+  }, [bookingToken, eventID, refreshKey]);
+  const bookingsUsedUp = !!bookingStatus && bookingStatus.remaining <= 0;
 
   function handleCallBackResponse(response) {
     var userObject = jwt_decode(response.credential);
@@ -163,96 +183,22 @@ export default function CreateMeet() {
             console.log(error);
           });
 
+        // Owner name/email only; the owner's Google token stays on the server
+        // (EventFreeBusy / BookEvent).
         axios
-          .get(BASE_URL + `UserDetails/${userID}`)
+          .get(BASE_URL + `EventOwner/${eventID}`)
           .then((response) => {
-            //console.log(response.data);
-            setAccessToken(response.data.google_auth_token);
-            setSelectedUser(response.data.user_unique_id);
-            setUserEmail(response.data.user_email_id);
+            const owner = response.data.result || {};
+            setSelectedUser(owner.user_unique_id);
+            setUserEmail(owner.user_email_id);
             setNewAttendees((a) => {
-              a[0].email = response.data.user_email_id;
+              a[0].email = owner.user_email_id;
               return a;
             });
-            setAttendees([{ email: response.data.user_email_id }]);
+            setAttendees([{ email: owner.user_email_id }]);
             setUserName(
-              response.data.user_first_name + "" + response.data.user_last_name
+              (owner.user_first_name || "") + "" + (owner.user_last_name || "")
             );
-            var old_at = response.data.google_auth_token;
-            var refresh_token = response.data.google_refresh_token;
-            //console.log(refresh_token);
-            //console.log('in events', old_at);
-            fetch(
-              `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${old_at}`,
-              {
-                method: "GET",
-              }
-            ).then((response) => {
-              //console.log('in events', response);
-              if (response["status"] === 400) {
-                //console.log('in events if');
-                let authorization_url =
-                  "https://accounts.google.com/o/oauth2/token";
-
-                var details = {
-                  refresh_token: refresh_token,
-                  client_id: CLIENT_ID,
-                  client_secret: CLIENT_SECRET,
-                  grant_type: "refresh_token",
-                };
-                //console.log(details);
-                var formBody = [];
-                for (var property in details) {
-                  var encodedKey = encodeURIComponent(property);
-                  var encodedValue = encodeURIComponent(details[property]);
-                  formBody.push(encodedKey + "=" + encodedValue);
-                }
-                formBody = formBody.join("&");
-
-                fetch(authorization_url, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type":
-                      "application/x-www-form-urlencoded;charset=UTF-8",
-                  },
-                  body: formBody,
-                })
-                  .then((response) => {
-                    return response.json();
-                  })
-                  .then((responseData) => {
-                    console.log(responseData);
-                    return responseData;
-                  })
-                  .then((data) => {
-                    //console.log(data);
-                    let at = data["access_token"];
-                    if (!at) {
-                      // Don't overwrite the stored token with undefined
-                      console.error("Google token refresh failed", data);
-                      return;
-                    }
-                    setAccessToken(at);
-                    //console.log('in events', at);
-                    let url = BASE_URL + `UpdateAccessToken/${userID}`;
-                    axios
-                      .post(url, {
-                        google_auth_token: at,
-                      })
-                      .then((response) => {})
-                      .catch((err) => {
-                        console.log(err);
-                      });
-                    return accessToken;
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              } else {
-                setAccessToken(old_at);
-                //console.log(old_at);
-              }
-            });
           })
           .catch((error) => {
             console.log(error);
@@ -365,7 +311,12 @@ export default function CreateMeet() {
       // Check both the owner's and the visitor's calendars; a time is only
       // offered if it is free on both.
       const freeBusyURL = `https://www.googleapis.com/calendar/v3/freeBusy?key=${API_KEY}`;
-      const ownerRequest = axios.post(freeBusyURL, data, { headers: headers });
+      // Owner's busy times come from the Skedul backend, which holds the owner's token.
+      const ownerRequest = axios.post(BASE_URL + "EventFreeBusy", {
+        event_id: eventID,
+        time_min: data.timeMin,
+        time_max: data.timeMax,
+      });
       const visitorRequest = visitorAccessToken
         ? axios.post(freeBusyURL, data, {
             headers: {
@@ -376,7 +327,7 @@ export default function CreateMeet() {
         : Promise.reject(new Error("Visitor calendar access not granted"));
       Promise.all([ownerRequest, visitorRequest])
         .then(([ownerResponse, visitorResponse]) => {
-          let busy = ownerResponse.data.calendars.primary.busy.concat(
+          let busy = ownerResponse.data.busy.concat(
             visitorResponse.data.calendars.primary.busy
           );
           for (let i in viewTimeSlots) {
@@ -636,109 +587,53 @@ export default function CreateMeet() {
     setAttendees(emails);
   }
 
-  function createNewMeet() {
-    var meeting = {
-      user_id: `${selectedUser}`,
-      view_id: `${viewID}`,
-      event_id: `${eventID}`,
-      meeting_name: meetName,
-      location: meetLocation,
-      attendees: attendees,
-      meeting_date: meetDate,
-      meeting_time: meetTime,
-    };
-
+  // Book through the Skedul backend: it creates the owner's Google Calendar event
+  // (with invites) and records the meeting, enforcing the Every Circle purchase
+  // limit when the page was opened with a booking token.
+  function bookMeeting() {
+    const start_time = moment(meetDate + "T" + meetTime).format();
+    const et = Date.parse(start_time) / 1000 + convert(duration);
+    const end_time = moment(new Date(et * 1000)).format();
+    const guests = [...attendees, { email: googleAuthedEmail }].filter(
+      (a) => a && a.email
+    );
+    setIsBooking(true);
+    setBookingError("");
     axios
-      .post(BASE_URL + "AddMeeting", meeting)
-      .then((response) => {
-        setRefreshKey((oldKey) => oldKey + 1);
+      .post(BASE_URL + "BookEvent", {
+        event_id: eventID,
+        booking_token: bookingToken || undefined,
+        summary: meetName || eventName,
+        location: meetLocation,
+        start: start_time,
+        end: end_time,
+        attendees: guests,
+        meeting_date: meetDate,
+        meeting_time: meetTime,
       })
-      .catch((error) => {
-        console.log("error", error);
-      });
-    setShowCreateNewMeetModal(false);
-    setTimeSelected(false);
-    setShowDays(false);
-    setShowTimes(false);
-    setMeetingConfirmed(true);
-    setTimeAASlots([]);
-    setTimeSlots([]);
-    setMeetName("");
-    //setMeetDate('');
-    setMeetLocation("");
-    //setMeetTime('');
-    setAttendees([{ email: "" }]);
-  }
-  function createMeet() {
-    //console.log(meetDate, meetTime, duration);
-    let start_time = meetDate + "T" + meetTime;
-    start_time = moment(start_time).format();
-    //console.log(start_time);
-    let d = convert(duration);
-    let et = Date.parse(start_time) / 1000 + d;
-    //console.log(d);
-    //console.log(et);
-    let end_time = moment(new Date(et * 1000)).format();
-    attendees.push({ email: googleAuthedEmail });
-    console.log(attendees);
-    var meet = {
-      summary: meetName,
-
-      location: meetLocation,
-      creator: {
-        email: googleAuthedEmail,
-        self: true,
-      },
-      organizer: {
-        email: googleAuthedEmail,
-        self: true,
-      },
-      start: {
-        dateTime: start_time,
-      },
-      end: {
-        dateTime: end_time,
-      },
-      attendees: attendees,
-    };
-    console.log(meet);
-
-    publishTheCalenderEvent(meet);
-    setTimeSelected(false);
-    setShowDays(false);
-    setShowTimes(false);
-    setMeetingConfirmed(true);
-    setMeetName("");
-    //setMeetDate('');
-    setMeetLocation("");
-    //setMeetTime('');
-    setAttendees([{ email: "" }]);
-  }
-
-  const publishTheCalenderEvent = (event) => {
-    let calendarId = "primary";
-    const headers = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: "Bearer " + accessToken,
-    };
-    // sendUpdates=all makes Google email the invite to the attendees;
-    // without it the API creates the event silently.
-    axios
-      .post(
-        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?sendUpdates=all&key=${API_KEY}`,
-        event,
-        {
-          headers: headers,
-        }
-      )
-      .then((response) => {
-        console.log(response);
+      .then((res) => {
+        const result = res.data.result || {};
+        if (result.allowed !== undefined) setBookingStatus(result);
+        setShowCreateNewMeetModal(false);
+        setTimeSelected(false);
+        setShowDays(false);
+        setShowTimes(false);
+        setMeetingConfirmed(true);
+        setTimeAASlots([]);
+        setTimeSlots([]);
+        setMeetName("");
+        setMeetLocation("");
+        setAttendees([{ email: "" }]);
       })
-      .catch((error) => {
-        console.error("Google Calendar event insert failed", error);
-      });
-  };
+      .catch((err) => {
+        setBookingError(
+          err.response?.data?.message ||
+            "Could not book this time. Please try again."
+        );
+        if (err.response?.status === 409) setRefreshKey((k) => k + 1);
+      })
+      .finally(() => setIsBooking(false));
+  }
 
   function formatTime(date, time) {
     if (time == null) {
@@ -1126,6 +1021,19 @@ export default function CreateMeet() {
         <div>
           {signedin ? (
             <div>
+              {bookingToken ? (
+                <Row style={{ margin: "16px 10px 0" }}>
+                  <Typography
+                    style={{ color: bookingError || bookingsUsedUp ? "#c62828" : "#2C2C2E" }}
+                  >
+                    {!bookingStatus
+                      ? bookingError || "Checking your bookings…"
+                      : bookingsUsedUp
+                      ? `You've used all ${bookingStatus.allowed} booking${bookingStatus.allowed === 1 ? "" : "s"} for this purchase.`
+                      : `Bookings remaining for this purchase: ${bookingStatus.remaining} of ${bookingStatus.allowed}`}
+                  </Typography>
+                </Row>
+              ) : null}
               <Row>
                 <Col xs={2}>
                   <div
@@ -1140,6 +1048,7 @@ export default function CreateMeet() {
                     onClick={() => {
                       // getAuthToGoogle();
                       // setSignedIn(true);
+                      if (bookingToken && (!bookingStatus || bookingsUsedUp)) return;
                       if (!visitorAccessToken) {
                         requestVisitorCalendarAccess();
                       }
@@ -1469,14 +1378,16 @@ export default function CreateMeet() {
                               borderRadius: "3px",
                               color: " #F3F3F8",
                             }}
-                            onClick={(e) => {
-                              console.log();
-                              createMeet();
-                              createNewMeet();
-                            }}
+                            disabled={isBooking || bookingsUsedUp}
+                            onClick={bookMeeting}
                           >
-                            Schedule Meeting
+                            {isBooking ? "Scheduling…" : "Schedule Meeting"}
                           </button>
+                          {bookingError ? (
+                            <div style={{ color: "#c62828", marginTop: "6px" }}>
+                              {bookingError}
+                            </div>
+                          ) : null}
                         </Col>
                       </Row>
                     </div>
