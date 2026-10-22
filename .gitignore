@@ -33,3 +33,6 @@ yarn-error.log*
 
 # Web certificates
 *.pem
+
+# Local Netlify link (site id); created by `netlify link` / first deploy
+.netlify
