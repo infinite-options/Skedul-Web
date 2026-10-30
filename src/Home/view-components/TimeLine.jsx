@@ -8,6 +8,38 @@ import { v4 } from "uuid";
 import "../../styles/timeline.css";
 import Cookies from "js-cookie";
 
+// "13:30" -> { hour: "1", min: "30", suffix: "pm" }
+const parseTime = (time) => {
+    const match = /^(\d+):(\d+)/.exec(String(time));
+    if (!match) return null;
+    const hr = parseInt(match[1], 10);
+    return {
+        hour: String(hr % 12 === 0 ? 12 : hr % 12),
+        min: match[2],
+        suffix: hr >= 12 && hr < 24 ? "pm" : "am",
+    };
+};
+// "13:30" -> "1:30pm"
+const formatTime = (time) => {
+    const t = parseTime(time);
+    return t ? `${t.hour}:${t.min}${t.suffix}` : "";
+};
+// Short form for narrow blocks: "12–3pm", "9:30–11am", "11am–1pm"
+const formatCompactRange = (start, end) => {
+    const s = parseTime(start);
+    const e = parseTime(end);
+    if (!s || !e) return "";
+    const part = (t) => (t.min === "00" ? t.hour : `${t.hour}:${t.min}`);
+    const startSuffix = s.suffix === e.suffix ? "" : s.suffix;
+    return `${part(s)}${startSuffix}–${part(e)}${e.suffix}`;
+};
+// Rough rendered width of the 11px label text, so we only draw a label that fits
+const LABEL_CHAR_PX = 6.2;
+const LABEL_PADDING_PX = 8;
+const labelFits = (text, size) =>
+    text.length * LABEL_CHAR_PX + LABEL_PADDING_PX <= size;
+const LABEL_MIN_HEIGHT_PX = 14; // a vertical block needs this much height for one line
+
 const TimeLine = (props) => {
     // DEFAULT PROPS
     const { allViews } = useContext(PageContext);
@@ -55,6 +87,59 @@ const TimeLine = (props) => {
                 userSelect: "none",
                 transition:
                     "left 0.05s ease, top 0.05s ease, height 0.05s ease,width 0.05s ease",
+            };
+        }
+        // Longest label that fits inside the block: full range, short range, or none
+        // (the full range is always in the hover tooltip). Text runs horizontally, so
+        // its room is the block's length when horizontal, or the day column's width
+        // (crossSize) when vertical, provided the block is tall enough for a line.
+        getLabel(crossSize = 0) {
+            if (!this.time) return "";
+            const room =
+                this.direction === "vertical"
+                    ? this.size >= LABEL_MIN_HEIGHT_PX
+                        ? crossSize
+                        : 0
+                    : this.size;
+            const full = this.getTimeRange();
+            if (labelFits(full, room)) return full;
+            const compact = formatCompactRange(
+                this.time.start_time,
+                this.time.end_time
+            );
+            return labelFits(compact, room) ? compact : "";
+        }
+        getTimeRange() {
+            if (!this.time) return "";
+            return `${formatTime(this.time.start_time)}–${formatTime(
+                this.time.end_time
+            )}`;
+        }
+        getLabelStyle() {
+            // Site text color (#2c2c2e), softened; light text only on dark view colors
+            const rgb = this.hexToRgb(this.color);
+            let textColor = "rgba(44, 44, 46, 0.75)";
+            if (rgb) {
+                const [r, g, b] = rgb.split(",").map(Number);
+                if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.6) {
+                    textColor = "rgba(255, 255, 255, 0.85)";
+                }
+            }
+            return {
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                // Same face as the rest of the page (views.css: SF Pro Display)
+                fontFamily: '"SF Pro Display", "SFProDisplay-Regular", sans-serif',
+                fontSize: "11px",
+                fontWeight: "normal",
+                letterSpacing: "0px",
+                color: textColor,
+                pointerEvents: "none",
             };
         }
         setDirection(direction) {
@@ -418,6 +503,29 @@ const TimeLine = (props) => {
     const [timeSlots, setTimeSlots] = useState([]);
     const [cursor, setCursor] = useState("copy"); // Cursor Style
 
+    const renderTimeSlots = () =>
+        timeSlotsData.current.map((timeSlot, idx) => (
+            <div
+                key={timeSlot.key}
+                style={timeSlot.getStyle()}
+                title={
+                    type === "all"
+                        ? timeSlot.getTimeRange()
+                        : `${timeSlot.getTimeRange()} (click to remove)`
+                }
+                onClick={() => {
+                    handleOnTimeSlotClick(timeSlotsData, idx);
+                }}
+            >
+                <div className={"timeSlot"}></div>
+                {timeSlot.getLabel(cell.current?.clientWidth) && (
+                    <span style={timeSlot.getLabelStyle()}>
+                        {timeSlot.getLabel(cell.current?.clientWidth)}
+                    </span>
+                )}
+            </div>
+        ));
+
     // NEW TIMESLOT HANDLERS
     const handleOnMouseDown = (
         e,
@@ -462,19 +570,7 @@ const TimeLine = (props) => {
     const getMouseMoveEvent = useCallback((e) => {
         console.log("TimeLine.jsx getMouseMoveEvent>>>>>>")
         timeSlotsData.current = handleOnMouseMove(e, timeSlotsData);
-        setTimeSlots([
-            ...timeSlotsData.current.map((timeSlot, idx) => (
-                <div
-                    key={timeSlot.key}
-                    style={timeSlot.getStyle()}
-                    onClick={() => {
-                        handleOnTimeSlotClick(timeSlotsData, idx);
-                    }}
-                >
-                    <div className={"timeSlot"}></div>
-                </div>
-            )),
-        ]);
+        setTimeSlots(renderTimeSlots());
     }, []);
     const handleOnMouseMove = (e, timeSlotsData) => {
         console.log("TimeLine.jsx handleOnMouseMove>>>>>>")
@@ -495,19 +591,7 @@ const TimeLine = (props) => {
     const handleOnTimeSlotClick = (timeSlotsData, idx) => {
         if (type !== "all") {
             timeSlotsData.current.splice(idx, 1);
-            setTimeSlots([
-                ...timeSlotsData.current.map((timeSlot, idx) => (
-                    <div
-                        key={timeSlot.key}
-                        style={timeSlot.getStyle()}
-                        onClick={() => {
-                            handleOnTimeSlotClick(timeSlotsData, idx);
-                        }}
-                    >
-                        <div className={"timeSlot"}></div>
-                    </div>
-                )),
-            ]);
+            setTimeSlots(renderTimeSlots());
         }
     };
     const handleOnMouseUpOnMouseLeaveOnPopoverClose = (timeSlotsData) => {
@@ -650,19 +734,7 @@ const TimeLine = (props) => {
             timeSlot.setLabel(label);
         });
 
-        setTimeSlots([
-            ...timeSlotsData.current.map((timeSlot, idx) => (
-                <div
-                    key={timeSlot.key}
-                    style={timeSlot.getStyle()}
-                    onClick={() => {
-                        handleOnTimeSlotClick(timeSlotsData, idx);
-                    }}
-                >
-                    <div className={"timeSlot"}></div>
-                </div>
-            )),
-        ]);
+        setTimeSlots(renderTimeSlots());
     }, [direction, type, label, pixelSize, allViews]);
 
     // allViews.map((view) => {
@@ -736,25 +808,35 @@ const TimeLine = (props) => {
                 display: "grid",
                 alignContent: "center",
                 gridTemplateColumns:
-                    direction === "horizontal" ? `60px ${pixelSize} 40px` : "",
+                    direction === "horizontal"
+                        ? `60px ${pixelSize} 40px`
+                        : "minmax(0, 1fr)",
                 gridTemplateRows:
                     direction === "vertical" ? `60px ${pixelSize} 40px` : "",
                 flexGrow: "1",
+                // Let day columns shrink below their content so the calendar fits narrow screens
+                flexBasis: direction === "vertical" ? "0" : "",
+                minWidth: 0,
                 width: direction === "horizontal" ? "100%" : "",
                 height: direction === "vertical" ? "100%" : "",
             }}
         >
-            {/* LABEL */}
+            {/* LABEL (short day name in vertical columns; `label` itself stays the full day) */}
             <h6
+                title={label}
                 style={{
                     justifySelf: direction === "vertical" ? "center" : "right",
                     alignSelf: "center",
-                    padding: "7.5px 15px",
-                    fontSize: "0.5em",
-                    color: "#bbb",
+                    padding: direction === "vertical" ? "7.5px 2px" : "7.5px 15px",
+                    fontSize: "0.75em",
+                    color: "#636366",
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                 }}
             >
-                {label}
+                {direction === "vertical" ? label.slice(0, 3) : label}
             </h6>
 
             {/* SCHEDULE */}
@@ -786,19 +868,7 @@ const TimeLine = (props) => {
                             label
                         );
                     }
-                    setTimeSlots([
-                        ...timeSlotsData.current.map((timeSlot, idx) => (
-                            <div
-                                key={timeSlot.key}
-                                style={timeSlot.getStyle()}
-                                onClick={() => {
-                                    handleOnTimeSlotClick(timeSlotsData, idx);
-                                }}
-                            >
-                                <div className={"timeSlot"}></div>
-                            </div>
-                        )),
-                    ]);
+                    setTimeSlots(renderTimeSlots());
                 }}
                 onMouseUpCapture={() => {
                     console.log("TimeLine.jsx onMouseUpCapture>>>>>>")
@@ -808,19 +878,7 @@ const TimeLine = (props) => {
                                 timeSlotsData
                             );
                     }
-                    setTimeSlots([
-                        ...timeSlotsData.current.map((timeSlot, idx) => (
-                            <div
-                                key={timeSlot.key}
-                                style={timeSlot.getStyle()}
-                                onClick={() => {
-                                    handleOnTimeSlotClick(timeSlotsData, idx);
-                                }}
-                            >
-                                <div className={"timeSlot"}></div>
-                            </div>
-                        )),
-                    ]);
+                    setTimeSlots(renderTimeSlots());
                 }}
                 onMouseLeave={() => {
                     console.log("TimeLine.jsx mouseLeave>>>>>>")
@@ -830,19 +888,7 @@ const TimeLine = (props) => {
                                 timeSlotsData
                             );
                     }
-                    setTimeSlots([
-                        ...timeSlotsData.current.map((timeSlot, idx) => (
-                            <div
-                                key={timeSlot.key}
-                                style={timeSlot.getStyle()}
-                                onClick={() => {
-                                    handleOnTimeSlotClick(timeSlotsData, idx);
-                                }}
-                            >
-                                <div className={"timeSlot"}></div>
-                            </div>
-                        )),
-                    ]);
+                    setTimeSlots(renderTimeSlots());
                 }}
             >
                 {timeSlots}
@@ -854,14 +900,18 @@ const TimeLine = (props) => {
                     style={{
                         justifySelf: "center",
                         alignSelf: "center",
-                        width: "34px",
+                        display: "flex",
+                        justifyContent: "center",
+                        width: "100%",
+                        maxWidth: "34px",
                         height: "34px",
                     }}
                 >
                     <IconButton
                         color="primary"
                         size="small"
-                        aria-label="add to shopping cart"
+                        sx={{ minWidth: 0, padding: "4px" }}
+                        aria-label={`Add hours on ${label}`}
                         onClick={(e) => {
                             if (type === "selected" && allViews.length > 0) {
                                 timeSlotsData.current = handleAddClick(
@@ -879,24 +929,7 @@ const TimeLine = (props) => {
                                         timeSlotsData
                                     );
                             }
-                            setTimeSlots([
-                                ...timeSlotsData.current.map(
-                                    (timeSlot, idx) => (
-                                        <div
-                                            key={timeSlot.key}
-                                            style={timeSlot.getStyle()}
-                                            onClick={() => {
-                                                handleOnTimeSlotClick(
-                                                    timeSlotsData,
-                                                    idx
-                                                );
-                                            }}
-                                        >
-                                            <div className={"timeSlot"}></div>
-                                        </div>
-                                    )
-                                ),
-                            ]);
+                            setTimeSlots(renderTimeSlots());
                         }}
                     >
                         <Add sx={{ width: "20px", height: "20px" }} />
@@ -963,28 +996,7 @@ const TimeLine = (props) => {
                                                 timeSlotsData
                                             );
 
-                                        setTimeSlots([
-                                            ...timeSlotsData.current.map(
-                                                (timeSlot, idx) => (
-                                                    <div
-                                                        key={timeSlot.key}
-                                                        style={timeSlot.getStyle()}
-                                                        onClick={() => {
-                                                            handleOnTimeSlotClick(
-                                                                timeSlotsData,
-                                                                idx
-                                                            );
-                                                        }}
-                                                    >
-                                                        <div
-                                                            className={
-                                                                "timeSlot"
-                                                            }
-                                                        ></div>
-                                                    </div>
-                                                )
-                                            ),
-                                        ]);
+                                        setTimeSlots(renderTimeSlots());
                                     }
                                 }}
                             />
@@ -1012,28 +1024,7 @@ const TimeLine = (props) => {
                                                 timeSlotsData
                                             );
 
-                                        setTimeSlots([
-                                            ...timeSlotsData.current.map(
-                                                (timeSlot, idx) => (
-                                                    <div
-                                                        key={timeSlot.key}
-                                                        style={timeSlot.getStyle()}
-                                                        onClick={() => {
-                                                            handleOnTimeSlotClick(
-                                                                timeSlotsData,
-                                                                idx
-                                                            );
-                                                        }}
-                                                    >
-                                                        <div
-                                                            className={
-                                                                "timeSlot"
-                                                            }
-                                                        ></div>
-                                                    </div>
-                                                )
-                                            ),
-                                        ]);
+                                        setTimeSlots(renderTimeSlots());
                                     }
                                 }}
                             />

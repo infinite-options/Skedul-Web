@@ -123,6 +123,8 @@ const Calendar = (props) => {
             style={{
                 // backgroundColor:"red",
                 position: "relative",
+                // Vertical: fill the parent's width (Views sizes the columns responsively);
+                // the 24 hours run down a fixed pixelSize height.
                 width:
                     direction === "horizontal"
                         ? parseInt(pixelSize) + 100 + "px"

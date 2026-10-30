@@ -16,6 +16,9 @@ import Legend from "./Legend";
 
 export const PageContext = createContext();
 
+// Both calendars (selected + combined) use this size so they match exactly
+const CALENDAR_SIZE = 750;
+
 function Views() {
     const userID = document.cookie
         .split(";")
@@ -102,11 +105,27 @@ function Views() {
                     <p className={"subTitle"}>Pacific Time - US Canada</p>
                 </Box>
                 <hr />
-                <Box height="300px">
-                    <Calendar type="selected" setSlotsData={setData} />
+                {/* Selected view (editable) on the left, combined views on the right.
+                    Each takes half the width and shrinks with the window (no side scroll). */}
+                <Box
+                    display="flex"
+                    flexWrap="nowrap"
+                    alignItems="flex-start"
+                    gap={{ xs: "12px", md: "40px" }}
+                    sx={{ "& > *": { flex: "1 1 0", minWidth: 0 } }}
+                >
+                <Box>
+                <p class="title" style={{ textAlign: "center" }}>SELECTED VIEW</p>
+                <Box>
+                    <Calendar
+                        direction="vertical"
+                        type="selected"
+                        pixelSize={CALENDAR_SIZE}
+                        setSlotsData={setData}
+                    />
                 </Box>
                 <Box m="20px 10px">
-                    
+
                     <Button
                         variant={updateClicked ? "contained" : "outlined"}
                         
@@ -126,18 +145,25 @@ function Views() {
 
                         }}
                     >
-                        {updateClicked ? "Updated" : "Update"}
-                        
+                        {updateClicked ? "Saved" : "Save"}
+
                     </Button>
                 </Box>
-                <hr />
-                <p class="title">COMBINED VIEWS</p>
+                </Box>
+                <Box>
+                <p class="title" style={{ textAlign: "center" }}>COMBINED VIEWS</p>
                 <div id="combined">
-                    <Box height="300px">
-                        <Calendar type="all" />
+                    <Box>
+                        <Calendar
+                            direction="vertical"
+                            type="all"
+                            pixelSize={CALENDAR_SIZE}
+                        />
                     </Box>{" "}
                     <Legend />
                 </div>
+                </Box>
+                </Box>
             </Box>
         </PageContext.Provider>
     );

@@ -11,14 +11,18 @@
     font: normal normal normal 18px/21px SF Pro Display;
 }
 
+/* Combined calendar with its legend underneath */
 #combined {
     display:flex;
+    flex-direction:column;
 }
 
 #legend {
     display:flex;
-    flex-direction:column;
-    justify-content: space-around;
+    flex-wrap:wrap;
+    justify-content: center;
+    gap: 8px 24px;
+    margin-top: 16px;
 }
 
 .color {
