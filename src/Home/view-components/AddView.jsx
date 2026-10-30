@@ -19,7 +19,7 @@ const AddView = (props) => {
           props.setShowCreateViewDialog(true);
         }}
       >
-        + Add View
+        + Add Calendar
       </Button>
       <Button
         variant="outlined"
@@ -31,7 +31,7 @@ const AddView = (props) => {
           props.setshowUpdateViewDialog(true);
         }}
       >
-        Edit View
+        Edit Calendar
         {/* <img
           src={Edit}
           style={{
@@ -63,13 +63,13 @@ const AddView = (props) => {
             }
           });
           props.setshowLoadingImg(false)
-          if (window.confirm("Are you sure You want to delete " + view_name + " View")) {
+          if (window.confirm("Are you sure You want to delete " + view_name + " Calendar")) {
             if (view_unique_id != "")
               deleteView(setAllViews, props.userID, view_unique_id, props.setshowLoadingImg)
           }
         }}
       >
-        Delete View
+        Delete Calendar
         {/* <img
         src={Trash}
         style={{

@@ -77,8 +77,8 @@ function Views() {
         >
             <Box minHeight="fit-content" minWidth="fit-content" p="20px">
                 <Box>
-                    <p className={"subTitle"}>SELECT A VIEW</p>
-                    <p className={"title"}>VIEWS</p>
+                    <p className={"subTitle"}>SELECT A CALENDAR</p>
+                    <p className={"title"}>CALENDARS</p>
                     <Box display="flex" flexWrap="wrap">
                         <SelectView />
                         <AddView
@@ -115,7 +115,7 @@ function Views() {
                     sx={{ "& > *": { flex: "1 1 0", minWidth: 0 } }}
                 >
                 <Box>
-                <p class="title" style={{ textAlign: "center" }}>SELECTED VIEW</p>
+                <p class="title" style={{ textAlign: "center" }}>SELECTED CALENDAR</p>
                 <Box>
                     <Calendar
                         direction="vertical"
@@ -151,7 +151,7 @@ function Views() {
                 </Box>
                 </Box>
                 <Box>
-                <p class="title" style={{ textAlign: "center" }}>COMBINED VIEWS</p>
+                <p class="title" style={{ textAlign: "center" }}>COMBINED CALENDARS</p>
                 <div id="combined">
                     <Box>
                         <Calendar

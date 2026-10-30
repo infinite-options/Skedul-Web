@@ -64,7 +64,7 @@ export default function Login() {
             },
           });
           history.push({
-            pathname: "/schedule",
+            pathname: "/event",
             state: {
               email: email.toString(),
               accessToken: "",
@@ -86,7 +86,7 @@ export default function Login() {
       .some((item) => item.trim().startsWith("user_uid="))
   ) {
     history.push({
-      pathname: "/schedule",
+      pathname: "/event",
       state: {
         email: email.toString(),
         accessToken: accessToken.toString(),

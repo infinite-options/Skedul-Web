@@ -8,6 +8,7 @@ import Edit from "../images/edit.svg";
 import Copy from "../images/copy.svg";
 import Trash from "../images/Trash.svg";
 import "../styles/event.css";
+import Schedule from "./Schedule";
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
@@ -859,8 +860,11 @@ export default function Event() {
         </Row>
       )}
       <Row className={"title"}>
-        <Col xs={2}>ALL VIEWS</Col>
-        <Col>ALL EVENT TYPES</Col>
+        {/* Same width as the view boxes below so the heading centers over them */}
+        <Col xs={2}>
+          <div style={{ width: "213px", textAlign: "center" }}>ALL VIEWS</div>
+        </Col>
+        <Col style={{ textAlign: "center" }}>ALL EVENT TYPES</Col>
       </Row>
 
       {allViews.map((view) => {
@@ -1053,7 +1057,7 @@ export default function Event() {
                             >
                               <Col
                                 onClick={() => {
-                                  history.push("/schedule");
+                                  history.push("/event");
                                 }}
                               >
                                 View booking page
@@ -1159,6 +1163,7 @@ export default function Event() {
           </Row>
         );
       })}
+      <Schedule calendarOnly />
       <div>{showCreateNewEventModal && createNewEventModal()}</div>
       <div>{showUpdateEventModal && updateEventModal()}</div>
       <div>{showShareModal && shareModal()}</div>

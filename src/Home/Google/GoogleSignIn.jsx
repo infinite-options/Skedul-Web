@@ -155,7 +155,7 @@ function GoogleSignIn(props) {
             },
           });
           history.push({
-            pathname: "/schedule",
+            pathname: "/event",
             state: {
               email: email.toString(),
               accessToken: res.data.result[1],

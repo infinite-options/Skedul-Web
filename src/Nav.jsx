@@ -1,7 +1,6 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Login from "./Home/Login";
-import Schedule from "../src/Home/Schedule";
 import SignUp from "../src/Home/SignUp";
 import Event from "../src/Home/Event";
 import Integration from "../src/Home/Integration";
@@ -17,7 +16,8 @@ function Nav(authLevel, isAuth) {
     return (
         <Switch>
             <Route exact path="/" component={Login} />
-            <Route exact path="/schedule" component={Schedule} />
+            {/* Calendar tab was removed; its calendar now lives on Event Types */}
+            <Redirect exact from="/schedule" to="/event" />
             <Route exact path="/event" component={Event} />
             <Route exact path="/views" component={Views} />
             <Route exact path="/integration" component={Integration} />

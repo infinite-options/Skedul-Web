@@ -13,6 +13,7 @@ const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URI;
 
 export default function Schedule(props) {
+    const { calendarOnly = false } = props;
     const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
     const loginContext = useContext(LoginContext);
@@ -1384,6 +1385,9 @@ export default function Schedule(props) {
                     <h1>No Views</h1>
                 ) : (
                     <div>
+                        {/* The week calendar is shown on the Event Types page
+                            (calendarOnly); the Calendar tab shows the event cards. */}
+                        {!calendarOnly && (
                         <Row>
                             {allViews.map((view) => {
                                 return (
@@ -1577,7 +1581,9 @@ export default function Schedule(props) {
                                 );
                             })}
                         </Row>
-
+                        )}
+                        {calendarOnly && (
+                        <>
                         <Container
                             fluid
                             style={{
@@ -1633,6 +1639,8 @@ export default function Schedule(props) {
                                 </Col>
                             </Row>
                         </Container>
+                        </>
+                        )}
                     </div>
                 )}
             </Container>

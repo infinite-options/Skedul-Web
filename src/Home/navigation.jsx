@@ -35,7 +35,7 @@ export function Navigation() {
     console.log("CLIENT_SECRET", typeof CLIENT_SECRET, CLIENT_SECRET);
     console.log("BASE_URL", typeof BASE_URL, BASE_URL);
     const history = useHistory();
-    const [isActive, setActive] = useState("schedule");
+    const [isActive, setActive] = useState("event");
     const loginContext = useContext(LoginContext);
     // const location = useLocation();
     //// const [globalValue, setGlobalValue] = useContext(GlobalContext);
@@ -130,7 +130,8 @@ export function Navigation() {
                                     src={Logo}
                                     alt="logo"
                                     onClick={() => {
-                                        history.push("/schedule");
+                                        history.push("/event");
+                                        setActive("event");
                                     }}
                                 />
                             </Box>
@@ -154,7 +155,7 @@ export function Navigation() {
                                         setActive("views");
                                     }}
                                 >
-                                    Views
+                                    CALENDARS
                                 </Button>
                                 <Button
                                     className={
@@ -169,21 +170,7 @@ export function Navigation() {
                                       
                                     }}
                                 >
-                                    Event Types
-                                </Button>
-                                <Button
-                                    className={
-                                        isActive === "schedule"
-                                            ? `${"activeButtonSelection"}`
-                                            : `${"buttonSelection"}`
-                                    }
-                                    onClick={() => {
-                                        handleViewsClick();
-                                        history.push("/schedule");
-                                        setActive("schedule");
-                                    }}
-                                >
-                                    Calendar
+                                    Events
                                 </Button>
                                 <Button
                                     className={

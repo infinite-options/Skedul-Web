@@ -57,7 +57,7 @@ export default function EveryCircleLogin() {
         });
 
         history.replace({
-          pathname: "/schedule",
+          pathname: "/event",
           state: {
             email: user.user_email_id,
             accessToken: user.google_auth_token || "",

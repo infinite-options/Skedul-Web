@@ -2730,9 +2730,9 @@ function Views() {
 
       {/* ALL VIEWS */}
 
-      <div className={classes.title}>ALL VIEWS</div>
+      <div className={classes.title}>ALL CALENDARS</div>
       {allViews.length === 0 || noViews ? (
-        <div className={classes.subTitle}>No Views added</div>
+        <div className={classes.subTitle}>No Calendars added</div>
       ) : (
         <div style={{ margin: '0 10px' }}>
           <Row>
@@ -2783,7 +2783,7 @@ function Views() {
             })}
           </Row>
 
-          {/* ALL VIEWS TABLE */}
+          {/* ALL CALENDARS TABLE */}
 
           <div className={classes.weekDiv}>
             <Row className={classes.colHeader}>
